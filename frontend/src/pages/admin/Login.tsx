@@ -1,9 +1,30 @@
 import React, { useState } from 'react';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
 import './Login.css';
 
 const Login: React.FC = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
+
+    const { login } = useAuth(); // 2. Access the login function
+    const navigate = useNavigate();
+
+    const handleFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError('');
+        
+        try {
+            // 3. Call the login logic from Context
+            await login(email, password);
+            // 4. Redirect on success
+            navigate('/admin/dashboard');
+        } catch (err: any) {
+            setError('Invalid email or password. Please try again.');
+        }
+    };
 
     return (
         <div className="login-container">
@@ -13,10 +34,18 @@ const Login: React.FC = () => {
                     <p>Enter your credentials to access the admin panel</p>
                 </div>
                 
-                <form className="admin-login-form">
+                <form className="admin-login-form" onSubmit={handleFormSubmit}>
+                    {error && <div className="error-message">{error}</div>}
+                    
                     <div className="form-group">
                         <label>Email Address</label>
-                        <input type="email" placeholder="admin@hireskill.com" required />
+                        <input 
+                            type="email" 
+                            placeholder="admin@hireskill.com" 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required 
+                        />
                     </div>
 
                     <div className="form-group">
@@ -25,6 +54,8 @@ const Login: React.FC = () => {
                             <input 
                                 type={showPassword ? "text" : "password"} 
                                 placeholder="••••••••" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required 
                             />
                             <button 
@@ -48,9 +79,6 @@ const Login: React.FC = () => {
                     <button type="submit" className="admin-login-btn">
                         Login to Dashboard
                     </button>
-                    <div className="reset-password">
-                        <Link to="/admin/reset-password">Reset Password</Link>
-                    </div>
                 </form>
             </div>
         </div>
