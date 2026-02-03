@@ -1,6 +1,6 @@
 import { type SchemaDefinition, Schema } from "mongoose";
 import type { GenerateSchemaFunction } from "../../types/model/index.ts";
-import { generateUserId } from "../../utils/generatorId.utils.ts";
+import { generateUserId } from "../../utils/helper.utils.ts";
 
 export const generateSchema: GenerateSchemaFunction = <T>(
   definition: SchemaDefinition<T>,

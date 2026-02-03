@@ -8,8 +8,8 @@ const UserSchema = generateSchema<UserDocument>({
     password: { type: String },
     role: { type: String },
     refreshTokenId: { type: String, default: null },
-    password_reset_otp: { type: Number, default: null },
-    password_reset_otp_expires: { type: Date, default: null }
+    password_reset_otp: { type: String, default: null },
+    password_reset_otp_expires: { type: Number , default: null }
 })
 
 export class UserClass extends BaseClass<UserDocument> {}
