@@ -3,6 +3,7 @@ import type { BaseModel } from "./index.ts";
 
 export interface StudentProfileDocument extends Document{
     user_id: string;
+    name: string;
     phone: number;
     college: string;
     degree: string;

@@ -4,10 +4,12 @@ import { generateSchema } from "./baseModel/Index.ts";
 import { BaseClass } from "./baseModel/BaseClass.ts";
 
 const UserSchema = generateSchema<UserDocument>({
-    name: { type: String },
     email: { type: String },
     password: { type: String },
-    role: { type: String }
+    role: { type: String },
+    refreshTokenId: { type: String, default: null },
+    resetToken: { type: String, default: null },
+    resetTokenExpiry: { type: Date, default: null }
 })
 
 export class UserClass extends BaseClass<UserDocument> {}
