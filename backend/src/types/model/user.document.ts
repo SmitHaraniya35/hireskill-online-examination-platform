@@ -5,8 +5,8 @@ export interface UserDocument extends BaseDocument{
     password: string,
     role: string,
     refreshTokenId: string,
-    resetToken: string,
-    resetTokenExpiry: Date
+    password_reset_otp: number,
+    password_reset_otp_expires: Date
 }
 
 export interface UserModel extends BaseModel<UserDocument> {}
