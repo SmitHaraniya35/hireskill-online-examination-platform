@@ -5,6 +5,7 @@ import ForgetPassword from './pages/admin/ForgetPassword.tsx'
 import ResetPassword from './pages/admin/ResetPassword.tsx'
 import NotFound from './components/NotFound.tsx'
 import Dashboard from './pages/admin/Dashboard.tsx'
+import AdminRoutes from './routes/AdminRoutes.tsx'
 
 const App: React.FC = () => {
   return (
@@ -14,14 +15,18 @@ const App: React.FC = () => {
       <Route path="/admin/login" element={<Login />} />
       <Route path="/admin/forget-password" element={<ForgetPassword />} />
       <Route path="/admin/reset-password/:token" element={<ResetPassword />} />
-      <Route 
-        path="/admin/dashboard"
-        element={
-          // <ProtectedRoute>
-            <Dashboard />
-          /* </ProtectedRoute> */
-        }
-      />
+      <Route element={<AdminRoutes/>}>
+        <Route 
+          path="/admin/dashboard"
+          element={
+            // <ProtectedRoute>
+              <Dashboard />
+            /* </ProtectedRoute> */
+          }
+        />
+        {/* <Route path="/admin/create-exam" element={<CreateExam />} /> */}
+      </Route>
+      
       <Route path="/*" element={<NotFound />} />
     </Routes>
   )
