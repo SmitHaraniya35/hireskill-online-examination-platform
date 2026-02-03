@@ -175,20 +175,6 @@
     opacity: 0.7;
 }
 
-.reset-password {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.reset-password a{
-    color: #1DA077;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.reset-password a:hover { color: #148562; }
 
 .remember-me{
     display: flex;
