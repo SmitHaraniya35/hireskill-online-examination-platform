@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import responseMiddleware from "./middlewares/response.middleware.ts";
+import adminRoutes from "./routes/auth.routes.ts";
 
 const app = express();
 
@@ -23,10 +24,8 @@ app.use(cookieParser());
 // Custom Response Middleware
 app.use(responseMiddleware);
 
-
-app.use("/", (req, res, next) => {
-    res.send("Hello Wolrd");
-})
+// Add all routes
+app.use("/api/auth", adminRoutes);
 
 export default app;
 
