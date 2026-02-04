@@ -9,7 +9,7 @@ const Login: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
 
-    const { login } = useAuth(); // 2. Access the login function
+    const { login } = useAuth(); //  Access the login function
     const navigate = useNavigate();
 
     const handleFormSubmit = async (e: React.FormEvent) => {
@@ -17,9 +17,9 @@ const Login: React.FC = () => {
         setError('');
         
         try {
-            // 3. Call the login logic from Context
+            //  Call the login logic from Context
             await login(email, password);
-            // 4. Redirect on success
+            //  Redirect on success
             navigate('/admin/dashboard');
         } catch (err: any) {
             setError('Invalid email or password. Please try again.');
@@ -73,7 +73,7 @@ const Login: React.FC = () => {
                             <input type="checkbox" /> 
                             <span>Remember me</span>
                         </label>
-                        <Link to="/admin/forget-password">Forgot Password?</Link>
+                        <Link to="/admin/forgot-password">Forgot Password?</Link>
                     </div>
 
                     <button type="submit" className="admin-login-btn">
