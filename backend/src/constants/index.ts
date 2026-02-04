@@ -20,6 +20,10 @@ export const SUCCESS_MESSAGES = {
   TEST_LIST_FETCHED: "Test list fetched successfully",
   TEST_DELETED: "Test deleted successfully",
   TEST_UPDATED: "Test updated successfully",
+
+  CODING_PROBLEM_CREATED: "Coding problem created successfully",
+  CODING_PROBLEM_FIND: "Coding Problem find successfully",
+  CODING_PROBLEM_LIST_FETCHED: "Coding Problem list fetched successfully"
 }
 
 export const ERROR_MESSAGES = {
@@ -56,7 +60,12 @@ export const ERROR_MESSAGES = {
   TEST_NOT_FOUND: "Test is not found",
   TEST_LIST_NOT_FOUND: "Test list not found",
   TEST_DELETE_FAILED: "Test delete failed",
-  TEST_UPDATE_FAILED: "Test update failed"
+  TEST_UPDATE_FAILED: "Test update failed",
+
+  CODING_PROBLEM_CREATE_FAILED: "Coding Problem create failed",
+  CODING_PROBLEM_NOT_FOUND: "Coding Problem is not found",
+  CODING_PROBLEM_ID_MISSING: "Coding Problem Id is missing",
+  CODING_PROBLEM_LIST_NOT_FOUND: "Coding Problem list not found",
 }
 
 export const HttpStatusCode = {
