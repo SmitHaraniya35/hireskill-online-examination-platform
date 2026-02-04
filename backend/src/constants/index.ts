@@ -11,7 +11,9 @@ export const SUCCESS_MESSAGES = {
 
   ACCESS_TOKEN: "Access token generated successfully",
   RESET_PASSWORD_OTP: "Reset password OTP generated successfully",
-  PASSWORD_RESET_SUCCESS: "Password reset successfully"
+  PASSWORD_RESET_SUCCESS: "Password reset successfully",
+
+  OTP_VERIFIED: "OTP verified successfully",
 }
 
 export const ERROR_MESSAGES = {
@@ -29,6 +31,7 @@ export const ERROR_MESSAGES = {
   REFRESH_TOKEN_INVALID: "Invalid or expired refresh token", 
 
   OTP_EXPIRED: "OTP expired or invalid",
+  OTP_MISSING: "OTP missing",
 
   INPUT_VALIDATION_ERROR: "Input is not valid",
   INPUT_MISSING: "Required input(s) are missing",

@@ -6,20 +6,20 @@ import { generateResetPasswordOTP } from "../utils/helper.utils.ts";
 import type { UserDocument } from "../types/model/user.document.ts";
 
 export const loginService = async (email: string, password: string) => {
-    const admin = await User.findOneActive({ email });
-    if (!admin) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
+    const user = await User.findOneActive({ email });
+    if (!user) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
 
-    const match = await bcrypt.compare(password, admin.password);
+    const match = await bcrypt.compare(password, user.password);
     if (!match) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
 
-    const accessToken = generateAccessToken(admin.id, admin.email);
+    const accessToken = generateAccessToken(user.id, user.email);
 
-    admin.refreshTokenId = (await generateRefreshTokenId()).toString();
-    await admin.save();
+    user.refreshTokenId = (await generateRefreshTokenId()).toString();
+    await user.save();
 
-    const refreshToken = generateRefreshToken(admin.id, admin.refreshTokenId);
+    const refreshToken = generateRefreshToken(user.id, user.refreshTokenId);
 
-    return { admin, accessToken, refreshToken };
+    return { user, accessToken, refreshToken };
 };
 
 export const createAdminService = async (email: string, password: string) => {
@@ -71,16 +71,23 @@ export const forgetPasswordService = async (email: string) => {
   return { otp };
 };
 
-export const resetPasswordService = async (email: string, otp: string, newPassword: string) => {
-
+export const verifyOtpService = async (email: string, otp: string) => {
     const admin: UserDocument | null = await User.findOneActive({ email });
 
     if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
 
     if (admin.password_reset_otp !== otp || admin.password_reset_otp_expires! < Date.now()) {
-        console.log("Hello")
         throw new Error(ERROR_MESSAGES.OTP_EXPIRED);
     }
+
+    return;
+}
+
+export const resetPasswordService = async (email: string, newPassword: string) => {
+
+    const admin: UserDocument | null = await User.findOneActive({ email });
+
+    if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
 
     const oldPassword = admin.password;
     

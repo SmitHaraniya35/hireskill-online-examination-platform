@@ -7,8 +7,10 @@ import {
   forgetPasswordService,
   resetPasswordService,
   logoutService,
+  verifyOtpService,
 } from "../services/auth.service.ts";
 import { verifyRefreshToken } from "../utils/jwt.utils.ts";
+import type { AuthRequest } from "../types/controller/index.ts";
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -77,7 +79,7 @@ export const refreshToken = async (req: Request, res: Response) => {
       secure: true,
     });
 
-    res.ok({ token: accessToken }, SUCCESS_MESSAGES.ACCESS_TOKEN);
+    res.ok({ accessToken }, SUCCESS_MESSAGES.ACCESS_TOKEN);
   } catch (error: any) {
     res.badRequest(error.message);
   }
@@ -85,7 +87,7 @@ export const refreshToken = async (req: Request, res: Response) => {
 
 export const forgotPassword = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const { email } = req.allParams;
 
     if (!email) {
       res.badRequest(ERROR_MESSAGES.INPUT_MISSING);
@@ -99,29 +101,50 @@ export const forgotPassword = async (req: Request, res: Response) => {
   }
 };
 
+export const verifyOtp = async (req: Request, res: Response) => {
+  try {
+    const { email, otp } = req.allParams;
+
+    if(!otp) {
+      res.badRequest(ERROR_MESSAGES.OTP_MISSING);
+    }
+
+    if(!email){
+      res.badRequest
+    }
+
+    await verifyOtpService(email, otp);
+
+    res.ok(SUCCESS_MESSAGES.OTP_VERIFIED);
+
+  } catch (err: any) {
+    res.badRequest(err.message);
+  }
+}
+
 export const resetPassword = async (req: Request, res: Response) => {
   try {
-    const { email, otp, newPassword } = req.body;
+    const { email, newPassword } = req.allParams;
 
-    if (!otp || !email) {
+    if (!email) {
       return res.badRequest(ERROR_MESSAGES.INPUT_MISSING);
     }
 
-    const data = await resetPasswordService(email, otp, newPassword);
+    const data = await resetPasswordService(email, newPassword);
 
-    res.ok(data, SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS);
+    res.ok(SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS);
   } catch (err: any) {
     res.badRequest(err.message);
   }
 };
 
-export const logout = async (req: Request, res: Response) => {
+export const logout = async (req: AuthRequest, res: Response) => {
   try {
-    const { userId } = req.body;
-    // const userId = req.user?.userId;
-    // if(!userId){
-    // return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED);
-    // }
+    const userId = req.user?.userId;
+
+    if(!userId){
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED);
+    }
 
     await logoutService(userId);
 
@@ -138,7 +161,7 @@ export const logout = async (req: Request, res: Response) => {
     });
 
     res.ok(SUCCESS_MESSAGES.LOGOUT_SUCCESS);
-  } catch (error: any) {
-    res.badRequest(error.message);
+  } catch (err: any) {
+    res.badRequest(err.message);
   }
 };
