@@ -2,15 +2,37 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css'; 
 import { Link } from 'react-router-dom';
+import authService from '../../services/authService';
 
 const ResetPassword: React.FC = () => {
     const [passwords, setPasswords] = useState({ new: '', confirm: '' });
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
     const navigate = useNavigate();
+    const email = localStorage.getItem('forgot_email');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Password reset successful");
-        navigate('/admin/login');
+        
+        if (!email) {
+            setError('Session expired. Please try forgot password again.');
+            navigate('/admin/forgot-password');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        const result = await authService.resetPassword(email, passwords.new);
+        setLoading(false);
+
+        if (result.success) {
+            localStorage.removeItem('forgot_email');
+            localStorage.removeItem('forgot_otp');
+            navigate('/admin/login');
+        } else {
+            setError(result.message);
+        }
     };
 
     const isMismatch = passwords.new !== passwords.confirm && passwords.confirm !== '';
@@ -24,19 +46,7 @@ const ResetPassword: React.FC = () => {
                     <p>Almost there! Create a strong password for your admin account.</p>
                 </div>
 
-                <form className="admin-login-form" onSubmit={handleSubmit}>
-
-                    <div className="form-group">
-                        <label>Old Password</label>
-                    <input 
-                        type="password" 
-                        placeholder="••••••••" 
-                        required 
-                        className="" 
-                        // onChange={(e) => setPasswords({...passwords, old: e.target.value})}
-                    />
-                    </div>
-                    
+                <form className="admin-login-form" onSubmit={handleSubmit}>                    
                     <div className="form-group">
                         <label>New Password</label>
                         <input 
@@ -65,12 +75,18 @@ const ResetPassword: React.FC = () => {
                         </div>
                     )}
 
+                    {error && (
+                        <div className="error-message">
+                            <span>❌</span> {error}
+                        </div>
+                    )}
+
                     <button 
                         type="submit" 
                         className="admin-login-btn"
-                        disabled={passwords.new !== passwords.confirm || !passwords.new}
+                        disabled={passwords.new !== passwords.confirm || !passwords.new || loading}
                     >
-                        Update Password
+                        {loading ? 'Updating...' : 'Update Password'}
                     </button>
                     <div className="form-options" style={{ justifyContent: 'center', marginTop: '1.5rem' }}>
                         <Link to="/admin/login" style={{ textDecoration: 'none', fontWeight: '600' }}>
