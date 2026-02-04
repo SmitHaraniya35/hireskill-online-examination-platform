@@ -25,7 +25,7 @@ export interface BaseDocument extends Document {
 export interface BaseModel<T> extends Model<T> {
   findActive(filter?: QueryFilter<T>, filterOptions?: ProjectionType<T>): Query<T[], T>;
   findOneActive(filter: QueryFilter<T>, filterOptions?: ProjectionType<T>): Query<T | null, T>;
-  findByIdActive(id: string): Query<T | null, T>;
+  findByIdActive(id: string, filterOptions?: ProjectionType<T>): Query<T | null, T>;
   updateOneByFilter(filter: QueryFilter<T>, update: UpdateQuery<T>): any;
   updateManyByFilter(filter: QueryFilter<T>, update: UpdateQuery<T>): any;
   softDelete(filter: QueryFilter<T>): any;

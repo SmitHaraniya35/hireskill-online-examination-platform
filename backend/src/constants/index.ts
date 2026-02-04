@@ -10,6 +10,12 @@ export const SUCCESS_MESSAGES = {
   ADMIN_CREATED: "Admin created successfully",
   ADMIN_FIND: "Admin find successfully",
 
+  TEST_CREATED: "Test created successfully",
+  TEST_FIND: "Test find successfully",
+  TESTLIST_FETCHED: "Test list fetched successfully",
+  TEST_DELETED: "Test deleted successfully",
+  TEST_UPDATED: "Test updated successfully",
+
   ACCESS_TOKEN: "Access token generated successfully",
   RESET_PASSWORD_OTP: "Reset password OTP generated successfully",
   PASSWORD_RESET_SUCCESS: "Password reset successfully",
@@ -42,6 +48,13 @@ export const ERROR_MESSAGES = {
 
   ADMIN_EXISTS: "Admin is already exists",
   ADMIN_NOT_EXIST: "Admin is not exists",
+
+  INPUT_DATE_INVALID: "Date not valid",
+  TEST_LINK_ID_MISSING: "Test link id missing",
+  TEST_NOT_FOUND: "Test not found",
+  TESTLIST_NOT_FOUND: "Test list not found",
+  TEST_DELETE_FAILED: "Test delete failed",
+  TEST_UPDATE_FAILED: "Test update failed"
 }
 
 export const HttpStatusCode = {
