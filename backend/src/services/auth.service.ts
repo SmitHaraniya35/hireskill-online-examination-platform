@@ -23,9 +23,6 @@ export const loginService = async (email: string, password: string) => {
 };
 
 export const getMeService = async (id: string, email: string) => {
-    if(!id || !email){
-        throw new Error(ERROR_MESSAGES.INPUT_MISSING);
-    }
 
     const user = await User.findOneActive({ id, email }, { id: 1, email: 1, role: 1, _id: 0});
 

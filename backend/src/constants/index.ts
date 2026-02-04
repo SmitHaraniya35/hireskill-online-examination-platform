@@ -4,23 +4,22 @@ export const SUCCESS_MESSAGES = {
   OK: "Success",
   CREATED: "Created",
 
-  LOGIN_SUCCESS: "Login successful",
-  LOGOUT_SUCCESS: "Logout successful",
+  LOGIN_SUCCESS: "Login successfully",
+  LOGOUT_SUCCESS: "Logout successfullly",
+  PASSWORD_RESET_SUCCESS: "Password reset successfully",
+  ACCESS_TOKEN_GENERATED: "Access token generated successfully",
+
+  OTP_GENERATED: "Reset password OTP generated successfully",
+  OTP_VERIFIED: "OTP verified successfully",
 
   ADMIN_CREATED: "Admin created successfully",
   ADMIN_FIND: "Admin find successfully",
 
   TEST_CREATED: "Test created successfully",
   TEST_FIND: "Test find successfully",
-  TESTLIST_FETCHED: "Test list fetched successfully",
+  TEST_LIST_FETCHED: "Test list fetched successfully",
   TEST_DELETED: "Test deleted successfully",
   TEST_UPDATED: "Test updated successfully",
-
-  ACCESS_TOKEN: "Access token generated successfully",
-  RESET_PASSWORD_OTP: "Reset password OTP generated successfully",
-  PASSWORD_RESET_SUCCESS: "Password reset successfully",
-
-  OTP_VERIFIED: "OTP verified successfully",
 }
 
 export const ERROR_MESSAGES = {
@@ -34,25 +33,28 @@ export const ERROR_MESSAGES = {
 
   ACCESS_TOKEN_MISSING: "Access token is missing",
   REFRESH_TOKEN_MISSING: "Refresh token is missing",
-  ACCESS_TOKEN_INVALID: "Invalid or expired access token", 
-  REFRESH_TOKEN_INVALID: "Invalid or expired refresh token", 
+  ACCESS_TOKEN_INVALID: "Invalid or Expired access token", 
+  REFRESH_TOKEN_INVALID: "Invalid or Expired refresh token", 
 
   OTP_EXPIRED: "OTP expired or invalid",
-  OTP_MISSING: "OTP missing",
+  OTP_REQUIRED: "OTP missing",
   OTP_NOT_VERIFIED: "OTP is not verified",
-
+  
+  INVALID_CREDENTIAL: "Invalid credentials",
+  
   INPUT_VALIDATION_ERROR: "Input is not valid",
   INPUT_MISSING: "Required input(s) are missing",
-
-  INVALID_CREDENTIAL: "Invalid credentials",
+  EMAIL_PASSWORD_REQUIRED: "Email and Password are required",
+  EMAIL_REQUIRED: "Email is required",
 
   ADMIN_EXISTS: "Admin is already exists",
   ADMIN_NOT_EXIST: "Admin is not exists",
+  USER_UNAUTHORIZED: "User Not Authorized",
 
-  INPUT_DATE_INVALID: "Date not valid",
-  TEST_LINK_ID_MISSING: "Test link id missing",
-  TEST_NOT_FOUND: "Test not found",
-  TESTLIST_NOT_FOUND: "Test list not found",
+  INPUT_DATE_INVALID: "Date is not valid",
+  TEST_ID_MISSING: "Test Id is missing",
+  TEST_NOT_FOUND: "Test is not found",
+  TEST_LIST_NOT_FOUND: "Test list not found",
   TEST_DELETE_FAILED: "Test delete failed",
   TEST_UPDATE_FAILED: "Test update failed"
 }

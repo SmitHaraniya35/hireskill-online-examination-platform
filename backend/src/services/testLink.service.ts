@@ -54,7 +54,7 @@ export const getAllTestLinkService = async () => {
     });
 
     if(!testList){
-        throw new Error(ERROR_MESSAGES.TESTLIST_NOT_FOUND);
+        throw new Error(ERROR_MESSAGES.TEST_LIST_NOT_FOUND);
     }
 
     return { testList };
