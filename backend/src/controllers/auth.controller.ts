@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
   loginService,
+  getMeService,
   createAdminService,
   refreshTokenService,
   forgetPasswordService,
@@ -10,7 +11,7 @@ import {
   verifyOtpService,
 } from "../services/auth.service.ts";
 import { verifyRefreshToken } from "../utils/jwt.utils.ts";
-import type { AuthRequest } from "../types/controller/index.ts";
+import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
 
 export const login = async (req: Request, res: Response) => {
   try {
@@ -36,6 +37,22 @@ export const login = async (req: Request, res: Response) => {
     });
 
     res.ok(data, SUCCESS_MESSAGES.LOGIN_SUCCESS);
+  } catch (err: any) {
+    res.badRequest(err.message);
+  }
+};
+
+export const getMe = async (req: Request, res: Response) => {
+  try{
+    const user: AuthJwtPayload | undefined = req.user;
+
+    if(!user) {
+      res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED);
+    }
+
+    const data = await getMeService(user!.userId, user!.email);
+    res.ok(data, SUCCESS_MESSAGES.ADMIN_FIND);
+
   } catch (err: any) {
     res.badRequest(err.message);
   }
@@ -114,13 +131,12 @@ export const verifyOtp = async (req: Request, res: Response) => {
     }
 
     await verifyOtpService(email, otp);
-
     res.ok(SUCCESS_MESSAGES.OTP_VERIFIED);
 
   } catch (err: any) {
     res.badRequest(err.message);
   }
-}
+};
 
 export const resetPassword = async (req: Request, res: Response) => {
   try {

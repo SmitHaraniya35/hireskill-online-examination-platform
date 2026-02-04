@@ -8,6 +8,7 @@ export const SUCCESS_MESSAGES = {
   LOGOUT_SUCCESS: "Logout successful",
 
   ADMIN_CREATED: "Admin created successfully",
+  ADMIN_FIND: "Admin find successfully",
 
   ACCESS_TOKEN: "Access token generated successfully",
   RESET_PASSWORD_OTP: "Reset password OTP generated successfully",

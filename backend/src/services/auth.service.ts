@@ -22,6 +22,20 @@ export const loginService = async (email: string, password: string) => {
     return { user, accessToken, refreshToken };
 };
 
+export const getMeService = async (id: string, email: string) => {
+    if(!id || !email){
+        throw new Error(ERROR_MESSAGES.INPUT_MISSING);
+    }
+
+    const user = await User.findOneActive({ id, email }, { id: 1, email: 1, role: 1, _id: 0});
+
+    if(!user){
+        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+    }
+
+    return { user };
+}
+
 export const createAdminService = async (email: string, password: string) => {
     const adminExists: UserDocument | null = await User.findOneActive({ email });
     if (adminExists){

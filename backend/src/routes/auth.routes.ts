@@ -7,6 +7,7 @@ import { authMiddleware } from "../middlewares/auth.middleware.ts";
 const router = express.Router();
 
 router.post("/login", validateRequest(loginSchema), AdminController.login);
+router.get("/me", authMiddleware, AdminController.getMe);
 router.post("/create-admin", validateRequest(createAdminSchema), AdminController.createAdmin);
 router.get("/refresh-token", validateRequest(), AdminController.refreshToken);
 router.post("/forgot-password", validateRequest(), AdminController.forgotPassword);

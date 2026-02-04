@@ -13,9 +13,10 @@ export class BaseClass<T> {
 
     static findOneActive<T>(
         this: BaseModel<T>,
-        filter: QueryFilter<T>
+        filter: QueryFilter<T>,
+        filterOptions: ProjectionType<T> = {}
     ): Query<T | null, T> {
-        return this.findOne({ ...filter, isDeleted: false });
+        return this.findOne({ ...filter, isDeleted: false }, filterOptions);
     }
 
     static findByIdActive<T>(
