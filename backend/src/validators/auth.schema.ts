@@ -16,5 +16,6 @@ export const resetPasswordSchema = Joi.object({
 }).options({ abortEarly: true });
 
 export const otpSchema = Joi.object({
+  email: Joi.string().email().required(), 
   otp: Joi.string().length(6).required()
 });

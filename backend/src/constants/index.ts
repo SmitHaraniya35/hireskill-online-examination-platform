@@ -33,6 +33,7 @@ export const ERROR_MESSAGES = {
 
   OTP_EXPIRED: "OTP expired or invalid",
   OTP_MISSING: "OTP missing",
+  OTP_NOT_VERIFIED: "OTP is not verified",
 
   INPUT_VALIDATION_ERROR: "Input is not valid",
   INPUT_MISSING: "Required input(s) are missing",

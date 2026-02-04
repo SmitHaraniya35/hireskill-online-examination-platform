@@ -94,7 +94,8 @@ export const verifyOtpService = async (email: string, otp: string) => {
         throw new Error(ERROR_MESSAGES.OTP_EXPIRED);
     }
 
-    return;
+    admin.is_otp_verified = true;
+    await admin.save();
 }
 
 export const resetPasswordService = async (email: string, newPassword: string) => {
@@ -103,6 +104,14 @@ export const resetPasswordService = async (email: string, newPassword: string) =
 
     if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
 
+    if (admin.password_reset_otp_expires! < Date.now()) {
+        throw new Error(ERROR_MESSAGES.OTP_EXPIRED);
+    }
+
+    if(!admin.is_otp_verified){
+        throw new Error(ERROR_MESSAGES.OTP_NOT_VERIFIED);
+    }
+
     const oldPassword = admin.password;
     
     const hashed: string = await bcrypt.hash(newPassword, 10);
@@ -110,6 +119,7 @@ export const resetPasswordService = async (email: string, newPassword: string) =
 
     admin.password_reset_otp = null;
     admin.password_reset_otp_expires = null;
+    admin.is_otp_verified = false;
 
     await admin.save();
 
