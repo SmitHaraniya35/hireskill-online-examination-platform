@@ -3,7 +3,7 @@ import type { BaseDocument, BaseModel } from "./index.ts";
 export interface CodingProblemDocument extends BaseDocument{
     title: string;
     difficulty: string;
-    topic: string;
+    topic: string[];
     problem_description: string;
     problem_description_image: string;
     constraint: string;
