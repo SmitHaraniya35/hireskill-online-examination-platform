@@ -6,21 +6,32 @@ import { generateResetPasswordOTP } from "../utils/helper.utils.ts";
 import type { UserDocument } from "../types/model/user.document.ts";
 
 export const loginService = async (email: string, password: string) => {
-    const admin = await User.findOneActive({ email });
-    if (!admin) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
+    const user = await User.findOneActive({ email });
+    if (!user) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
 
-    const match = await bcrypt.compare(password, admin.password);
+    const match = await bcrypt.compare(password, user.password);
     if (!match) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
 
-    const accessToken = generateAccessToken(admin.id, admin.email);
+    const accessToken = generateAccessToken(user.id, user.email);
 
-    admin.refreshTokenId = (await generateRefreshTokenId()).toString();
-    await admin.save();
+    user.refreshTokenId = (await generateRefreshTokenId()).toString();
+    await user.save();
 
-    const refreshToken = generateRefreshToken(admin.id, admin.refreshTokenId);
+    const refreshToken = generateRefreshToken(user.id, user.refreshTokenId);
 
-    return { admin, accessToken, refreshToken };
+    return { user, accessToken, refreshToken };
 };
+
+export const getMeService = async (id: string, email: string) => {
+
+    const user = await User.findOneActive({ id, email }, { id: 1, email: 1, role: 1, _id: 0});
+
+    if(!user){
+        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+    }
+
+    return { user };
+}
 
 export const createAdminService = async (email: string, password: string) => {
     const adminExists: UserDocument | null = await User.findOneActive({ email });
@@ -71,15 +82,31 @@ export const forgetPasswordService = async (email: string) => {
   return { otp };
 };
 
-export const resetPasswordService = async (email: string, otp: string, newPassword: string) => {
-
+export const verifyOtpService = async (email: string, otp: string) => {
     const admin: UserDocument | null = await User.findOneActive({ email });
 
     if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
 
     if (admin.password_reset_otp !== otp || admin.password_reset_otp_expires! < Date.now()) {
-        console.log("Hello")
         throw new Error(ERROR_MESSAGES.OTP_EXPIRED);
+    }
+
+    admin.is_otp_verified = true;
+    await admin.save();
+}
+
+export const resetPasswordService = async (email: string, newPassword: string) => {
+
+    const admin: UserDocument | null = await User.findOneActive({ email });
+
+    if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+
+    if (admin.password_reset_otp_expires! < Date.now()) {
+        throw new Error(ERROR_MESSAGES.OTP_EXPIRED);
+    }
+
+    if(!admin.is_otp_verified){
+        throw new Error(ERROR_MESSAGES.OTP_NOT_VERIFIED);
     }
 
     const oldPassword = admin.password;
@@ -89,6 +116,7 @@ export const resetPasswordService = async (email: string, otp: string, newPasswo
 
     admin.password_reset_otp = null;
     admin.password_reset_otp_expires = null;
+    admin.is_otp_verified = false;
 
     await admin.save();
 

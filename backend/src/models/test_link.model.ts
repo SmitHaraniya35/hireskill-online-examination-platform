@@ -8,7 +8,14 @@ const TestLinkSchema = generateSchema<TestLinkDocument>({
     unique_token: { type: String },
     expiration_at: { type: Date },
     duration_minutes: { type: Number },
-    is_active: { type: Boolean }
+    is_active: { type: Boolean },
+    created_by: { type: String }
+});
+
+TestLinkSchema.virtual('user', {
+    ref: 'User',
+    localField: 'created_by',
+    foreignField: 'id'
 });
 
 export class TestLinkClass extends BaseClass<TestLinkDocument> {}

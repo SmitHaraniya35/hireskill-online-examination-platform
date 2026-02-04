@@ -7,6 +7,7 @@ export interface TestLinkDocument extends BaseDocument{
     expiration_at: Date;
     duration_minutes: number;
     is_active: boolean;
+    created_by: string;
 }
 
-export interface TestLinkModel extends BaseModel<TestCaseDocument> {}
+export interface TestLinkModel extends BaseModel<TestLinkDocument> {}

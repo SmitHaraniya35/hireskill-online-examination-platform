@@ -1,6 +1,4 @@
-import type { BaseDocument, BaseModel } from "./index.ts";
-
-export interface CodingProblemDocument extends BaseDocument{
+export interface CodingProblemData {
     title: string;
     difficulty: string;
     topic: string[];
@@ -12,7 +10,4 @@ export interface CodingProblemDocument extends BaseDocument{
     sample_input: string;
     sample_output: string;
     basic_code_layout: string;
-    created_by: string; 
 }
-
-export interface CodingProblemModel extends BaseModel<CodingProblemDocument>{}
