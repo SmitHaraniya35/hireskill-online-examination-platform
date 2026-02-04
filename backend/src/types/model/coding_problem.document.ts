@@ -5,7 +5,7 @@ export interface CodingProblemDocument extends BaseDocument{
     difficulty: string;
     topic: string;
     problem_description: string;
-    problem_description_image: ImageData;
+    problem_description_image: string;
     constraint: string;
     input_format: string;
     output_format: string;

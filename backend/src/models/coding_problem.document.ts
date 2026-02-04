@@ -8,7 +8,7 @@ const CodingProblemSchema = generateSchema<CodingProblemDocument>({
     difficulty: { type: String },
     topic: { type: String },
     problem_description: { type: String },
-    problem_description_image: { type: ImageData },
+    problem_description_image: { type: String },
     constraint: { type: String },
     input_format: { type: String },
     output_format: { type: String },
