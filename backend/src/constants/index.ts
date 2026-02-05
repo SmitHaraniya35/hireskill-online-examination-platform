@@ -23,7 +23,9 @@ export const SUCCESS_MESSAGES = {
 
   CODING_PROBLEM_CREATED: "Coding problem created successfully",
   CODING_PROBLEM_FIND: "Coding Problem find successfully",
-  CODING_PROBLEM_LIST_FETCHED: "Coding Problem list fetched successfully"
+  CODING_PROBLEM_LIST_FETCHED: "Coding Problem list fetched successfully",
+  CODING_PROBLEM_DELETED: "Coding Problem delete successfully",
+  CODING_PROBLEM_UPDATED: "Coding Problem update successfully",
 }
 
 export const ERROR_MESSAGES = {
@@ -66,6 +68,8 @@ export const ERROR_MESSAGES = {
   CODING_PROBLEM_NOT_FOUND: "Coding Problem is not found",
   CODING_PROBLEM_ID_MISSING: "Coding Problem Id is missing",
   CODING_PROBLEM_LIST_NOT_FOUND: "Coding Problem list not found",
+  CODING_PROBLEM_UPDATE_FAILED: "Coding Problem update failed",
+  CODING_PROBLEM_DELETE_FAILED: "Coding Problem delete failed",
 }
 
 export const HttpStatusCode = {

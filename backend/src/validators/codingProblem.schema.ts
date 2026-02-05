@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 export const CodingProblemSchema = Joi.object({
+    id: Joi.string().optional(),
     title: Joi.string().required(),
     difficulty: Joi.string().required(),
     topic: Joi.array().items(Joi.string().required()).required(),
