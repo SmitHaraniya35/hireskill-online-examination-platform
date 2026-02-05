@@ -1,5 +1,5 @@
 import { ERROR_MESSAGES } from "../constants/index.ts";
-import { CodingProblem } from "../models/coding_problem.document.ts";
+import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
 import type { CodingProblemData } from "../types/controller/codingProblemController.type.ts";
 
