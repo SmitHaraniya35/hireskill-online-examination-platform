@@ -6,6 +6,8 @@ import { TestSchema } from "../validators/test.schema.ts";
 
 const router = express();
 
+router.get("/:slug", TestController.validateTestLink);
+
 router.post("/create-test", authMiddleware, validateRequest(TestSchema), TestController.createTest);
 router.get("/get-test-details/:id", authMiddleware, validateRequest(), TestController.getTestById);
 router.get("/get-all-tests", authMiddleware, TestController.getAllTests);

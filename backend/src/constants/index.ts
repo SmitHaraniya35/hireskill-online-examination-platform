@@ -32,6 +32,8 @@ export const SUCCESS_MESSAGES = {
   TEST_CASE_LIST_FETCHED: "Test case list fetched successfully",
   TEST_CASE_DELETED: "Test case deleted successfully",
   TEST_CASE_UPDATED: "Test case updated successfully",
+
+  VALID_TEST_LINK: "Test link is valid"
 }
 
 export const ERROR_MESSAGES = {
@@ -53,6 +55,8 @@ export const ERROR_MESSAGES = {
   OTP_NOT_VERIFIED: "OTP is not verified",
   
   INVALID_CREDENTIAL: "Invalid credentials",
+  INVALID_TEST_LINK: "Test link is invalid",
+  EXPIRED_TEST_LINK: "Test link is expired",
   
   INPUT_VALIDATION_ERROR: "Input is not valid",
   INPUT_MISSING: "Required input(s) are missing",

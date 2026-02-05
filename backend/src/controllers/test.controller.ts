@@ -7,6 +7,7 @@ import {
   getTestByIdService,
   deleteTestService,
   updateTestService,
+  validateTestLinkService,
 } from "../services/test.service.ts";
 
 export const createTest = async (req: AuthRequest, res: Response) => {
@@ -107,3 +108,16 @@ export const deleteTest = async (req: AuthRequest, res: Response) => {
     res.badRequest(err.message);
   }
 };
+
+export const validateTestLink = async (req: AuthRequest, res: Response) => {
+  try {
+    const slug: string = req.params['slug'] as string;
+    if(!slug){
+      res.badRequest(ERROR_MESSAGES.INVALID_TEST_LINK);
+    }
+    await validateTestLinkService(slug!);
+    res.ok(SUCCESS_MESSAGES.VALID_TEST_LINK);
+  } catch (err: any){
+    res.badRequest(err.message);
+  }
+}

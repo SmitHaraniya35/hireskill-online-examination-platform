@@ -83,3 +83,19 @@ export const deleteTestService = async (id: string) => {
 
     return { test };
 };
+
+export const validateTestLinkService = async (slug: string) => {
+    const data = await Test.findOneActive({ unique_token: slug });
+
+    if(!data){
+        throw new Error(ERROR_MESSAGES.INVALID_TEST_LINK);
+    }
+
+    const currentDateTime = new Date();
+    
+    if(currentDateTime > data.expiration_at || !data.is_active){
+        throw new Error(ERROR_MESSAGES.EXPIRED_TEST_LINK);
+    }
+
+    return { data };
+}
