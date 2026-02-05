@@ -26,6 +26,12 @@ export const SUCCESS_MESSAGES = {
   CODING_PROBLEM_LIST_FETCHED: "Coding Problem list fetched successfully",
   CODING_PROBLEM_DELETED: "Coding Problem delete successfully",
   CODING_PROBLEM_UPDATED: "Coding Problem update successfully",
+  
+  TEST_CASES_CREATED: "Test cases created successfully",
+  TEST_CASE_FIND: "Test case find successfully",
+  TEST_CASE_LIST_FETCHED: "Test case list fetched successfully",
+  TEST_CASE_DELETED: "Test case deleted successfully",
+  TEST_CASE_UPDATED: "Test case updated successfully",
 }
 
 export const ERROR_MESSAGES = {
@@ -70,6 +76,12 @@ export const ERROR_MESSAGES = {
   CODING_PROBLEM_LIST_NOT_FOUND: "Coding Problem list not found",
   CODING_PROBLEM_UPDATE_FAILED: "Coding Problem update failed",
   CODING_PROBLEM_DELETE_FAILED: "Coding Problem delete failed",
+
+  TEST_CASE_CREATE_FAILED: "Test case create failed",
+  TEST_CASE_ID_MISSING: "Test case Id is missing",
+  TEST_CASES_NOT_FOUND: "Test cases is not found",
+  TEST_CASE_DELETE_FAILED: "Test case delete failed",
+  TEST_CASE_UPDATE_FAILED: "Test case update failed",
 }
 
 export const HttpStatusCode = {
