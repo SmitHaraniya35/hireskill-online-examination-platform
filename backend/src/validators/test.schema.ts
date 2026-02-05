@@ -1,6 +1,6 @@
 import Joi from "joi";
 
-export const TestLinkSchema = Joi.object({
+export const TestSchema = Joi.object({
     id: Joi.string().optional(),
     title: Joi.string().required(),
     duration_minutes: Joi.number().required(),

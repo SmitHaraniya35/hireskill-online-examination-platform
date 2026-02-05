@@ -1,7 +1,6 @@
 import type { BaseDocument, BaseModel } from "./index.ts";
-import type { TestCaseDocument } from "./test_case.document.ts";
 
-export interface TestLinkDocument extends BaseDocument{
+export interface TestDocument extends BaseDocument{
     title: string;
     unique_token: string;
     expiration_at: Date;
@@ -10,4 +9,4 @@ export interface TestLinkDocument extends BaseDocument{
     created_by: string;
 }
 
-export interface TestLinkModel extends BaseModel<TestLinkDocument> {}
+export interface TestModel extends BaseModel<TestDocument> {}

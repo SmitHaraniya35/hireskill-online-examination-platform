@@ -1,9 +1,9 @@
 import { model } from "mongoose";
-import type { TestLinkDocument, TestLinkModel } from "../types/model/test_link.document.ts";
+import type { TestDocument, TestModel } from "../types/model/test.document.ts";
 import { BaseClass } from "./baseModel/BaseClass.ts";
 import { generateSchema } from "./baseModel/Index.ts";
 
-const TestLinkSchema = generateSchema<TestLinkDocument>({
+const TestSchema = generateSchema<TestDocument>({
     title: { type: String },
     unique_token: { type: String },
     expiration_at: { type: Date },
@@ -12,14 +12,14 @@ const TestLinkSchema = generateSchema<TestLinkDocument>({
     created_by: { type: String }
 });
 
-TestLinkSchema.virtual('user', {
+TestSchema.virtual('user', {
     ref: 'User',
     localField: 'created_by',
     foreignField: 'id'
 });
 
-export class TestLinkClass extends BaseClass<TestLinkDocument> {}
+export class TestClass extends BaseClass<TestDocument> {}
 
-TestLinkSchema.loadClass(TestLinkClass);
+TestSchema.loadClass(TestClass);
 
-export const TestLink = model<TestLinkDocument, TestLinkModel>('TestLink', TestLinkSchema);
+export const Test = model<TestDocument, TestModel>('Test', TestSchema);

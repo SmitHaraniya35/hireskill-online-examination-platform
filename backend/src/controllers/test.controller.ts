@@ -2,14 +2,14 @@ import type { Response } from "express";
 import type { AuthRequest } from "../types/controller/index.ts";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
-  createTestLinkService,
-  getAllTestLinkService,
-  getTestLinkByIdService,
-  deleteTestLinkService,
-  updateTestLinkService,
-} from "../services/testLink.service.ts";
+  createTestService,
+  getAllTestService,
+  getTestByIdService,
+  deleteTestService,
+  updateTestService,
+} from "../services/test.service.ts";
 
-export const createTestLink = async (req: AuthRequest, res: Response) => {
+export const createTest = async (req: AuthRequest, res: Response) => {
   try {
     const { title, duration_minutes, expiration_at } = req.allParams;
     const adminId = req.user!.userId;
@@ -23,14 +23,14 @@ export const createTestLink = async (req: AuthRequest, res: Response) => {
       res.badRequest(ERROR_MESSAGES.INPUT_MISSING);
     }
 
-    const data = await createTestLinkService(title, duration_minutes, expiry, adminId);
+    const data = await createTestService(title, duration_minutes, expiry, adminId);
     res.ok({ data }, SUCCESS_MESSAGES.TEST_CREATED);
   } catch (err: any) {
     res.badRequest(err.message);
   }
 };
 
-export const getTestLinkById = async (req: AuthRequest, res: Response) => {
+export const getTestById = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.allParams;
 
@@ -38,7 +38,7 @@ export const getTestLinkById = async (req: AuthRequest, res: Response) => {
       res.badRequest(ERROR_MESSAGES.TEST_ID_MISSING);
     }
 
-    const data = await getTestLinkByIdService(id);
+    const data = await getTestByIdService(id);
 
     res.ok(data, SUCCESS_MESSAGES.TEST_FIND);
   } catch (err: any) {
@@ -46,21 +46,21 @@ export const getTestLinkById = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getAllTestLink = async (req: AuthRequest, res: Response) => {
+export const getAllTests = async (req: AuthRequest, res: Response) => {
   try {
     const admin = req.user;
     if (!admin) {
       res.unauthorized(ERROR_MESSAGES.USER_UNAUTHORIZED);
     }
 
-    const data = await getAllTestLinkService();
+    const data = await getAllTestService();
     res.ok(data, SUCCESS_MESSAGES.TEST_LIST_FETCHED);
   } catch (err: any) {
     res.badRequest(err.message);
   }
 };
 
-export const updateTestLink = async (req: AuthRequest, res: Response) => {
+export const updateTest = async (req: AuthRequest, res: Response) => {
   try {
     const admin = req.user;
     if (!admin) {
@@ -79,7 +79,7 @@ export const updateTestLink = async (req: AuthRequest, res: Response) => {
 
     const expiry = new Date(expiration_at);
 
-    const data = await updateTestLinkService(id, title, duration_minutes, expiry);
+    const data = await updateTestService(id, title, duration_minutes, expiry);
 
     res.ok(data, SUCCESS_MESSAGES.TEST_UPDATED);
   } catch (err: any) {
@@ -87,7 +87,7 @@ export const updateTestLink = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const deleteTestLink = async (req: AuthRequest, res: Response) => {
+export const deleteTest = async (req: AuthRequest, res: Response) => {
   try {
     const admin = req.user;
     if (!admin) {
@@ -100,7 +100,7 @@ export const deleteTestLink = async (req: AuthRequest, res: Response) => {
       res.badRequest(ERROR_MESSAGES.TEST_ID_MISSING);
     }
 
-    const data = await deleteTestLinkService(id);
+    const data = await deleteTestService(id);
 
     res.ok(data, SUCCESS_MESSAGES.TEST_DELETED);
   } catch (err: any) {

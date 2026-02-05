@@ -1,9 +1,9 @@
 import { ERROR_MESSAGES } from "../constants/index.ts";
-import { TestLink } from "../models/test_link.model.ts";
+import { Test } from "../models/test.model.ts";
 import { User } from "../models/user.model.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 
-export const createTestLinkService = async (title: string, duration_minutes: number, expiration_at: Date, adminId: string) => {
+export const createTestService = async (title: string, duration_minutes: number, expiration_at: Date, adminId: string) => {
     const admin = await User.findByIdActive(adminId);
 
     if(!admin){
@@ -12,7 +12,7 @@ export const createTestLinkService = async (title: string, duration_minutes: num
 
     const unique_token = generateUniqueTestToken();
 
-    const test = await TestLink.create({
+    const test = await Test.create({
         title,
         unique_token,
         expiration_at,
@@ -26,8 +26,8 @@ export const createTestLinkService = async (title: string, duration_minutes: num
     return { test };
 };
 
-export const getTestLinkByIdService = async (testLinkId: string) => {
-    const test = await TestLink.findByIdActive(testLinkId, { 
+export const getTestByIdService = async (testId: string) => {
+    const test = await Test.findByIdActive(testId, { 
         id: 1, 
         title: 1, 
         expiration_at: 1, 
@@ -43,8 +43,8 @@ export const getTestLinkByIdService = async (testLinkId: string) => {
     return { test };
 };
 
-export const getAllTestLinkService = async () => {
-    const testList = await TestLink.findActive({},{ 
+export const getAllTestService = async () => {
+    const testList = await Test.findActive({},{ 
         id: 1, 
         title: 1, 
         expiration_at: 1, 
@@ -60,8 +60,8 @@ export const getAllTestLinkService = async () => {
     return { testList };
 };
 
-export const updateTestLinkService = async (id: string, title: string, duration_minutes: number, expiration_at: Date) => {
-    const test = await TestLink.updateOneByFilter({ id }, {
+export const updateTestService = async (id: string, title: string, duration_minutes: number, expiration_at: Date) => {
+    const test = await Test.updateOneByFilter({ id }, {
         title,
         duration_minutes,
         expiration_at
@@ -74,8 +74,8 @@ export const updateTestLinkService = async (id: string, title: string, duration_
     return { test };
 };
 
-export const deleteTestLinkService = async (id: string) => {
-    const test = await TestLink.softDelete({ id });
+export const deleteTestService = async (id: string) => {
+    const test = await Test.softDelete({ id });
 
     if(!test){
         throw new Error(ERROR_MESSAGES.TEST_DELETE_FAILED);
