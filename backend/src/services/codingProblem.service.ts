@@ -1,7 +1,7 @@
 import { ERROR_MESSAGES } from "../constants/index.ts";
-import { CodingProblem } from "../models/coding_problem.document.ts";
+import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
-import type { CodingProblemData } from "../types/controller/codingProblemController.type.ts";
+import type { CodingProblemData } from "../types/controller/codingProblemData.types.ts";
 
 export const createCodingProblemService = async (input: CodingProblemData, adminId: string) => {
     const admin = await User.findOneActive({ id: adminId });
@@ -40,5 +40,33 @@ export const getAllCodingProblemsService = async () => {
     return { codingProblemList };
 };
 
-export const updateCodingProblemService = async () => {};
-export const deleteCodingProblemService = async () => {};
+export const updateCodingProblemService = async (id: string, updatedInput: CodingProblemData) => {
+    // const admin = await User.findOneActive({ id: adminId });
+
+    // if(!admin){
+    //     throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+    // }
+
+    const codingProblem = await CodingProblem.updateOne({ id }, { ...updatedInput });
+
+    if(!codingProblem){
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_UPDATE_FAILED);
+    }
+
+    return { codingProblem };
+};
+export const deleteCodingProblemService = async (id: string) => {
+    // const admin = await User.findOneActive({ id: adminId });
+
+    // if(!admin){
+    //     throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+    // }
+
+    const codingProblem = await CodingProblem.softDelete({ id });
+
+    if(!codingProblem){
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_DELETE_FAILED);
+    }
+
+    return { codingProblem };
+};

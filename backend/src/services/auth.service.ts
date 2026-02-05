@@ -130,7 +130,7 @@ export const logoutService = async (userId: string) => {
       throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
     }
 
-    admin.refreshTokenId = "";
+    admin.refreshTokenId = null;
     await admin.save();
     return;
 }

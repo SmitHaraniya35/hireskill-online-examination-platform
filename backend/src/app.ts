@@ -4,8 +4,9 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import responseMiddleware from "./middlewares/response.middleware.ts";
 import adminRoutes from "./routes/auth.routes.ts";
-import testRoutes from "./routes/testLink.routes.ts";
+import testRoutes from "./routes/test.routes.ts";
 import codingProblemRoutes from "./routes/codingProblem.routes.ts";
+import testCaseRoutes from "./routes/testCase.routes.ts";
 
 const app = express();
 
@@ -28,8 +29,9 @@ app.use(responseMiddleware);
 
 // Add all routes
 app.use("/api/auth", adminRoutes);
-app.use("/api/test-link", testRoutes);
+app.use("/api/test", testRoutes);
 app.use("/api/coding-problem", codingProblemRoutes);
+app.use("/api/test-case", testCaseRoutes);
 
 export default app;
 

@@ -5,7 +5,7 @@ import { generateSchema } from "./baseModel/Index.ts";
 
 const UserAttemptSchema = generateSchema<UserAttemptDocument>({
     user_id: { type: String },
-    test_link_id: { type: String },
+    test_id: { type: String },
     started_at: { type: Date },
     expires_at: { type: Date },
     is_submitted: { type: Boolean },
@@ -18,9 +18,9 @@ UserAttemptSchema.virtual('user', {
     justOne: true
 });
 
-UserAttemptSchema.virtual('test_link', {
-    ref: 'TestLink',
-    localField: 'test_link_id',
+UserAttemptSchema.virtual('test', {
+    ref: 'Test',
+    localField: 'test_id',
     foreignField: 'id',
     justOne: true
 });
