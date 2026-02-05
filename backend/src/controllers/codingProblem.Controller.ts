@@ -1,6 +1,6 @@
 import type { Response } from "express";
 import type { AuthRequest } from "../types/controller/index.ts";
-import type { CodingProblemData } from "../types/controller/codingProblemController.type.ts";
+import type { CodingProblemData } from "../types/controller/codingProblemData.types.ts";
 import { 
     createCodingProblemService, 
     deleteCodingProblemService, 

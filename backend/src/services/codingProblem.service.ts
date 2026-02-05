@@ -1,7 +1,7 @@
 import { ERROR_MESSAGES } from "../constants/index.ts";
 import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
-import type { CodingProblemData } from "../types/controller/codingProblemController.type.ts";
+import type { CodingProblemData } from "../types/controller/codingProblemData.types.ts";
 
 export const createCodingProblemService = async (input: CodingProblemData, adminId: string) => {
     const admin = await User.findOneActive({ id: adminId });
