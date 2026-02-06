@@ -1,7 +1,6 @@
 import React from 'react';
 import './Dashboard.css';
 import Navbar from '../../components/Navbar';
-import TestLinkManager from '../../components/TestLinkManager';
 
 const Dashboard: React.FC = () => {
     // Static data for preview
@@ -21,7 +20,7 @@ const Dashboard: React.FC = () => {
     return (
         <>
             <Navbar/>
-            <TestLinkManager/>
+            {/* <TestLinkManager/> */}
             <div className="dashboard-container">
                 <header className="dashboard-header">
                     <h1>Overview</h1>
@@ -78,7 +77,6 @@ const Dashboard: React.FC = () => {
                 </div>
             </div>
         </>
-        
     );
 };
 

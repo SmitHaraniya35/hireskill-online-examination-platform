@@ -7,6 +7,9 @@ import NotFound from './components/NotFound.tsx'
 import Dashboard from './pages/admin/Dashboard.tsx'
 import AdminRoutes from './routes/AdminRoutes.tsx'
 import VerifyOtp from './pages/admin/VerifyOtp.tsx'
+import TestLinkManager from './components/TestLinkManager.tsx'
+import CodingProblem from './pages/admin/CodingProblems.tsx'
+import AddNewProblem from './pages/admin/AddNewProblem.tsx'
 
 const App: React.FC = () => {
   return (
@@ -26,8 +29,10 @@ const App: React.FC = () => {
             /* </ProtectedRoute> */
           }
         />
-        {/* <Route path="/admin/create-exam" element={<CreateExam />} /> */}
-      {/* </Route> */}
+        <Route path="/admin/create-exam" element={<TestLinkManager/>} />
+        <Route path="/admin/coding-problem" element={<CodingProblem/>}/>
+        <Route path="/admin/coding-problem/add-new-problem" element={<AddNewProblem/>}/>
+      {/* /* </Route> */ }
       
       <Route path="/*" element={<NotFound />} />
     </Routes>

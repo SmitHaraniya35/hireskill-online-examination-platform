@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DatePicker from "react-datepicker";
 import testLinkService from '../../services/testLinkService';
 import './GenerateNewTest.css'
@@ -6,71 +6,101 @@ import './GenerateNewTest.css'
 interface GenerateProps {
     closeModal: () => void;
     refreshLinks: () => void;
+    editData?:any;
+    isEditMode?: boolean;
 }
 
-const GenerateNewTest: React.FC<GenerateProps> = ({ closeModal, refreshLinks }) => {
+const GenerateNewTest: React.FC<GenerateProps> = ({ closeModal, refreshLinks, editData, isEditMode }) => {
     const [title, setTitle] = useState("");
     const [selectDate, setSelectDate] = useState<Date | null>(null);
     const [expiryTime, setExpiryTime] = useState<string>("23:59");
     const [time, setTime] = useState("");
     const [loading, setLoading] = useState(false);
+    const [data, setData] = useState("");
+    const [duration,setDuration] = useState("");
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    useEffect(() => {
+    if (isEditMode && editData) {
+        const testObj = editData.test || {};
+        setTitle(testObj.title || "");
+        setTime(String(testObj.duration_minutes || ""));
+
+        const exp = testObj.expiration_at;
+        if (exp) {
+            const parsed = new Date(exp); // Automatically handles UTC string to Local Date
+            if (!isNaN(parsed.getTime())) {
+                setSelectDate(parsed);
+                
+                // Format HH:mm for the local time input
+                const hh = String(parsed.getHours()).padStart(2, '0');
+                const mm = String(parsed.getMinutes()).padStart(2, '0');
+                setExpiryTime(`${hh}:${mm}`);
+            }
+        }
+    } else {
+        setTitle("");
+        setSelectDate(null);
+        setTime("");
+        setExpiryTime("23:59");
+    }
+}, [editData, isEditMode]);
+
+   // Inside handleSubmit in GenerateNewTest.tsx
+
+   const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
 
-        // Basic validation
         if (!title.trim() || !selectDate || !time || !expiryTime) {
             alert('Please fill all fields');
             setLoading(false);
             return;
         }
 
-        // combine selected date and expiry time (HH:MM) into a single ISO timestamp
-        const parts = expiryTime.split(":");
-        let hh = Number(parts[0] ?? 0);
-        let mm = Number(parts[1] ?? 0);
+        // 1. Get HH and MM from the local time input
+        const [hh, mm] = expiryTime.split(":").map(Number);
 
-        if (!Number.isInteger(hh) || hh < 0 || hh > 23) hh = 23;
-        if (!Number.isInteger(mm) || mm < 0 || mm > 59) mm = 59;
+        // 2. Create a copy of the selected date
+        const finalDate = new Date(selectDate);
+        
+        // 3. Set the hours and minutes based on local time input
+        // We set seconds to 59 to match your backend requirement
+        finalDate.setHours(hh, mm, 59, 0);
 
-        // Build a UTC timestamp so the resulting ISO string matches exactly "YYYY-MM-DDTHH:MM:59Z"
-        const year = selectDate.getFullYear();
-        const month = selectDate.getMonth(); // zero-based
-        const day = selectDate.getDate();
-        const utcTs = Date.UTC(year, month, day, hh, mm, 59);
-        const expirationDate = new Date(utcTs);
-
-        if (isNaN(expirationDate.getTime())) {
-            alert('Invalid expiry date/time');
-            setLoading(false);
-            return;
-        }
+        // 4. Convert to UTC ISO string and strip milliseconds
+        // Result format: "2026-02-04T23:59:59Z"
+        const formattedExpiration = finalDate.toISOString().replace('.000', '');
 
         const testData = {
             title: title.trim(),
-            duration_minutes: Number(time), // backend expects minutes field
-            // remove milliseconds to match exact format: 2026-02-04T23:59:59Z
-            expiration_at: expirationDate.toISOString().replace('.000', ''), // backend expects expiration_at
+            duration_minutes: Number(time),
+            expiration_at: formattedExpiration, 
         };
 
-        let res;
+        
+
         try {
-            res = await testLinkService.createTestLink(testData);
+            let res;
+            const editId = editData?.test?.id || editData?.id; 
+
+            if (isEditMode && editId) {
+                res = await testLinkService.updateTestLink(editId, testData);
+            } else {
+                res = await testLinkService.createTestLink(testData);
+            }
+
+            if (res?.success) {
+                refreshLinks();
+                closeModal();
+            } else {
+                alert(res?.message || "Input is not valid - please check date/time");
+            }
         } catch (err) {
-            res = { success: false, message: (err as any)?.message || 'Request failed' };
+            alert("Server Error: Check console for details");
+        } finally {
+            setLoading(false);
         }
-
-        if (res.success) {
-            refreshLinks(); // Reload the list to show the new test
-            closeModal(); // Close the modal on success
-        } else {
-            alert(res.message || 'Failed to create test');
-        }
-
-        setLoading(false);
     };
-
     return (
         <div className="generate-container">
             <div className="modal-header">
@@ -126,7 +156,7 @@ const GenerateNewTest: React.FC<GenerateProps> = ({ closeModal, refreshLinks }) 
 
                 <div className="modal-actions">
                     <button type="submit" className="submit-test-btn" disabled={loading}>
-                        {loading ? "Creating..." : "Create Test"}
+                        {loading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Test" : "Create Test")}
                     </button>
                 </div>
             </form>
