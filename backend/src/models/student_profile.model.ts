@@ -1,11 +1,9 @@
 import { model } from "mongoose";
-import type { StudentProfileDocument, StudentProfileModel } from "../types/model/student_profile.document.ts";
+import type { StudentDocument, StudentModel } from "../types/model/student_profile.document.ts";
 import { BaseClass } from "./baseModel/BaseClass.ts";
 import { generateSchema } from "./baseModel/Index.ts";
-import { string } from "joi";
 
-const StudentProfileSchema = generateSchema<StudentProfileDocument>({
-    user_id: { type: String },
+const StudentSchema = generateSchema<StudentDocument>({
     name: { type: String },
     phone: { type: Number },
     college: {type: String },
@@ -18,18 +16,11 @@ const StudentProfileSchema = generateSchema<StudentProfileDocument>({
     github_url: {type: String },
 });
 
-StudentProfileSchema.virtual('user', {
-  ref: 'User',
-  localField: 'user_id',
-  foreignField: 'id',
-  justOne: true
-});
+export class StudentClass extends BaseClass<StudentDocument> {}
 
-export class StudentProfileClass extends BaseClass<StudentProfileDocument> {}
+StudentSchema.loadClass(StudentClass);
 
-StudentProfileSchema.loadClass(StudentProfileClass);
-
-export const StudentProfile = model<StudentProfileDocument, StudentProfileModel>(
-    'StudentProfile', 
-    StudentProfileSchema
+export const StudentProfile = model<StudentDocument, StudentModel>(
+    'Student', 
+    StudentSchema
 );

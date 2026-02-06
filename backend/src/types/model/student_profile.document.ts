@@ -1,8 +1,7 @@
 import type { Document } from "mongoose";
 import type { BaseModel } from "./index.ts";
 
-export interface StudentProfileDocument extends Document{
-    user_id: string;
+export interface StudentDocument extends Document{
     name: string;
     phone: number;
     college: string;
@@ -15,4 +14,4 @@ export interface StudentProfileDocument extends Document{
     github_url: string;
 }
 
-export interface StudentProfileModel extends BaseModel<StudentProfileDocument> {}
+export interface StudentModel extends BaseModel<StudentDocument> {}
