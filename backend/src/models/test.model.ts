@@ -5,11 +5,11 @@ import { generateSchema } from "./baseModel/Index.ts";
 
 const TestSchema = generateSchema<TestDocument>({
     title: { type: String },
+    created_by: { type: String },
     unique_token: { type: String },
     expiration_at: { type: Date },
     duration_minutes: { type: Number },
     is_active: { type: Boolean, default: true },
-    created_by: { type: String }
 });
 
 TestSchema.virtual('user', {
