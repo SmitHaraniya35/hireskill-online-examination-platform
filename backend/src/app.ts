@@ -7,6 +7,7 @@ import adminRoutes from "./routes/auth.routes.ts";
 import testRoutes from "./routes/test.routes.ts";
 import codingProblemRoutes from "./routes/codingProblem.routes.ts";
 import testCaseRoutes from "./routes/testCase.routes.ts";
+import studentRoutes from "./routes/student.routes.ts";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use("/api/auth", adminRoutes);
 app.use("/api/test", testRoutes);
 app.use("/api/coding-problem", codingProblemRoutes);
 app.use("/api/test-case", testCaseRoutes);
+app.use("/api/student", studentRoutes);
 
 export default app;
 
