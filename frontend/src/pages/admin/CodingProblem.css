@@ -1,0 +1,152 @@
+/* Layout */
+.page-container {
+    min-height: 100vh;
+    background: #f5f6f8;
+}
+
+.main-container {
+    max-width: 900px;
+    margin: auto;
+    padding: 24px;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #1f2937;
+}
+
+.subtitle {
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-warning {
+    background: #f59e0b;
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #d97706;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+/* Loader */
+.loader-container {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+}
+
+
+
+/* Problem List */
+.problem-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.problem-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Problem Info */
+.problem-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.problem-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.problem-meta {
+    font-size: 14px;
+    color: #6b7280;
+    margin-top: 4px;
+}
+
+/* Difficulty Badge */
+.badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.badge.easy {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge.medium {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge.hard {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Actions */
+.actions {
+    display: flex;
+    gap: 8px;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 0;
+    color: #6b7280;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
