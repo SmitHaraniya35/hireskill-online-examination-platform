@@ -1,7 +1,10 @@
 import { ERROR_MESSAGES } from "../constants/index.ts";
 import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
-import type { CodingProblemData } from "../types/controller/codingProblemData.types.ts";
+import type { CodingProblemData, CodingProblemWithTestCasesData } from "../types/controller/codingProblemData.types.ts";
+import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
+import type { TestCaseDocument } from "../types/model/test_case.document.ts";
+import { createManyTestCasesService } from "./testCase.service.ts";
 
 export const createCodingProblemService = async (input: CodingProblemData, adminId: string) => {
     const admin = await User.findOneActive({ id: adminId });
@@ -41,12 +44,6 @@ export const getAllCodingProblemsService = async () => {
 };
 
 export const updateCodingProblemService = async (id: string, updatedInput: CodingProblemData) => {
-    // const admin = await User.findOneActive({ id: adminId });
-
-    // if(!admin){
-    //     throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
-    // }
-
     const codingProblem = await CodingProblem.updateOne({ id }, { ...updatedInput });
 
     if(!codingProblem){
@@ -55,13 +52,8 @@ export const updateCodingProblemService = async (id: string, updatedInput: Codin
 
     return { codingProblem };
 };
+
 export const deleteCodingProblemService = async (id: string) => {
-    // const admin = await User.findOneActive({ id: adminId });
-
-    // if(!admin){
-    //     throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
-    // }
-
     const codingProblem = await CodingProblem.softDelete({ id });
 
     if(!codingProblem){
@@ -69,4 +61,52 @@ export const deleteCodingProblemService = async (id: string) => {
     }
 
     return { codingProblem };
+};
+
+export const createCodingWithTestCasesProblemService = async (input: CodingProblemWithTestCasesData, adminId: string) => {
+    const admin = await User.findOneActive({ id: adminId });
+
+    if(!admin){
+        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+    }
+
+    const { testCases, ...codeWithoutTestCase }  = input;
+    const sampleTestCase = testCases.find((item) => {
+        if(!item.is_hidden){
+            return item;
+        }
+    });
+
+    console.log(sampleTestCase)
+
+    const codeInput = {
+        ...codeWithoutTestCase,
+        sample_input: sampleTestCase!.input,
+        sample_output: sampleTestCase!.expected_output,
+        created_by: adminId
+    };
+
+    console.log(codeInput)
+
+    const codingProblem = await CodingProblem.create({ ...codeInput });
+    if(!codingProblem){
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_CREATE_FAILED);
+    }
+    await codingProblem.save();
+
+    const { id: problem_id }  = codingProblem;
+
+    const hiddenTestCases = testCases.filter((item) => {
+        if(item.is_hidden){
+            return item;
+        }
+    });
+
+    const inputTestCases: TestCaseData[] = hiddenTestCases.map((item) => {
+        return { problem_id, ...item };
+    });
+
+    const data = await createManyTestCasesService(inputTestCases)
+
+    return { codingProblem, data };
 };

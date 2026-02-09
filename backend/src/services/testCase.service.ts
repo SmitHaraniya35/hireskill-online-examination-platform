@@ -1,8 +1,10 @@
+import type { InsertManyResult } from "mongoose";
 import { ERROR_MESSAGES } from "../constants/index.ts";
 import { CodingProblem } from "../models/coding_problem.model.ts";
 import { TestCase } from "../models/test_case.model.ts";
 import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
 import { getCodingProblemByIdService } from "./codingProblem.service.ts";
+import type { TestCaseDocument } from "../types/model/test_case.document.ts";
 
 export const createTestCaseService = async (input: TestCaseData) => {
     const testCase = await TestCase.create({ ...input });
@@ -45,3 +47,13 @@ export const deleteTestCaseService = async (id: string) => {
 
     return { testCase };
 };
+
+export const createManyTestCasesService = async (input: TestCaseData[]) => {
+    const testCases = await TestCase.insertMany(input);
+
+    if(!testCases){
+        throw new Error(ERROR_MESSAGES.TEST_CASE_CREATE_FAILED);
+    }
+
+    return { testCases };
+}
