@@ -17,7 +17,7 @@ export const createTestCaseService = async (input: TestCaseData) => {
 export const getAllTestCasesByProblemIdService = async (problemId: string) => {
     const problem = await getCodingProblemByIdService(problemId);
 
-    const data = await TestCase.findActive({problem_id: problemId});
+    const data = await TestCase.findActive({problem_id: problemId}, {input: 1, expected_output: 1, _id: 0});
 
     if(!data.length){
         throw new Error(ERROR_MESSAGES.TEST_CASES_NOT_FOUND);
