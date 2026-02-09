@@ -1,6 +1,6 @@
 import { ERROR_MESSAGES } from "../constants/index.ts";
 import { Student } from "../models/student.model.ts";
-import type { StudentData } from "../types/controller/student.types.ts";
+import type { StudentData } from "../types/controller/studentData.types.ts";
 import type { StudentDocument } from "../types/model/student.document.ts";
 
 export const createStudentService = async (input: StudentData) => {

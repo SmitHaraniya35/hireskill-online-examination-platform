@@ -40,6 +40,9 @@ export const SUCCESS_MESSAGES = {
   STUDENT_LIST_FETCHED: "Student list fetched successfully",
   STUDENT_DELETED: "Student deleted successfully",
   STUDENT_UPDATED: "Student updated successfully",
+
+  CODE_EXECUTED: "Code executed successfully",
+  TESTCASES_EXECUTED: "All test cases executed successfully"
 }
 
 export const ERROR_MESSAGES = {

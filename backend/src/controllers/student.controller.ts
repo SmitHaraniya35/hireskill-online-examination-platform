@@ -8,7 +8,7 @@ import {
 } from "../services/student.service.ts";
 import type { AuthRequest } from "../types/controller/index.ts";
 import type { Response } from "express";
-import type { StudentData } from "../types/controller/student.types.ts";
+import type { StudentData } from "../types/controller/studentData.types.ts";
 
 export const createStudent = async (req: AuthRequest, res: Response) => {
     try {
