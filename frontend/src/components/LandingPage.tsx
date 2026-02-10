@@ -24,13 +24,6 @@ const LandingPage: React.FC = () => {
         >
           Admin Login
         </button>
-
-        <button
-          onClick={() => navigate("/user/login")}
-          className="px-8 py-3 rounded-2xl border border-white font-semibold hover:bg-white hover:text-[#1DA077] transition"
-        >
-          User Login
-        </button>
       </div>
     </div>
   );
