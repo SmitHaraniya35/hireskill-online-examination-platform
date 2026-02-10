@@ -11,11 +11,14 @@ const TestCaseSchema = generateSchema<TestCaseDocument>({
 });
 
 TestCaseSchema.virtual('coding_problem', {
-    ref: 'User',
+    ref: 'CodingProblem',
     localField: 'problemId',
     foreignField: 'id',
     justOne: true
 });
+
+TestCaseSchema.set('toObject', { virtuals: true });
+TestCaseSchema.set('toJSON', { virtuals: true });
 
 export class TestCaseClass extends BaseClass<TestCaseDocument> {}
 

@@ -121,4 +121,20 @@ export const selectRandomProblemService = async () => {
     const index = Math.floor(Math.random() * len);
     
     return problems[index];
+};
+
+export const getCodingProblemWithTestCasesService = async (id: string) => {
+    const codingProblemWithTestCases = await CodingProblem.findByIdActive(
+        id, 
+        { _id: 0, createdAt: 0, deletedAt: 0, updatedAt: 0, isDeleted: 0}
+    ).populate({
+        path: "testcases",
+        select: "id input expected_output is_hidden -_id"
+    });
+
+    if(!codingProblemWithTestCases){
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
+    }
+
+    return { codingProblemWithTestCases }
 }

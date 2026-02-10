@@ -4,6 +4,7 @@ import type { CodingProblemData, CodingProblemWithTestCasesData } from "../types
 import { 
     createCodingProblemService, 
     createCodingWithTestCasesProblemService, 
+    getCodingProblemWithTestCasesService,
     deleteCodingProblemService, 
     getAllCodingProblemsService, 
     getCodingProblemByIdService, 
@@ -125,6 +126,28 @@ export const createCodingProblemWithTestCases = async (req: AuthRequest, res: Re
         }
 
         const data = await createCodingWithTestCasesProblemService(input, admin!.userId);
+        res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
+
+    } catch (err:any) {
+        res.badRequest(err.message);
+    }
+};
+
+export const getCodingProblemWithTestCases = async (req: AuthRequest, res: Response) => {
+    try {
+        const admin = req.user;
+
+        if(!admin || !admin.userId){
+            res.badRequest(ERROR_MESSAGES.USER_UNAUTHORIZED);
+        }
+
+        const { id } = req.allParams;
+
+        if(!id){
+            res.badRequest(ERROR_MESSAGES.CODING_PROBLEM_ID_MISSING);
+        }
+
+        const data = await getCodingProblemWithTestCasesService(id);
         res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
 
     } catch (err:any) {
