@@ -29,6 +29,7 @@ const codingProblemService = {
 
     getCodingProblem: async (id: string) => {
         try {
+            console.log("Requesting URL:", `${API_URL}/get-coding-problem/${id}`);
             const response = await axios.get(`${API_URL}/get-coding-problem/${id}`,getAuthHeaders());
             return {success: true, payload: response.data.payload};
             return 
