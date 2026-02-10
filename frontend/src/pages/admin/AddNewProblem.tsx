@@ -1,4 +1,10 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
+import TextAlign from "@tiptap/extension-text-align";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { FontFamily } from "@tiptap/extension-font-family";
 import codingProblemService from "../../services/codingProblemService";
 
 interface Props {
@@ -23,107 +29,108 @@ function SectionBox({ label, children }: any) {
   );
 }
 
-// Rich Text Editor Component
-const RichTextEditor = ({
+// Tiptap Rich Text Editor Component
+const TiptapEditor = ({
   value,
   onChange,
 }: {
   value: string;
   onChange: (html: string) => void;
 }) => {
-  const [fontSize, setFontSize] = useState("16px");
-  const [fontFamily, setFontFamily] = useState("system-ui");
-  const editorRef = useRef<HTMLDivElement>(null);
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3, 4, 5, 6],
+        },
+      }),
+      Underline,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      TextStyle,
+      FontFamily.configure({
+        types: ["textStyle"],
+      }),
+    ],
+    content: value,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class:
+          "min-h-[300px] p-4 outline-none bg-white text-gray-800 prose prose-sm max-w-none focus:bg-white",
+      },
+    },
+  });
 
-  const execCommand = (command: string, value?: string) => {
-    document.execCommand(command, false, value || undefined);
-    editorRef.current?.focus();
-  };
-
-  const handleFontChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const font = e.target.value;
-    setFontFamily(font);
-    execCommand("fontName", font);
-  };
-
-  const handleFontSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const size = e.target.value;
-    setFontSize(size);
-
-    const selection = window.getSelection();
-    if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
-      try {
-        const range = selection.getRangeAt(0);
-        const span = document.createElement("span");
-        span.style.fontSize = size;
-
-        const fragment = range.extractContents();
-        span.appendChild(fragment);
-        range.insertNode(span);
-
-        selection.removeAllRanges();
-        const newRange = document.createRange();
-        newRange.selectNodeContents(span);
-        selection.addRange(newRange);
-      } catch (error) {
-        console.error("Font size change error:", error);
-      }
-    }
-
-    if (editorRef.current) {
-      editorRef.current.style.fontSize = size;
-    }
-  };
-
-  const handleInput = () => {
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  };
-
+  // Update editor content when value changes externally
   useEffect(() => {
-    if (editorRef.current && value) {
-      editorRef.current.innerHTML = value;
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
     }
-  }, []);
+  }, [value, editor]);
+
+  if (!editor) {
+    return null;
+  }
+
+  const setFontFamily = (font: string) => {
+    editor.chain().focus().setFontFamily(font).run();
+  };
+
+  const setFontSize = (size: string) => {
+    editor.chain().focus().setMark("textStyle", { fontSize: size }).run();
+  };
 
   return (
     <div className="border-[1.5px] border-gray-200 rounded-xl overflow-hidden bg-white">
       {/* Toolbar */}
       <div className="bg-gray-50 border-b border-gray-200 p-2 flex gap-2 flex-wrap items-center">
+        {/* Bold */}
         <button
           type="button"
-          onClick={() => execCommand("bold")}
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive("bold") ? "bg-gray-200" : ""
+          }`}
           title="Bold (Ctrl+B)"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <strong className="text-sm">B</strong>
         </button>
 
+        {/* Italic */}
         <button
           type="button"
-          onClick={() => execCommand("italic")}
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive("italic") ? "bg-gray-200" : ""
+          }`}
           title="Italic (Ctrl+I)"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <em className="text-sm">I</em>
         </button>
 
+        {/* Underline */}
         <button
           type="button"
-          onClick={() => execCommand("underline")}
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive("underline") ? "bg-gray-200" : ""
+          }`}
           title="Underline (Ctrl+U)"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <span className="underline text-sm">U</span>
         </button>
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
+        {/* Font Family */}
         <select
-          value={fontFamily}
-          onChange={handleFontChange}
+          onChange={(e) => setFontFamily(e.target.value)}
           className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[140px] outline-none"
+          defaultValue="system-ui"
         >
           <option value="system-ui">System Font</option>
           <option value="Georgia, serif">Georgia</option>
@@ -133,10 +140,11 @@ const RichTextEditor = ({
           <option value="'Courier New', monospace">Courier New</option>
         </select>
 
+        {/* Font Size */}
         <select
-          value={fontSize}
-          onChange={handleFontSizeChange}
+          onChange={(e) => setFontSize(e.target.value)}
           className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[70px] outline-none"
+          defaultValue="16px"
         >
           <option value="12px">12pt</option>
           <option value="14px">14pt</option>
@@ -148,11 +156,14 @@ const RichTextEditor = ({
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
+        {/* Align Left */}
         <button
           type="button"
-          onClick={() => execCommand("justifyLeft")}
+          onClick={() => editor.chain().focus().setTextAlign("left").run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive({ textAlign: "left" }) ? "bg-gray-200" : ""
+          }`}
           title="Align Left"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <svg
             width="18"
@@ -168,11 +179,14 @@ const RichTextEditor = ({
           </svg>
         </button>
 
+        {/* Align Center */}
         <button
           type="button"
-          onClick={() => execCommand("justifyCenter")}
+          onClick={() => editor.chain().focus().setTextAlign("center").run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive({ textAlign: "center" }) ? "bg-gray-200" : ""
+          }`}
           title="Align Center"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <svg
             width="18"
@@ -188,11 +202,14 @@ const RichTextEditor = ({
           </svg>
         </button>
 
+        {/* Align Right */}
         <button
           type="button"
-          onClick={() => execCommand("justifyRight")}
+          onClick={() => editor.chain().focus().setTextAlign("right").run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive({ textAlign: "right" }) ? "bg-gray-200" : ""
+          }`}
           title="Align Right"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <svg
             width="18"
@@ -210,11 +227,14 @@ const RichTextEditor = ({
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
+        {/* Bullet List */}
         <button
           type="button"
-          onClick={() => execCommand("insertUnorderedList")}
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive("bulletList") ? "bg-gray-200" : ""
+          }`}
           title="Bullet List"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <svg
             width="18"
@@ -233,11 +253,14 @@ const RichTextEditor = ({
           </svg>
         </button>
 
+        {/* Numbered List */}
         <button
           type="button"
-          onClick={() => execCommand("insertOrderedList")}
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
+            editor.isActive("orderedList") ? "bg-gray-200" : ""
+          }`}
           title="Numbered List"
-          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
         >
           <svg
             width="18"
@@ -250,48 +273,36 @@ const RichTextEditor = ({
             <line x1="10" y1="6" x2="21" y2="6" />
             <line x1="10" y1="12" x2="21" y2="12" />
             <line x1="10" y1="18" x2="21" y2="18" />
-            <text x="3" y="8" fontSize="8" fill="currentColor" stroke="none">
-              1.
-            </text>
-            <text x="3" y="14" fontSize="8" fill="currentColor" stroke="none">
-              2.
-            </text>
-            <text x="3" y="20" fontSize="8" fill="currentColor" stroke="none">
-              3.
-            </text>
           </svg>
         </button>
       </div>
 
-      {/* Editor Area */}
-      <div
-        ref={editorRef}
-        contentEditable
-        onInput={handleInput}
-        className="min-h-[300px] p-4 outline-none bg-white text-gray-800 focus:bg-white"
-        style={{
-          fontSize: fontSize,
-          fontFamily: fontFamily,
-          lineHeight: "1.6",
-        }}
-        suppressContentEditableWarning
-      />
+      {/* Editor Content */}
+      <EditorContent editor={editor} />
 
       <style>{`
-                [contenteditable] ul {
-                    list-style-type: disc;
-                    padding-left: 40px;
-                    margin: 1em 0;
-                }
-                [contenteditable] ol {
-                    list-style-type: decimal;
-                    padding-left: 40px;
-                    margin: 1em 0;
-                }
-                [contenteditable] li {
-                    margin: 0.5em 0;
-                }
-            `}</style>
+        .ProseMirror {
+          min-height: 300px;
+          padding: 1rem;
+          outline: none;
+        }
+        .ProseMirror:focus {
+          outline: none;
+        }
+        .ProseMirror ul {
+          list-style-type: disc;
+          padding-left: 40px;
+          margin: 1em 0;
+        }
+        .ProseMirror ol {
+          list-style-type: decimal;
+          padding-left: 40px;
+          margin: 1em 0;
+        }
+        .ProseMirror li {
+          margin: 0.5em 0;
+        }
+      `}</style>
     </div>
   );
 };
@@ -306,31 +317,32 @@ const AddNewProblem: React.FC<Props> = ({
   const [title, setTitle] = useState("");
   const [difficulty, setDifficulty] = useState("easy");
   const [topic, setTopic] = useState("");
-  const [fullProblemDescription, setFullProblemDescription] = useState("");
+
+  // Store as HTML
+  const [problemDescription, setProblemDescription] = useState("");
   const [constraint, setConstraint] = useState("");
-  const [sampleInput, setSampleInput] = useState("");
-  const [sampleOutput, setSampleOutput] = useState("");
-  const [basicCodeLayout, setBasicCodeLayout] = useState("");
+  const [inputFormat, setInputFormat] = useState("");
+  const [outputFormat, setOutputFormat] = useState("");
+
   const [testCases, setTestCases] = useState<TestCase[]>([
     { input: "", output: "", visible: false },
   ]);
+  const [basicCodeLayout, setBasicCodeLayout] = useState("");
 
   const addTestCase = () => {
     setTestCases([...testCases, { input: "", output: "", visible: false }]);
   };
 
-  // Update input/output
   const updateTestCase = (
     index: number,
     field: "input" | "output",
-    value: string,
+    value: string
   ) => {
     const updated = [...testCases];
     updated[index][field] = value;
     setTestCases(updated);
   };
 
-  // Toggle visibility
   const toggleVisibility = (index: number) => {
     const updated = [...testCases];
     updated[index].visible = !updated[index].visible;
@@ -349,20 +361,49 @@ const AddNewProblem: React.FC<Props> = ({
       setTopic(
         Array.isArray(editData.topic)
           ? editData.topic.join(", ")
-          : editData.topic || "",
+          : editData.topic || ""
       );
 
-      const combinedDescription = `
-                ${editData.problem_description || ""}
-                ${editData.input_format ? `<h3>Input Format</h3>${editData.input_format}` : ""}
-                ${editData.output_format ? `<h3>Output Format</h3>${editData.output_format}` : ""}
-            `;
-      setFullProblemDescription(combinedDescription);
-
+      // Load HTML content directly
+      setProblemDescription(editData.problem_description || "");
       setConstraint(editData.constraint || "");
-      setSampleInput(editData.sample_input || "");
-      setSampleOutput(editData.sample_output || "");
+      setInputFormat(editData.input_format || "");
+      setOutputFormat(editData.output_format || "");
+
       setBasicCodeLayout(editData.basic_code_layout || "");
+
+      // Load test cases if available; otherwise fallback to sample_input/sample_output
+      const apiTestCases = Array.isArray(editData.testCases)
+        ? editData.testCases
+        : [];
+
+      if (apiTestCases.length > 0) {
+        const mapped = apiTestCases.map((tc: any) => ({
+          input: tc.input || "",
+          output: tc.expected_output || tc.output || "",
+          visible: !tc.is_hidden,
+        }));
+
+        // If backend also stores sample_input/sample_output separately,
+        // ensure the first test case is prefilled at least.
+        if (mapped[0] && (!mapped[0].input || !mapped[0].output)) {
+          mapped[0] = {
+            ...mapped[0],
+            input: mapped[0].input || editData.sample_input || "",
+            output: mapped[0].output || editData.sample_output || "",
+          };
+        }
+
+        setTestCases(mapped);
+      } else {
+        setTestCases([
+          {
+            input: editData.sample_input || "",
+            output: editData.sample_output || "",
+            visible: true,
+          },
+        ]);
+      }
     }
   }, [editData, isEditMode]);
 
@@ -374,63 +415,87 @@ const AddNewProblem: React.FC<Props> = ({
       return;
     }
 
+    if (testCases.length === 0) {
+      alert("Please add at least one test case.");
+      return;
+    }
+
+    // Validate test cases
+    const hasEmptyTestCase = testCases.some(
+      (tc) => !tc.input.trim() || !tc.output.trim()
+    );
+    if (hasEmptyTestCase) {
+      alert("Please fill in all test case inputs and outputs.");
+      return;
+    }
+
     setLoading(true);
 
+    const topicArray = topic.includes(",")
+      ? topic.split(",").map((t) => t.trim()).filter(Boolean)
+      : [topic.trim()];
+    const capitalizedDifficulty =
+      difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+
+    // Send HTML content as-is to backend
     const problemData = {
       title: title.trim(),
-      difficulty: difficulty.toLowerCase(),
-      topic: topic.includes(",")
-        ? topic
-            .split(",")
-            .map((t) => t.trim())
-            .filter((t) => t !== "")
-        : [topic.trim()],
-      problem_description: fullProblemDescription,
+      difficulty: capitalizedDifficulty,
+      topic: topicArray,
+
+      // Store formatted HTML content from Tiptap
+      problem_description: problemDescription.trim(),
+      constraint: constraint.trim(),
+      input_format: inputFormat.trim(),
+      output_format: outputFormat.trim(),
+      basic_code_layout: basicCodeLayout.trim(),
+      // Backend requires a non-empty string for problem_description_image
+      // Use a simple placeholder URL by default
       problem_description_image:
         editData?.problem_description_image ||
-        "https://via.placeholder.com/150",
-      constraint: constraint,
-      basic_code_layout: basicCodeLayout,
-      input_format: "",
-      output_format: "",
-      sample_input: sampleInput,
-      sample_output: sampleOutput,
+        "https://via.placeholder.com/300x200?text=Problem+Image",
     };
 
     try {
       let res;
-      const editId = editData?.id;
 
-      if (isEditMode && editId) {
+      if (isEditMode && editData?.id) {
         res = await codingProblemService.updateCodingProblem(
-          editId,
-          problemData,
+          editData.id,
+          problemData
         );
       } else {
-        res = await codingProblemService.createCodingProblem(problemData);
+        res = await codingProblemService.createCodingProblemWithTestCases(
+          problemData,
+          testCases.map((tc) => ({
+            input: tc.input.trim(),
+            output: tc.output.trim(),
+            visible: tc.visible,
+          }))
+        );
       }
 
       if (res?.success) {
         alert(
           isEditMode
             ? "Problem Updated Successfully!"
-            : "Problem Created Successfully!",
+            : "Problem Created Successfully!"
         );
         refreshLinks();
         closeModal();
       } else {
-        alert(`Validation Error: ${res?.message || "Please check all fields"}`);
+        alert((res as any)?.message || "Validation error");
       }
     } catch (err) {
-      console.error("Submission Error:", err);
-      alert("Server Error: Unable to reach the API.");
+      console.error(err);
+      alert("Server error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-3xl">
+    <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-3xl max-h-[90vh] overflow-y-auto">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="mb-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -471,18 +536,33 @@ const AddNewProblem: React.FC<Props> = ({
               className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 outline-none transition-all focus:bg-white focus:border-gray-400"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
+              placeholder="e.g., Arrays, Hash Map"
               required
             />
           </SectionBox>
         </div>
 
-        <SectionBox label="Problem Description (includes Input & Output Format)">
-          <RichTextEditor
-            value={fullProblemDescription}
-            onChange={setFullProblemDescription}
+        <SectionBox label="Problem Description">
+          <TiptapEditor
+            value={problemDescription}
+            onChange={setProblemDescription}
           />
         </SectionBox>
+
+        <SectionBox label="Constraints">
+          <TiptapEditor value={constraint} onChange={setConstraint} />
+        </SectionBox>
+
+        <SectionBox label="Input Format">
+          <TiptapEditor value={inputFormat} onChange={setInputFormat} />
+        </SectionBox>
+
+        <SectionBox label="Output Format">
+          <TiptapEditor value={outputFormat} onChange={setOutputFormat} />
+        </SectionBox>
+
         <div className="space-y-6">
+          <h3 className="font-semibold text-gray-700 text-lg">Test Cases</h3>
           {testCases.map((tc, index) => (
             <div
               key={index}
@@ -490,12 +570,10 @@ const AddNewProblem: React.FC<Props> = ({
                 tc.visible ? "bg-white" : "bg-gray-50"
               }`}
             >
-              {/* Header */}
               <div className="flex justify-between items-center mb-4">
                 <h2 className="font-semibold text-lg">Test Case {index + 1}</h2>
 
                 <div className="flex items-center gap-4">
-                  {/* Visibility Toggle (Custom Tailwind Toggle) */}
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-600">
                       {tc.visible ? "Visible" : "Hidden"}
@@ -516,7 +594,6 @@ const AddNewProblem: React.FC<Props> = ({
                     </button>
                   </div>
 
-                  {/* Remove */}
                   {testCases.length > 1 && (
                     <button
                       type="button"
@@ -529,26 +606,27 @@ const AddNewProblem: React.FC<Props> = ({
                 </div>
               </div>
 
-              {/* Fields */}
               <div className="grid md:grid-cols-2 gap-6">
-                <SectionBox label="Sample Input">
+                <SectionBox label="Input">
                   <textarea
                     className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
                     value={tc.input}
                     onChange={(e) =>
                       updateTestCase(index, "input", e.target.value)
                     }
+                    placeholder="Enter test case input"
                     required
                   />
                 </SectionBox>
 
-                <SectionBox label="Sample Output">
+                <SectionBox label="Expected Output">
                   <textarea
                     className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
                     value={tc.output}
                     onChange={(e) =>
                       updateTestCase(index, "output", e.target.value)
                     }
+                    placeholder="Enter expected output"
                     required
                   />
                 </SectionBox>
@@ -556,28 +634,23 @@ const AddNewProblem: React.FC<Props> = ({
             </div>
           ))}
 
-          {/* Add Test Case Button */}
           <div className="flex flex-row-reverse">
-              <button
-                type="button"
-                onClick={addTestCase}
-                className="px-5 py-2 rounded-xl bg-[#1DA077] text-white font-medium shadow hover:opacity-90 transition"
-              >
-                + Add Test Case
-              </button>
+            <button
+              type="button"
+              onClick={addTestCase}
+              className="px-5 py-2 rounded-xl bg-[#1DA077] text-white font-medium shadow hover:opacity-90 transition"
+            >
+              + Add Test Case
+            </button>
           </div>
-          
-
-          {/* Debug preview (remove in production) */}
-          <pre className="bg-gray-900 text-green-400 p-4 rounded-xl text-sm overflow-auto">
-            {JSON.stringify(testCases, null, 2)}
-          </pre>
         </div>
+
         <SectionBox label="Code Template">
           <textarea
             className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-40 outline-none transition-all focus:bg-white focus:border-gray-400"
             value={basicCodeLayout}
             onChange={(e) => setBasicCodeLayout(e.target.value)}
+            placeholder="Enter starter code template"
             required
           />
         </SectionBox>
