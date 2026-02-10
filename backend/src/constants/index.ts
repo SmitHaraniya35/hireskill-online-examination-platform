@@ -20,6 +20,7 @@ export const SUCCESS_MESSAGES = {
   TEST_LIST_FETCHED: "Test list fetched successfully",
   TEST_DELETED: "Test deleted successfully",
   TEST_UPDATED: "Test updated successfully",
+  TEST_STARTED: "Test started successfully",
 
   CODING_PROBLEM_CREATED: "Coding problem created successfully",
   CODING_PROBLEM_FIND: "Coding Problem find successfully",
@@ -42,7 +43,9 @@ export const SUCCESS_MESSAGES = {
   STUDENT_UPDATED: "Student updated successfully",
 
   CODE_EXECUTED: "Code executed successfully",
-  TESTCASES_EXECUTED: "All test cases executed successfully"
+  TESTCASES_EXECUTED: "All test cases executed successfully",
+
+  STUDENT_ATTEMPT_CREATED: "Student attempt created successfully"
 }
 
 export const ERROR_MESSAGES = {
@@ -99,7 +102,10 @@ export const ERROR_MESSAGES = {
   STUDENT_EXIST_WITH_EMAIL: "Student exist with this email id",
   STUDENT_ID_MISSING: "Student id is missing",
   STUDENT_NOT_FOUND: "Student is not found",
-  STUDENT_LIST_NOT_FOUND: "Student list is not found"
+  STUDENT_LIST_NOT_FOUND: "Student list is not found",
+
+  STUDENT_ALREADY_ACTIVE: "Student already active",
+  STUDENT_ATTEMPT_CREATE_FAILED: "Student attempt create failed",
 }
 
 export const HttpStatusCode = {

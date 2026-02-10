@@ -3,7 +3,6 @@ import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
 import type { CodingProblemData, CodingProblemWithTestCasesData } from "../types/controller/codingProblemData.types.ts";
 import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
-import type { TestCaseDocument } from "../types/model/test_case.document.ts";
 import { createManyTestCasesService } from "./testCase.service.ts";
 
 export const createCodingProblemService = async (input: CodingProblemData, adminId: string) => {
@@ -110,3 +109,16 @@ export const createCodingWithTestCasesProblemService = async (input: CodingProbl
 
     return { codingProblem, data };
 };
+
+export const selectRandomProblemService = async () => {
+    const problems = await CodingProblem.find();
+
+    if(!problems.length){
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
+    }
+
+    const len = problems.length;
+    const index = Math.floor(Math.random() * len);
+    
+    return problems[index];
+}
