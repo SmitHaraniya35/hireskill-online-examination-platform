@@ -19,6 +19,14 @@ export const createStudent = async (req: AuthRequest, res: Response) => {
         }
 
         const data = await createStudentService(input);
+
+        res.cookie("studentToken", data.studentToken, {
+            maxAge: 2 * 60 * 60 * 1000,
+            httpOnly: true,
+            sameSite: "none",
+            secure: true,
+        });
+
         return res.created(data, SUCCESS_MESSAGES.STUDENT_CREATED);
 
     } catch (err: any) {

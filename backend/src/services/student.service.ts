@@ -2,6 +2,7 @@ import { ERROR_MESSAGES } from "../constants/index.ts";
 import { Student } from "../models/student.model.ts";
 import type { StudentData } from "../types/controller/studentData.types.ts";
 import type { StudentDocument } from "../types/model/student.document.ts";
+import { generateAccessToken } from "../utils/jwt.utils.ts";
 
 export const createStudentService = async (input: StudentData) => {
     const { email } = input;
@@ -10,13 +11,15 @@ export const createStudentService = async (input: StudentData) => {
         throw new Error(ERROR_MESSAGES.STUDENT_EXIST_WITH_EMAIL);
     }
 
-    const student: StudentDocument = await Student.create({
+    const student = await Student.create({
         ...input
     });
 
     await student.save();
 
-    return { student };
+    const studentToken = generateAccessToken(student.id, student.email);
+
+    return { student, studentToken };
 };
 
 export const getStudentByIdService = async (id: string) => {
