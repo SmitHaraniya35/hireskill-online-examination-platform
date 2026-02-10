@@ -20,6 +20,7 @@ export const SUCCESS_MESSAGES = {
   TEST_LIST_FETCHED: "Test list fetched successfully",
   TEST_DELETED: "Test deleted successfully",
   TEST_UPDATED: "Test updated successfully",
+  TEST_STARTED: "Test started successfully",
 
   CODING_PROBLEM_CREATED: "Coding problem created successfully",
   CODING_PROBLEM_FIND: "Coding Problem find successfully",
@@ -33,7 +34,18 @@ export const SUCCESS_MESSAGES = {
   TEST_CASE_DELETED: "Test case deleted successfully",
   TEST_CASE_UPDATED: "Test case updated successfully",
 
-  VALID_TEST_LINK: "Test link is valid"
+  VALID_TEST_LINK: "Test link is valid",
+
+  STUDENT_CREATED: "Student created successfully",
+  STUDENT_FIND: "Student find successfully",
+  STUDENT_LIST_FETCHED: "Student list fetched successfully",
+  STUDENT_DELETED: "Student deleted successfully",
+  STUDENT_UPDATED: "Student updated successfully",
+
+  CODE_EXECUTED: "Code executed successfully",
+  TESTCASES_EXECUTED: "All test cases executed successfully",
+
+  STUDENT_ATTEMPT_CREATED: "Student attempt created successfully"
 }
 
 export const ERROR_MESSAGES = {
@@ -77,7 +89,7 @@ export const ERROR_MESSAGES = {
   CODING_PROBLEM_CREATE_FAILED: "Coding Problem create failed",
   CODING_PROBLEM_NOT_FOUND: "Coding Problem is not found",
   CODING_PROBLEM_ID_MISSING: "Coding Problem Id is missing",
-  CODING_PROBLEM_LIST_NOT_FOUND: "Coding Problem list not found",
+  CODING_PROBLEM_LIST_NOT_FOUND: "Coding Problem list is not found",
   CODING_PROBLEM_UPDATE_FAILED: "Coding Problem update failed",
   CODING_PROBLEM_DELETE_FAILED: "Coding Problem delete failed",
 
@@ -86,6 +98,14 @@ export const ERROR_MESSAGES = {
   TEST_CASES_NOT_FOUND: "Test cases is not found",
   TEST_CASE_DELETE_FAILED: "Test case delete failed",
   TEST_CASE_UPDATE_FAILED: "Test case update failed",
+
+  STUDENT_EXIST_WITH_EMAIL: "Student exist with this email id",
+  STUDENT_ID_MISSING: "Student id is missing",
+  STUDENT_NOT_FOUND: "Student is not found",
+  STUDENT_LIST_NOT_FOUND: "Student list is not found",
+
+  STUDENT_ALREADY_ACTIVE: "Student already active",
+  STUDENT_ATTEMPT_CREATE_FAILED: "Student attempt create failed",
 }
 
 export const HttpStatusCode = {

@@ -2,6 +2,8 @@ import { ERROR_MESSAGES } from "../constants/index.ts";
 import { Test } from "../models/test.model.ts";
 import { User } from "../models/user.model.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
+import { selectRandomProblemService } from "./codingProblem.service.ts";
+import { createStudentAttemptService } from "./student_attempt.service.ts";
 
 export const createTestService = async (title: string, duration_minutes: number, expiration_at: Date, adminId: string) => {
     const admin = await User.findByIdActive(adminId);
@@ -84,18 +86,13 @@ export const deleteTestService = async (id: string) => {
     return { test };
 };
 
-export const validateTestLinkService = async (slug: string) => {
-    const data = await Test.findOneActive({ unique_token: slug });
-
-    if(!data){
-        throw new Error(ERROR_MESSAGES.INVALID_TEST_LINK);
+export const startTestService = async (test_id: string, student_id: string) => {
+    const problem = await selectRandomProblemService();
+    if(!problem && !problem!.id){
+      throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
     }
-
-    const currentDateTime = new Date();
     
-    if(currentDateTime > data.expiration_at || !data.is_active){
-        throw new Error(ERROR_MESSAGES.EXPIRED_TEST_LINK);
-    }
-
-    return { data };
+    await createStudentAttemptService(test_id, problem!.id, student_id);
+    
+    return { problemId: problem!.id };
 }

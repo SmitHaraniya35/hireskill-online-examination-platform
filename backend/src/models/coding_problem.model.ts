@@ -18,6 +18,15 @@ const CodingProblemSchema = generateSchema<CodingProblemDocument>({
     created_by: { type: String },
 });
 
+CodingProblemSchema.virtual('testcases', {
+    ref: 'TestCase',
+    localField: 'id',
+    foreignField: 'problem_id',
+});
+
+CodingProblemSchema.set('toObject', { virtuals: true });
+CodingProblemSchema.set('toJSON', { virtuals: true });
+
 export class CodingProblemClass extends BaseClass<CodingProblemDocument> {}
 
 CodingProblemSchema.loadClass(CodingProblemClass);

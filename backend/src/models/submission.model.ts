@@ -4,11 +4,16 @@ import { BaseClass } from "./baseModel/BaseClass.ts";
 import { generateSchema } from "./baseModel/Index.ts";
 
 const SubmissionSchema = generateSchema<SubmissionDocument>({
-    user_attempt_id: { type: String, required: true },
-    problem_id: { type: String, required: true },
-    language: { type: String, required: true },
-    source_code: { type: String, required: true },
+    student_attempt_id: { type: String },
+    problem_id: { type: String },
+    language: { type: String },
+    source_code: { type: String },
     submitted_at: { type: Date, default: Date.now },
+    total_test_cases: { type: Number },
+    passed_test_cases: { type: Number },
+    status: { type: String },
+    execution_time: { type: String },
+    memory_used: { type: String },
 });
 
 SubmissionSchema.virtual('problem', {
@@ -18,9 +23,9 @@ SubmissionSchema.virtual('problem', {
     justOne: true
 });
 
-SubmissionSchema.virtual('user_attempt', {
-    ref: 'UserAttempt',
-    localField: 'user_attempt_id',
+SubmissionSchema.virtual('student_attempt', {
+    ref: 'StudentAttempt',
+    localField: 'student_attempt_id',
     foreignField: 'id'
 });
 

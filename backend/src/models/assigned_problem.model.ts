@@ -5,10 +5,7 @@ import { generateSchema } from "./baseModel/Index.ts";
 
 const AssignedProblemSchema = generateSchema<AssignedProblemDocument>({
     user_attempt_id: { type: String },
-    problem_id: { type: String },
-    started_at: { type: Date },
-    expires_at: { type: Date },
-    is_submitted: { type: Boolean }
+    problem_id: { type: String }
 });
 
 AssignedProblemSchema.virtual('user_attempt', {
