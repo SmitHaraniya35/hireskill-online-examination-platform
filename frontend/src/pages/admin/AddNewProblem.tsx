@@ -8,6 +8,20 @@ interface Props {
     isEditMode?: boolean;
 }
 
+type TestCase = {
+    input: string;
+    output: string;
+}
+
+function SectionBox({label,children}:any){
+    return (
+        <div className="space-y-2">
+            <label className="font-semibold text-gray-700">{label}</label>
+            {children}
+        </div>
+    );
+}
+
 // Rich Text Editor Component
 const RichTextEditor = ({ value, onChange }: { value: string; onChange: (html: string) => void }) => {
     const [fontSize, setFontSize] = useState("16px");
@@ -234,13 +248,6 @@ const RichTextEditor = ({ value, onChange }: { value: string; onChange: (html: s
     );
 };
 
-// SectionBox Component
-const SectionBox = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="flex flex-col gap-2">
-        <label className="text-sm font-semibold text-gray-800">{label}</label>
-        {children}
-    </div>
-);
 
 const AddNewProblem: React.FC<Props> = ({ closeModal, refreshLinks, editData, isEditMode }) => {
     const [loading, setLoading] = useState(false);
@@ -252,6 +259,28 @@ const AddNewProblem: React.FC<Props> = ({ closeModal, refreshLinks, editData, is
     const [sampleInput, setSampleInput] = useState("");
     const [sampleOutput, setSampleOutput] = useState("");
     const [basicCodeLayout, setBasicCodeLayout] = useState("");
+    const [testCases, setTestCases] = useState<TestCase[]>([
+        { input: "", output: "" }
+    ]);
+
+    const addTestCase = () => {
+        setTestCases([...testCases, { input: "", output: "" }]);
+    }
+
+    const updateTestCase = (
+        index: number,
+        field: "input" | "output",
+        value: string
+    ) => {
+        const updated = [...testCases];
+        updated[index][field] = value;
+        setTestCases(updated);
+    }
+    
+    const removeTestCase = (index: number) => {
+         const updated = testCases.filter((_, i) => i !== index);
+        setTestCases(updated);
+    }
 
     useEffect(() => {
         if (isEditMode && editData) {
@@ -377,7 +406,7 @@ const AddNewProblem: React.FC<Props> = ({ closeModal, refreshLinks, editData, is
                     />
                 </SectionBox>
 
-                <div className="grid md:grid-cols-2 gap-6">
+                {/* <div className="grid md:grid-cols-2 gap-6">
                     <SectionBox label="Sample Input">
                         <textarea
                             className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
@@ -395,8 +424,62 @@ const AddNewProblem: React.FC<Props> = ({ closeModal, refreshLinks, editData, is
                             required
                         />
                     </SectionBox>
-                </div>
+                </div> */}
+                <div className="space-y-6">
+                    {testCases.map((tc, index) => (
+                        <div key={index} className="border rounded-2xl p-4 bg-white shadow-sm">
+                        <div className="flex justify-between items-center mb-3">
+                            <h2 className="font-semibold text-lg">Test Case {index + 1}</h2>
 
+                            {testCases.length > 1 && (
+                            <button
+                                type="button"
+                                onClick={() => removeTestCase(index)}
+                                className="text-red-500 text-sm hover:underline"
+                            >
+                                Remove
+                            </button>
+                            )}
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-6">
+                            <SectionBox label="Sample Input">
+                            <textarea
+                                className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
+                                value={tc.input}
+                                onChange={(e) =>
+                                updateTestCase(index, "input", e.target.value)
+                                }
+                                required
+                            />
+                            </SectionBox>
+
+                            <SectionBox label="Sample Output">
+                            <textarea
+                                className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
+                                value={tc.output}
+                                onChange={(e) =>
+                                updateTestCase(index, "output", e.target.value)
+                                }
+                                required
+                            />
+                            </SectionBox>
+                        </div>
+                        </div>
+                    ))}
+
+                    {/* Add Test Case Button */}
+                    <div className="flex flex-row-reverse">
+                        <button
+                        type="button"
+                        onClick={addTestCase}
+                        className="px-5 py-2 rounded-xl bg-[#1DA077] text-white font-medium shadow hover:opacity-90 transition"
+                        >
+                            + Add Test Case
+                        </button>
+                    </div>
+                    
+                </div>
                 <SectionBox label="Code Template">
                     <textarea
                         className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-40 outline-none transition-all focus:bg-white focus:border-gray-400"
