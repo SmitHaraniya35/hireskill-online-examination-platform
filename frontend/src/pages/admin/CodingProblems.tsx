@@ -53,6 +53,19 @@ const CodingProblem: React.FC = () => {
         }
     };
 
+    const difficultyBadgeClass = (difficulty?: string) => {
+        switch ((difficulty || "").toLowerCase()) {
+            case "easy":
+                return "bg-green-100 text-green-700";
+            case "medium":
+                return "bg-yellow-100 text-yellow-700";
+            case "hard":
+                return "bg-red-100 text-red-700";
+            default:
+                return "bg-gray-100 text-gray-700";
+        }
+    };
+
     return (
         <div className="page-container">
             <Navbar />
@@ -76,7 +89,7 @@ const CodingProblem: React.FC = () => {
                                 <div>
                                     <div className="problem-header flex items-center gap-3">
                                         <h3 className="problem-title font-bold text-lg">{problem.title}</h3>
-                                        <span className={`badge px-3 py-1 rounded-full text-[10px] font-bold uppercase ${problem.difficulty?.toLowerCase() === 'easy' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                                        <span className={`badge px-3 py-1 rounded-full text-[10px] font-bold uppercase ${difficultyBadgeClass(problem.difficulty)}`}>
                                             {problem.difficulty}
                                         </span>
                                     </div>

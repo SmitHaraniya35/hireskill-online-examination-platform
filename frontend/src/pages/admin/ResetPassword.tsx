@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css'; 
 import { Link } from 'react-router-dom';
-import authService from '../../services/authService';
+import authService from '../../services/authAdminService';
 
 const ResetPassword: React.FC = () => {
     const [passwords, setPasswords] = useState({ new: '', confirm: '' });
