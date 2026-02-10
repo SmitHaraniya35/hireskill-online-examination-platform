@@ -2,234 +2,282 @@ import { useEffect, useState, useRef } from "react";
 import codingProblemService from "../../services/codingProblemService";
 
 interface Props {
-    closeModal: () => void;
-    refreshLinks: () => void;
-    editData?: any;
-    isEditMode?: boolean;
+  closeModal: () => void;
+  refreshLinks: () => void;
+  editData?: any;
+  isEditMode?: boolean;
 }
 
 type TestCase = {
-    input: string;
-    output: string;
-}
+  input: string;
+  output: string;
+  visible: boolean;
+};
 
-function SectionBox({label,children}:any){
-    return (
-        <div className="space-y-2">
-            <label className="font-semibold text-gray-700">{label}</label>
-            {children}
-        </div>
-    );
+function SectionBox({ label, children }: any) {
+  return (
+    <div className="space-y-2">
+      <label className="font-semibold text-gray-700">{label}</label>
+      {children}
+    </div>
+  );
 }
 
 // Rich Text Editor Component
-const RichTextEditor = ({ value, onChange }: { value: string; onChange: (html: string) => void }) => {
-    const [fontSize, setFontSize] = useState("16px");
-    const [fontFamily, setFontFamily] = useState("system-ui");
-    const editorRef = useRef<HTMLDivElement>(null);
+const RichTextEditor = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (html: string) => void;
+}) => {
+  const [fontSize, setFontSize] = useState("16px");
+  const [fontFamily, setFontFamily] = useState("system-ui");
+  const editorRef = useRef<HTMLDivElement>(null);
 
-    const execCommand = (command: string, value?: string) => {
-        document.execCommand(command, false, value || undefined);
-        editorRef.current?.focus();
-    };
+  const execCommand = (command: string, value?: string) => {
+    document.execCommand(command, false, value || undefined);
+    editorRef.current?.focus();
+  };
 
-    const handleFontChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const font = e.target.value;
-        setFontFamily(font);
-        execCommand('fontName', font);
-    };
+  const handleFontChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const font = e.target.value;
+    setFontFamily(font);
+    execCommand("fontName", font);
+  };
 
-    const handleFontSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const size = e.target.value;
-        setFontSize(size);
-        
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
-            try {
-                const range = selection.getRangeAt(0);
-                const span = document.createElement('span');
-                span.style.fontSize = size;
-                
-                const fragment = range.extractContents();
-                span.appendChild(fragment);
-                range.insertNode(span);
-                
-                selection.removeAllRanges();
-                const newRange = document.createRange();
-                newRange.selectNodeContents(span);
-                selection.addRange(newRange);
-            } catch (error) {
-                console.error('Font size change error:', error);
-            }
-        }
-        
-        if (editorRef.current) {
-            editorRef.current.style.fontSize = size;
-        }
-    };
+  const handleFontSizeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const size = e.target.value;
+    setFontSize(size);
 
-    const handleInput = () => {
-        if (editorRef.current) {
-            onChange(editorRef.current.innerHTML);
-        }
-    };
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0 && !selection.isCollapsed) {
+      try {
+        const range = selection.getRangeAt(0);
+        const span = document.createElement("span");
+        span.style.fontSize = size;
 
-    useEffect(() => {
-        if (editorRef.current && value) {
-            editorRef.current.innerHTML = value;
-        }
-    }, []);
+        const fragment = range.extractContents();
+        span.appendChild(fragment);
+        range.insertNode(span);
 
-    return (
-        <div className="border-[1.5px] border-gray-200 rounded-xl overflow-hidden bg-white">
-            {/* Toolbar */}
-            <div className="bg-gray-50 border-b border-gray-200 p-2 flex gap-2 flex-wrap items-center">
-                <button
-                    type="button"
-                    onClick={() => execCommand('bold')}
-                    title="Bold (Ctrl+B)"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <strong className="text-sm">B</strong>
-                </button>
+        selection.removeAllRanges();
+        const newRange = document.createRange();
+        newRange.selectNodeContents(span);
+        selection.addRange(newRange);
+      } catch (error) {
+        console.error("Font size change error:", error);
+      }
+    }
 
-                <button
-                    type="button"
-                    onClick={() => execCommand('italic')}
-                    title="Italic (Ctrl+I)"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <em className="text-sm">I</em>
-                </button>
+    if (editorRef.current) {
+      editorRef.current.style.fontSize = size;
+    }
+  };
 
-                <button
-                    type="button"
-                    onClick={() => execCommand('underline')}
-                    title="Underline (Ctrl+U)"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <span className="underline text-sm">U</span>
-                </button>
+  const handleInput = () => {
+    if (editorRef.current) {
+      onChange(editorRef.current.innerHTML);
+    }
+  };
 
-                <div className="w-px h-6 bg-gray-300 mx-1"></div>
+  useEffect(() => {
+    if (editorRef.current && value) {
+      editorRef.current.innerHTML = value;
+    }
+  }, []);
 
-                <select
-                    value={fontFamily}
-                    onChange={handleFontChange}
-                    className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[140px] outline-none"
-                >
-                    <option value="system-ui">System Font</option>
-                    <option value="Georgia, serif">Georgia</option>
-                    <option value="'Times New Roman', serif">Times New Roman</option>
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="Verdana, sans-serif">Verdana</option>
-                    <option value="'Courier New', monospace">Courier New</option>
-                </select>
+  return (
+    <div className="border-[1.5px] border-gray-200 rounded-xl overflow-hidden bg-white">
+      {/* Toolbar */}
+      <div className="bg-gray-50 border-b border-gray-200 p-2 flex gap-2 flex-wrap items-center">
+        <button
+          type="button"
+          onClick={() => execCommand("bold")}
+          title="Bold (Ctrl+B)"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <strong className="text-sm">B</strong>
+        </button>
 
-                <select
-                    value={fontSize}
-                    onChange={handleFontSizeChange}
-                    className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[70px] outline-none"
-                >
-                    <option value="12px">12pt</option>
-                    <option value="14px">14pt</option>
-                    <option value="16px">16pt</option>
-                    <option value="18px">18pt</option>
-                    <option value="20px">20pt</option>
-                    <option value="24px">24pt</option>
-                </select>
+        <button
+          type="button"
+          onClick={() => execCommand("italic")}
+          title="Italic (Ctrl+I)"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <em className="text-sm">I</em>
+        </button>
 
-                <div className="w-px h-6 bg-gray-300 mx-1"></div>
+        <button
+          type="button"
+          onClick={() => execCommand("underline")}
+          title="Underline (Ctrl+U)"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <span className="underline text-sm">U</span>
+        </button>
 
-                <button
-                    type="button"
-                    onClick={() => execCommand('justifyLeft')}
-                    title="Align Left"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <line x1="3" y1="12" x2="15" y2="12" />
-                        <line x1="3" y1="18" x2="18" y2="18" />
-                    </svg>
-                </button>
+        <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
-                <button
-                    type="button"
-                    onClick={() => execCommand('justifyCenter')}
-                    title="Align Center"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <line x1="6" y1="12" x2="18" y2="12" />
-                        <line x1="4" y1="18" x2="20" y2="18" />
-                    </svg>
-                </button>
+        <select
+          value={fontFamily}
+          onChange={handleFontChange}
+          className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[140px] outline-none"
+        >
+          <option value="system-ui">System Font</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="'Courier New', monospace">Courier New</option>
+        </select>
 
-                <button
-                    type="button"
-                    onClick={() => execCommand('justifyRight')}
-                    title="Align Right"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="3" y1="6" x2="21" y2="6" />
-                        <line x1="9" y1="12" x2="21" y2="12" />
-                        <line x1="6" y1="18" x2="21" y2="18" />
-                    </svg>
-                </button>
+        <select
+          value={fontSize}
+          onChange={handleFontSizeChange}
+          className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[70px] outline-none"
+        >
+          <option value="12px">12pt</option>
+          <option value="14px">14pt</option>
+          <option value="16px">16pt</option>
+          <option value="18px">18pt</option>
+          <option value="20px">20pt</option>
+          <option value="24px">24pt</option>
+        </select>
 
-                <div className="w-px h-6 bg-gray-300 mx-1"></div>
+        <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
-                <button
-                    type="button"
-                    onClick={() => execCommand('insertUnorderedList')}
-                    title="Bullet List"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="8" y1="6" x2="21" y2="6" />
-                        <line x1="8" y1="12" x2="21" y2="12" />
-                        <line x1="8" y1="18" x2="21" y2="18" />
-                        <circle cx="4" cy="6" r="1.5" fill="currentColor" />
-                        <circle cx="4" cy="12" r="1.5" fill="currentColor" />
-                        <circle cx="4" cy="18" r="1.5" fill="currentColor" />
-                    </svg>
-                </button>
+        <button
+          type="button"
+          onClick={() => execCommand("justifyLeft")}
+          title="Align Left"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="12" x2="15" y2="12" />
+            <line x1="3" y1="18" x2="18" y2="18" />
+          </svg>
+        </button>
 
-                <button
-                    type="button"
-                    onClick={() => execCommand('insertOrderedList')}
-                    title="Numbered List"
-                    className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
-                >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="10" y1="6" x2="21" y2="6" />
-                        <line x1="10" y1="12" x2="21" y2="12" />
-                        <line x1="10" y1="18" x2="21" y2="18" />
-                        <text x="3" y="8" fontSize="8" fill="currentColor" stroke="none">1.</text>
-                        <text x="3" y="14" fontSize="8" fill="currentColor" stroke="none">2.</text>
-                        <text x="3" y="20" fontSize="8" fill="currentColor" stroke="none">3.</text>
-                    </svg>
-                </button>
-            </div>
+        <button
+          type="button"
+          onClick={() => execCommand("justifyCenter")}
+          title="Align Center"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="6" y1="12" x2="18" y2="12" />
+            <line x1="4" y1="18" x2="20" y2="18" />
+          </svg>
+        </button>
 
-            {/* Editor Area */}
-            <div
-                ref={editorRef}
-                contentEditable
-                onInput={handleInput}
-                className="min-h-[300px] p-4 outline-none bg-white text-gray-800 focus:bg-white"
-                style={{
-                    fontSize: fontSize,
-                    fontFamily: fontFamily,
-                    lineHeight: '1.6'
-                }}
-                suppressContentEditableWarning
-            />
+        <button
+          type="button"
+          onClick={() => execCommand("justifyRight")}
+          title="Align Right"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="9" y1="12" x2="21" y2="12" />
+            <line x1="6" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
 
-            <style>{`
+        <div className="w-px h-6 bg-gray-300 mx-1"></div>
+
+        <button
+          type="button"
+          onClick={() => execCommand("insertUnorderedList")}
+          title="Bullet List"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="8" y1="6" x2="21" y2="6" />
+            <line x1="8" y1="12" x2="21" y2="12" />
+            <line x1="8" y1="18" x2="21" y2="18" />
+            <circle cx="4" cy="6" r="1.5" fill="currentColor" />
+            <circle cx="4" cy="12" r="1.5" fill="currentColor" />
+            <circle cx="4" cy="18" r="1.5" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => execCommand("insertOrderedList")}
+          title="Numbered List"
+          className="px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <line x1="10" y1="6" x2="21" y2="6" />
+            <line x1="10" y1="12" x2="21" y2="12" />
+            <line x1="10" y1="18" x2="21" y2="18" />
+            <text x="3" y="8" fontSize="8" fill="currentColor" stroke="none">
+              1.
+            </text>
+            <text x="3" y="14" fontSize="8" fill="currentColor" stroke="none">
+              2.
+            </text>
+            <text x="3" y="20" fontSize="8" fill="currentColor" stroke="none">
+              3.
+            </text>
+          </svg>
+        </button>
+      </div>
+
+      {/* Editor Area */}
+      <div
+        ref={editorRef}
+        contentEditable
+        onInput={handleInput}
+        className="min-h-[300px] p-4 outline-none bg-white text-gray-800 focus:bg-white"
+        style={{
+          fontSize: fontSize,
+          fontFamily: fontFamily,
+          lineHeight: "1.6",
+        }}
+        suppressContentEditableWarning
+      />
+
+      <style>{`
                 [contenteditable] ul {
                     list-style-type: disc;
                     padding-left: 40px;
@@ -244,261 +292,310 @@ const RichTextEditor = ({ value, onChange }: { value: string; onChange: (html: s
                     margin: 0.5em 0;
                 }
             `}</style>
-        </div>
-    );
+    </div>
+  );
 };
 
+const AddNewProblem: React.FC<Props> = ({
+  closeModal,
+  refreshLinks,
+  editData,
+  isEditMode,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState("");
+  const [difficulty, setDifficulty] = useState("easy");
+  const [topic, setTopic] = useState("");
+  const [fullProblemDescription, setFullProblemDescription] = useState("");
+  const [constraint, setConstraint] = useState("");
+  const [sampleInput, setSampleInput] = useState("");
+  const [sampleOutput, setSampleOutput] = useState("");
+  const [basicCodeLayout, setBasicCodeLayout] = useState("");
+  const [testCases, setTestCases] = useState<TestCase[]>([
+    { input: "", output: "", visible: false },
+  ]);
 
-const AddNewProblem: React.FC<Props> = ({ closeModal, refreshLinks, editData, isEditMode }) => {
-    const [loading, setLoading] = useState(false);
-    const [title, setTitle] = useState("");
-    const [difficulty, setDifficulty] = useState("easy");
-    const [topic, setTopic] = useState("");
-    const [fullProblemDescription, setFullProblemDescription] = useState("");
-    const [constraint, setConstraint] = useState("");
-    const [sampleInput, setSampleInput] = useState("");
-    const [sampleOutput, setSampleOutput] = useState("");
-    const [basicCodeLayout, setBasicCodeLayout] = useState("");
-    const [testCases, setTestCases] = useState<TestCase[]>([
-        { input: "", output: "" }
-    ]);
+  const addTestCase = () => {
+    setTestCases([...testCases, { input: "", output: "", visible: false }]);
+  };
 
-    const addTestCase = () => {
-        setTestCases([...testCases, { input: "", output: "" }]);
-    }
+  // Update input/output
+  const updateTestCase = (
+    index: number,
+    field: "input" | "output",
+    value: string,
+  ) => {
+    const updated = [...testCases];
+    updated[index][field] = value;
+    setTestCases(updated);
+  };
 
-    const updateTestCase = (
-        index: number,
-        field: "input" | "output",
-        value: string
-    ) => {
-        const updated = [...testCases];
-        updated[index][field] = value;
-        setTestCases(updated);
-    }
-    
-    const removeTestCase = (index: number) => {
-         const updated = testCases.filter((_, i) => i !== index);
-        setTestCases(updated);
-    }
+  // Toggle visibility
+  const toggleVisibility = (index: number) => {
+    const updated = [...testCases];
+    updated[index].visible = !updated[index].visible;
+    setTestCases(updated);
+  };
 
-    useEffect(() => {
-        if (isEditMode && editData) {
-            setTitle(editData.title || "");
-            setDifficulty(editData.difficulty?.toLowerCase() || "easy");
-            setTopic(Array.isArray(editData.topic) ? editData.topic.join(', ') : editData.topic || "");
-            
-            const combinedDescription = `
+  const removeTestCase = (index: number) => {
+    const updated = testCases.filter((_, i) => i !== index);
+    setTestCases(updated);
+  };
+
+  useEffect(() => {
+    if (isEditMode && editData) {
+      setTitle(editData.title || "");
+      setDifficulty(editData.difficulty?.toLowerCase() || "easy");
+      setTopic(
+        Array.isArray(editData.topic)
+          ? editData.topic.join(", ")
+          : editData.topic || "",
+      );
+
+      const combinedDescription = `
                 ${editData.problem_description || ""}
                 ${editData.input_format ? `<h3>Input Format</h3>${editData.input_format}` : ""}
                 ${editData.output_format ? `<h3>Output Format</h3>${editData.output_format}` : ""}
             `;
-            setFullProblemDescription(combinedDescription);
-            
-            setConstraint(editData.constraint || "");
-            setSampleInput(editData.sample_input || "");
-            setSampleOutput(editData.sample_output || "");
-            setBasicCodeLayout(editData.basic_code_layout || "");
-        }
-    }, [editData, isEditMode]);
+      setFullProblemDescription(combinedDescription);
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+      setConstraint(editData.constraint || "");
+      setSampleInput(editData.sample_input || "");
+      setSampleOutput(editData.sample_output || "");
+      setBasicCodeLayout(editData.basic_code_layout || "");
+    }
+  }, [editData, isEditMode]);
 
-        if (!title || !difficulty) {
-            alert("Please fill required fields.");
-            return;
-        }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-        setLoading(true);
+    if (!title || !difficulty) {
+      alert("Please fill required fields.");
+      return;
+    }
 
-        const problemData = {
-            title: title.trim(),
-            difficulty: difficulty.toLowerCase(),
-            topic: topic.includes(',')
-                ? topic.split(',').map(t => t.trim()).filter(t => t !== "")
-                : [topic.trim()],
-            problem_description: fullProblemDescription,
-            problem_description_image: editData?.problem_description_image || "https://via.placeholder.com/150",
-            constraint: constraint,
-            basic_code_layout: basicCodeLayout,
-            input_format: "",
-            output_format: "",
-            sample_input: sampleInput,
-            sample_output: sampleOutput,
-        };
+    setLoading(true);
 
-        try {
-            let res;
-            const editId = editData?.id;
-
-            if (isEditMode && editId) {
-                res = await codingProblemService.updateCodingProblem(editId, problemData);
-            } else {
-                res = await codingProblemService.createCodingProblem(problemData);
-            }
-
-            if (res?.success) {
-                alert(isEditMode ? "Problem Updated Successfully!" : "Problem Created Successfully!");
-                refreshLinks();
-                closeModal();
-            } else {
-                alert(`Validation Error: ${res?.message || "Please check all fields"}`);
-            }
-        } catch (err) {
-            console.error("Submission Error:", err);
-            alert("Server Error: Unable to reach the API.");
-        } finally {
-            setLoading(false);
-        }
+    const problemData = {
+      title: title.trim(),
+      difficulty: difficulty.toLowerCase(),
+      topic: topic.includes(",")
+        ? topic
+            .split(",")
+            .map((t) => t.trim())
+            .filter((t) => t !== "")
+        : [topic.trim()],
+      problem_description: fullProblemDescription,
+      problem_description_image:
+        editData?.problem_description_image ||
+        "https://via.placeholder.com/150",
+      constraint: constraint,
+      basic_code_layout: basicCodeLayout,
+      input_format: "",
+      output_format: "",
+      sample_input: sampleInput,
+      sample_output: sampleOutput,
     };
 
-    return (
-        <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-3xl">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+    try {
+      let res;
+      const editId = editData?.id;
 
-                <div className="mb-4">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                        {isEditMode ? "Update Coding Challenge" : "Create New Challenge"}
-                    </h2>
-                    <p className="text-gray-600 text-base">
-                        {isEditMode ? "Modify the coding challenge details below." : "Fill in the details to create a new coding challenge."}
-                    </p>
-                </div>
+      if (isEditMode && editId) {
+        res = await codingProblemService.updateCodingProblem(
+          editId,
+          problemData,
+        );
+      } else {
+        res = await codingProblemService.createCodingProblem(problemData);
+      }
 
-                <SectionBox label="Problem Title">
-                    <input
-                        className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 outline-none transition-all focus:bg-white focus:border-gray-400"
-                        type="text"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                    />
-                </SectionBox>
+      if (res?.success) {
+        alert(
+          isEditMode
+            ? "Problem Updated Successfully!"
+            : "Problem Created Successfully!",
+        );
+        refreshLinks();
+        closeModal();
+      } else {
+        alert(`Validation Error: ${res?.message || "Please check all fields"}`);
+      }
+    } catch (err) {
+      console.error("Submission Error:", err);
+      alert("Server Error: Unable to reach the API.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                <div className="grid md:grid-cols-2 gap-6">
-                    <SectionBox label="Difficulty">
-                        <select
-                            className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 outline-none transition-all focus:bg-white focus:border-gray-400"
-                            value={difficulty}
-                            onChange={(e) => setDifficulty(e.target.value)}
-                        >
-                            <option value="easy">Easy</option>
-                            <option value="medium">Medium</option>
-                            <option value="hard">Hard</option>
-                        </select>
-                    </SectionBox>
-
-                    <SectionBox label="Topic">
-                        <input
-                            className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 outline-none transition-all focus:bg-white focus:border-gray-400"
-                            value={topic}
-                            onChange={(e) => setTopic(e.target.value)}
-                            required
-                        />
-                    </SectionBox>
-                </div>
-
-                <SectionBox label="Problem Description (includes Input & Output Format)">
-                    <RichTextEditor 
-                        value={fullProblemDescription}
-                        onChange={setFullProblemDescription}
-                    />
-                </SectionBox>
-
-                {/* <div className="grid md:grid-cols-2 gap-6">
-                    <SectionBox label="Sample Input">
-                        <textarea
-                            className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
-                            value={sampleInput}
-                            onChange={(e) => setSampleInput(e.target.value)}
-                            required
-                        />
-                    </SectionBox>
-
-                    <SectionBox label="Sample Output">
-                        <textarea
-                            className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
-                            value={sampleOutput}
-                            onChange={(e) => setSampleOutput(e.target.value)}
-                            required
-                        />
-                    </SectionBox>
-                </div> */}
-                <div className="space-y-6">
-                    {testCases.map((tc, index) => (
-                        <div key={index} className="border rounded-2xl p-4 bg-white shadow-sm">
-                        <div className="flex justify-between items-center mb-3">
-                            <h2 className="font-semibold text-lg">Test Case {index + 1}</h2>
-
-                            {testCases.length > 1 && (
-                            <button
-                                type="button"
-                                onClick={() => removeTestCase(index)}
-                                className="text-red-500 text-sm hover:underline"
-                            >
-                                Remove
-                            </button>
-                            )}
-                        </div>
-
-                        <div className="grid md:grid-cols-2 gap-6">
-                            <SectionBox label="Sample Input">
-                            <textarea
-                                className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
-                                value={tc.input}
-                                onChange={(e) =>
-                                updateTestCase(index, "input", e.target.value)
-                                }
-                                required
-                            />
-                            </SectionBox>
-
-                            <SectionBox label="Sample Output">
-                            <textarea
-                                className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
-                                value={tc.output}
-                                onChange={(e) =>
-                                updateTestCase(index, "output", e.target.value)
-                                }
-                                required
-                            />
-                            </SectionBox>
-                        </div>
-                        </div>
-                    ))}
-
-                    {/* Add Test Case Button */}
-                    <div className="flex flex-row-reverse">
-                        <button
-                        type="button"
-                        onClick={addTestCase}
-                        className="px-5 py-2 rounded-xl bg-[#1DA077] text-white font-medium shadow hover:opacity-90 transition"
-                        >
-                            + Add Test Case
-                        </button>
-                    </div>
-                    
-                </div>
-                <SectionBox label="Code Template">
-                    <textarea
-                        className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-40 outline-none transition-all focus:bg-white focus:border-gray-400"
-                        value={basicCodeLayout}
-                        onChange={(e) => setBasicCodeLayout(e.target.value)}
-                        required
-                    />
-                </SectionBox>
-
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-[#1DA077] text-white px-6 py-3 border-none rounded-xl font-bold text-base cursor-pointer transition-all duration-300 mt-4 shadow-[0_4px_12px_rgba(29,160,119,0.2)] hover:bg-[#148562] hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(29,160,119,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                    {loading ? "Saving..." : isEditMode ? "Update Problem" : "Create Problem"}
-                </button>
-            </form>
+  return (
+    <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-3xl">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+        <div className="mb-4">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            {isEditMode ? "Update Coding Challenge" : "Create New Challenge"}
+          </h2>
+          <p className="text-gray-600 text-base">
+            {isEditMode
+              ? "Modify the coding challenge details below."
+              : "Fill in the details to create a new coding challenge."}
+          </p>
         </div>
-    );
+
+        <SectionBox label="Problem Title">
+          <input
+            className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 outline-none transition-all focus:bg-white focus:border-gray-400"
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
+        </SectionBox>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <SectionBox label="Difficulty">
+            <select
+              className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 outline-none transition-all focus:bg-white focus:border-gray-400"
+              value={difficulty}
+              onChange={(e) => setDifficulty(e.target.value)}
+            >
+              <option value="easy">Easy</option>
+              <option value="medium">Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </SectionBox>
+
+          <SectionBox label="Topic">
+            <input
+              className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 outline-none transition-all focus:bg-white focus:border-gray-400"
+              value={topic}
+              onChange={(e) => setTopic(e.target.value)}
+              required
+            />
+          </SectionBox>
+        </div>
+
+        <SectionBox label="Problem Description (includes Input & Output Format)">
+          <RichTextEditor
+            value={fullProblemDescription}
+            onChange={setFullProblemDescription}
+          />
+        </SectionBox>
+        <div className="space-y-6">
+          {testCases.map((tc, index) => (
+            <div
+              key={index}
+              className={`border rounded-2xl p-4 shadow-sm transition ${
+                tc.visible ? "bg-white" : "bg-gray-50"
+              }`}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="font-semibold text-lg">Test Case {index + 1}</h2>
+
+                <div className="flex items-center gap-4">
+                  {/* Visibility Toggle (Custom Tailwind Toggle) */}
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className="text-gray-600">
+                      {tc.visible ? "Visible" : "Hidden"}
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleVisibility(index)}
+                      className={`w-11 h-6 flex items-center rounded-full p-1 transition ${
+                        tc.visible ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
+                          tc.visible ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Remove */}
+                  {testCases.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeTestCase(index)}
+                      className="text-red-500 text-sm hover:underline"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Fields */}
+              <div className="grid md:grid-cols-2 gap-6">
+                <SectionBox label="Sample Input">
+                  <textarea
+                    className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
+                    value={tc.input}
+                    onChange={(e) =>
+                      updateTestCase(index, "input", e.target.value)
+                    }
+                    required
+                  />
+                </SectionBox>
+
+                <SectionBox label="Sample Output">
+                  <textarea
+                    className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
+                    value={tc.output}
+                    onChange={(e) =>
+                      updateTestCase(index, "output", e.target.value)
+                    }
+                    required
+                  />
+                </SectionBox>
+              </div>
+            </div>
+          ))}
+
+          {/* Add Test Case Button */}
+          <div className="flex flex-row-reverse">
+              <button
+                type="button"
+                onClick={addTestCase}
+                className="px-5 py-2 rounded-xl bg-[#1DA077] text-white font-medium shadow hover:opacity-90 transition"
+              >
+                + Add Test Case
+              </button>
+          </div>
+          
+
+          {/* Debug preview (remove in production) */}
+          <pre className="bg-gray-900 text-green-400 p-4 rounded-xl text-sm overflow-auto">
+            {JSON.stringify(testCases, null, 2)}
+          </pre>
+        </div>
+        <SectionBox label="Code Template">
+          <textarea
+            className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-40 outline-none transition-all focus:bg-white focus:border-gray-400"
+            value={basicCodeLayout}
+            onChange={(e) => setBasicCodeLayout(e.target.value)}
+            required
+          />
+        </SectionBox>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full bg-[#1DA077] text-white px-6 py-3 border-none rounded-xl font-bold text-base cursor-pointer transition-all duration-300 mt-4 shadow-[0_4px_12px_rgba(29,160,119,0.2)] hover:bg-[#148562] hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(29,160,119,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading
+            ? "Saving..."
+            : isEditMode
+              ? "Update Problem"
+              : "Create Problem"}
+        </button>
+      </form>
+    </div>
+  );
 };
 
 export default AddNewProblem;
