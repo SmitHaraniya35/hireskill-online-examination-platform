@@ -62,6 +62,15 @@ const testLinkService = {
         } catch (error: any) {
             return { success: false, message: error.response?.data?.message || "Failed to delete link" };
         }
+    },
+
+    validateTestLink: async (slug: string ) => {
+        try {
+            const response = await axios.get(`${API_URL}/validate-test-link/${slug}`);
+            return { success: true, payload: response.data.payload };
+        } catch (error: any) {
+            return { success: false, message: error.response?.data?.message || "Failed to validate link" };
+        }
     }
 };
 
