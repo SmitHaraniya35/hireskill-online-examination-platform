@@ -10,11 +10,12 @@ import codingProblemService from "../../services/codingProblemService";
 interface Props {
   closeModal: () => void;
   refreshLinks: () => void;
-  editData?: any;
+  editData: any;
   isEditMode?: boolean;
 }
 
 type TestCase = {
+  id?: string; 
   input: string;
   output: string;
   visible: boolean;
@@ -29,7 +30,6 @@ function SectionBox({ label, children }: any) {
   );
 }
 
-// Tiptap Rich Text Editor Component
 const TiptapEditor = ({
   value,
   onChange,
@@ -325,7 +325,7 @@ const AddNewProblem: React.FC<Props> = ({
   const [outputFormat, setOutputFormat] = useState("");
 
   const [testCases, setTestCases] = useState<TestCase[]>([
-    { input: "", output: "", visible: false },
+    { input: "", output: "", visible: true },
   ]);
   const [basicCodeLayout, setBasicCodeLayout] = useState("");
 
@@ -356,56 +356,37 @@ const AddNewProblem: React.FC<Props> = ({
 
   useEffect(() => {
     if (isEditMode && editData) {
+      console.log("Loading edit data:", editData);
+      
       setTitle(editData.title || "");
       setDifficulty(editData.difficulty?.toLowerCase() || "easy");
-      setTopic(
-        Array.isArray(editData.topic)
-          ? editData.topic.join(", ")
-          : editData.topic || ""
-      );
-
-      // Load HTML content directly
+      
+      if (Array.isArray(editData.topic)) {
+        setTopic(editData.topic.join(", "));
+      } else {
+        setTopic(editData.topic || "");
+      }
+      
       setProblemDescription(editData.problem_description || "");
       setConstraint(editData.constraint || "");
       setInputFormat(editData.input_format || "");
       setOutputFormat(editData.output_format || "");
-
       setBasicCodeLayout(editData.basic_code_layout || "");
-
-      // Load test cases if available; otherwise fallback to sample_input/sample_output
-      const apiTestCases = Array.isArray(editData.testCases)
-        ? editData.testCases
-        : [];
-
-      if (apiTestCases.length > 0) {
-        const mapped = apiTestCases.map((tc: any) => ({
-          input: tc.input || "",
-          output: tc.expected_output || tc.output || "",
-          visible: !tc.is_hidden,
-        }));
-
-        // If backend also stores sample_input/sample_output separately,
-        // ensure the first test case is prefilled at least.
-        if (mapped[0] && (!mapped[0].input || !mapped[0].output)) {
-          mapped[0] = {
-            ...mapped[0],
-            input: mapped[0].input || editData.sample_input || "",
-            output: mapped[0].output || editData.sample_output || "",
-          };
-        }
-
-        setTestCases(mapped);
-      } else {
-        setTestCases([
-          {
-            input: editData.sample_input || "",
-            output: editData.sample_output || "",
-            visible: true,
-          },
-        ]);
+      
+      const testCasesList = editData.testcases || editData.testCases || [];
+      
+      if (testCasesList.length > 0) {
+        setTestCases(
+          testCasesList.map((tc: any) => ({
+            id: tc.id,
+            input: tc.input || "",
+            output: tc.expected_output || tc.output || "",
+            visible: tc.is_hidden === false,
+          }))
+        );
       }
     }
-  }, [editData, isEditMode]);
+  }, [isEditMode, editData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -420,7 +401,6 @@ const AddNewProblem: React.FC<Props> = ({
       return;
     }
 
-    // Validate test cases
     const hasEmptyTestCase = testCases.some(
       (tc) => !tc.input.trim() || !tc.output.trim()
     );
@@ -433,24 +413,21 @@ const AddNewProblem: React.FC<Props> = ({
 
     const topicArray = topic.includes(",")
       ? topic.split(",").map((t) => t.trim()).filter(Boolean)
-      : [topic.trim()];
+      : topic.trim() ? [topic.trim()] : [];
+    
     const capitalizedDifficulty =
       difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
 
-    // Send HTML content as-is to backend
+    // Base problem data without sample_input and sample_output
     const problemData = {
       title: title.trim(),
       difficulty: capitalizedDifficulty,
       topic: topicArray,
-
-      // Store formatted HTML content from Tiptap
       problem_description: problemDescription.trim(),
       constraint: constraint.trim(),
       input_format: inputFormat.trim(),
       output_format: outputFormat.trim(),
       basic_code_layout: basicCodeLayout.trim(),
-      // Backend requires a non-empty string for problem_description_image
-      // Use a simple placeholder URL by default
       problem_description_image:
         editData?.problem_description_image ||
         "https://via.placeholder.com/300x200?text=Problem+Image",
@@ -460,13 +437,32 @@ const AddNewProblem: React.FC<Props> = ({
       let res;
 
       if (isEditMode && editData?.id) {
-        res = await codingProblemService.updateCodingProblem(
+        // For update - REMOVE sample_input and sample_output completely
+        const updatePayload = {
+          ...problemData,
+          testCases: testCases.map((tc) => ({
+            ...(tc.id && { id: tc.id }),
+            input: tc.input.trim(),
+            expected_output: tc.output.trim(),
+            is_hidden: !tc.visible
+          }))
+        };
+        
+        console.log('Update Payload:', updatePayload);
+        res = await codingProblemService.updateCodingProblemWithTestCases(
           editData.id,
-          problemData
+          updatePayload
         );
       } else {
+        // For create - ONLY include sample_input and sample_output for creation
+        const createData = {
+          ...problemData,
+          sample_input: testCases.length > 0 ? testCases[0].input.trim() : "",
+          sample_output: testCases.length > 0 ? testCases[0].output.trim() : "",
+        };
+        
         res = await codingProblemService.createCodingProblemWithTestCases(
-          problemData,
+          createData,
           testCases.map((tc) => ({
             input: tc.input.trim(),
             output: tc.output.trim(),
@@ -481,10 +477,10 @@ const AddNewProblem: React.FC<Props> = ({
             ? "Problem Updated Successfully!"
             : "Problem Created Successfully!"
         );
-        refreshLinks();
+        await refreshLinks();
         closeModal();
       } else {
-        alert((res as any)?.message || "Validation error");
+        alert(res?.message || "Validation error");
       }
     } catch (err) {
       console.error(err);
@@ -565,7 +561,7 @@ const AddNewProblem: React.FC<Props> = ({
           <h3 className="font-semibold text-gray-700 text-lg">Test Cases</h3>
           {testCases.map((tc, index) => (
             <div
-              key={index}
+              key={tc.id ?? `tc-${index}`}
               className={`border rounded-2xl p-4 shadow-sm transition ${
                 tc.visible ? "bg-white" : "bg-gray-50"
               }`}
