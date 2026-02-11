@@ -42,3 +42,13 @@ export const createStudentAttemptService = async (test_id: string, problem_id: s
 
     return { attempt };
 };
+
+export const deleteStudentAttemptService = async (id: string) => {
+    const studentAttempt = await StudentAttempt.softDelete({ id });
+
+    if(!studentAttempt){
+        throw new Error(ERROR_MESSAGES.STUDENT_ATTEMPT_DELETE_FAILED);
+    }
+
+    return { studentAttempt };
+};

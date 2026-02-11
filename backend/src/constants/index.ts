@@ -45,7 +45,8 @@ export const SUCCESS_MESSAGES = {
   CODE_EXECUTED: "Code executed successfully",
   TESTCASES_EXECUTED: "All test cases executed successfully",
 
-  STUDENT_ATTEMPT_CREATED: "Student attempt created successfully"
+  STUDENT_ATTEMPT_CREATED: "Student attempt created successfully",
+  STUDENT_ATTEMPT_DELETED: "Student attempt deleted successfully"
 }
 
 export const ERROR_MESSAGES = {
@@ -106,6 +107,9 @@ export const ERROR_MESSAGES = {
 
   STUDENT_ALREADY_ACTIVE: "Student already active",
   STUDENT_ATTEMPT_CREATE_FAILED: "Student attempt create failed",
+  STUDENT_ATTEMPT_NOT_FOUND: "Student attempt is not found",
+  STUDENT_ATTEMPT_DELETE_FAILED: "Student attempt delete failed",
+  STUDENT_ATTEMPT_ID_MISSING: "Student attempt Id is missing"
 }
 
 export const HttpStatusCode = {
