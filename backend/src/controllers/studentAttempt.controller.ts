@@ -1,7 +1,7 @@
 import type { Response } from "express";
 import type { AuthRequest } from "../types/controller/index.ts";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
-import { deleteStudentAttemptService } from "../services/student_attempt.service.ts";
+import { deleteStudentAttemptService, getStudentAttemptsDetailsByTestIdService } from "../services/student_attempt.service.ts";
 
 export const deleteStudentAttempt = async (req: AuthRequest, res: Response) => {
     try {
@@ -20,4 +20,21 @@ export const deleteStudentAttempt = async (req: AuthRequest, res: Response) => {
     } catch (err: any) {
         res.badRequest(err.message);
     }
-}
+};
+
+export const getStudentAttemptsDetailsByTestId = async (req: AuthRequest, res: Response) => {
+    try {
+        const { testId } = req.allParams;
+
+        if(!testId){
+            return res.notFound(ERROR_MESSAGES.TEST_ID_MISSING);
+        }
+
+        const data = await getStudentAttemptsDetailsByTestIdService(testId);
+        res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPTS_OF_TEST_FETCHED);
+
+    } catch (err: any) {
+        res.badRequest(err.message);
+    }
+};
+

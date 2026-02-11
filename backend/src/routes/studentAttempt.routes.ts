@@ -6,5 +6,6 @@ import * as StudentAttemptController from "../controllers/studentAttempt.control
 const router = express();
 
 router.delete("/delete-student-attempt/:id", authMiddleware, validateRequest(), StudentAttemptController.deleteStudentAttempt);
+router.get("/get-student-attempts-details/:testId", authMiddleware, validateRequest(), StudentAttemptController.getStudentAttemptsDetailsByTestId);
 
 export default router;

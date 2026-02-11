@@ -5,6 +5,7 @@ import { Test } from "../models/test.model.ts";
 import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
 import type { StudentAttemptDocument } from "../types/model/student_attempt.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
+import { getTestByIdService } from "./test.service.ts";
 
 export const createStudentAttemptService = async (test_id: string, problem_id: string, student_id: string) => {
     const existAttempt: StudentAttemptDocument | null = await StudentAttempt.findOneActive({student_id});
@@ -52,3 +53,27 @@ export const deleteStudentAttemptService = async (id: string) => {
 
     return { studentAttempt };
 };
+
+export const getStudentAttemptsDetailsByTestIdService = async (test_id: string) => {
+    const test = await getTestByIdService(test_id);
+    if(!test){
+        throw new Error(ERROR_MESSAGES.TEST_NOT_FOUND);
+    }
+
+    const students = await StudentAttempt.findActive({ test_id })
+        .populate({
+            path: 'student',
+            select: 'id name email phone -_id'
+        })
+        .populate({
+            path:'problem',
+            select: 'id title difficulty'
+        })
+        .select('id started_at expires_at is_submitted is_active student_id problem_id -_id')
+
+    if(!students){
+        throw new Error(ERROR_MESSAGES.STUDENT_ATTEMPT_LIST_NOT_FOUND);
+    }
+
+    return { students };
+}

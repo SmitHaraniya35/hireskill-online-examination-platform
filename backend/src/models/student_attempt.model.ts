@@ -34,6 +34,9 @@ StudentAttemptSchema.virtual('problem', {
     justOne: true
 });
 
+StudentAttemptSchema.set('toObject', { virtuals: true });
+StudentAttemptSchema.set('toJSON', { virtuals: true });
+
 export class StudentAttemptClass extends BaseClass<StudentAttemptDocument> {}
 
 StudentAttemptSchema.loadClass(StudentAttemptClass);
