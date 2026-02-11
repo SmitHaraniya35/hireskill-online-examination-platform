@@ -39,7 +39,6 @@ const TestInstruction: React.FC = () => {
         alert(res?.message || "Unable to start test. Please try again.");
       }
     } catch (err) {
-      console.error(err);
       alert("Unable to start test. Please try again later.");
     }
   };

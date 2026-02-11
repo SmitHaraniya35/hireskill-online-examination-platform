@@ -43,10 +43,19 @@ export const getAllCodingProblemsService = async () => {
 };
 
 export const updateCodingProblemService = async (id: string, updatedInput: CodingProblemData) => {
-    const codingProblem = await CodingProblem.updateOne({ id }, { ...updatedInput });
+    const { id: _omit, ...fieldsToUpdate } = updatedInput as CodingProblemData & { id?: string };
+    const result = await CodingProblem.updateOne(
+        { id, isDeleted: false },
+        { $set: fieldsToUpdate }
+    );
 
-    if(!codingProblem){
+    if (!result.acknowledged) {
         throw new Error(ERROR_MESSAGES.CODING_PROBLEM_UPDATE_FAILED);
+    }
+
+    const codingProblem = await CodingProblem.findByIdActive(id);
+    if (!codingProblem) {
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
     }
 
     return { codingProblem };

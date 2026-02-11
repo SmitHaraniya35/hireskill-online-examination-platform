@@ -22,7 +22,7 @@ const App: React.FC = () => {
 
       <Route path="/landing-page" element={<LandingPage />} />
       <Route path="/admin/login" element={<LoginAdmin />} />
-      <Route path="/user/login" element={<LoginUser />} />
+      {/* <Route path="/user/login" element={<LoginUser />} /> */}
       <Route path="/admin/forgot-password" element={<ForgotPassword />} />
       <Route path="/admin/verify-otp" element={<VerifyOtp />} />
       <Route path="/admin/reset-password/" element={<ResetPassword />} />

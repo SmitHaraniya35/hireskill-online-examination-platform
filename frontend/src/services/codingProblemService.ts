@@ -14,18 +14,16 @@ const getAuthHeaders = () => {
 };
 
 const codingProblemService = {
-    // Create problem with test cases
     createCodingProblemWithTestCases: async (problemData: any, testCases: any[]) => {
         try {
             const response = await axios.post(
                 `${API_URL}/create-coding-problem-with-testcases`,
                 {
                     ...problemData,
-                    // Store HTML content as-is
-                    problem_description: problemData.problem_description, // HTML format
-                    constraint: problemData.constraint, // HTML format
-                    input_format: problemData.input_format, // HTML format
-                    output_format: problemData.output_format, // HTML format
+                    problem_description: problemData.problem_description,
+                    constraint: problemData.constraint,
+                    input_format: problemData.input_format,
+                    output_format: problemData.output_format,
                     testCases: testCases.map((tc) => ({
                         input: tc.input,
                         expected_output: tc.output,
@@ -49,20 +47,27 @@ const codingProblemService = {
         }
     },
 
-    // Update problem
-    updateCodingProblem: async (id: string, updateData: any) => {
+    updateCodingProblemWithTestCases: async (id: string, updateData: any) => {
         try {
             const payload = {
                 ...updateData,
                 difficulty: updateData.difficulty.charAt(0).toUpperCase() + updateData.difficulty.slice(1),
-                // Ensure HTML content is sent as-is
-                problem_description: updateData.problem_description, // HTML format
-                constraint: updateData.constraint, // HTML format
-                input_format: updateData.input_format, // HTML format
-                output_format: updateData.output_format, // HTML format
+                problem_description: updateData.problem_description,
+                constraint: updateData.constraint,
+                input_format: updateData.input_format,
+                output_format: updateData.output_format,
             };
-            const response = await axios.put(`${API_URL}/update-coding-problem/${id}`, payload, getAuthHeaders());
-            return { success: true, payload: response.data.payload };
+            
+            const response = await axios.patch(
+                `${API_URL}/update-coding-problem-with-testcases/${id}`, 
+                payload, 
+                getAuthHeaders()
+            );
+            
+            return { 
+                success: true, 
+                payload: response.data.payload 
+            };
         } catch (error: any) {
             return { 
                 success: false, 
@@ -73,29 +78,67 @@ const codingProblemService = {
 
     getCodingProblem: async (id: string) => {
         try {
-            const response = await axios.get(`${API_URL}/get-coding-problem/${id}`, getAuthHeaders());
-            // Response will contain HTML formatted content
+            const response = await axios.get(
+                `${API_URL}/get-coding-problem/${id}`, 
+                getAuthHeaders()
+            );
             return { success: true, payload: response.data.payload };
         } catch (error: any) {
-            return { success: false, message: error.response?.data?.message || "Failed to fetch problem" };
+            return { 
+                success: false, 
+                message: error.response?.data?.message || "Failed to fetch problem" 
+            };
+        }
+    },
+    
+    getCodingProblemWithTestCases: async (id: string) => {
+        try {
+            const response = await axios.get(
+                `${API_URL}/get-coding-problem-with-testcases/${id}`,
+                getAuthHeaders()
+            );
+
+            return {
+                success: true,
+                payload: response.data.payload.codingProblemWithTestCases, 
+            };
+        } catch (error: any) {
+            return {
+                success: false,
+                message:
+                    error.response?.data?.message ||
+                    "Failed to fetch problem with test cases",
+            };
         }
     },
 
     getAllCodingProblem: async () => {
         try {
-            const response = await axios.get(`${API_URL}/get-all-coding-problems`, getAuthHeaders());
+            const response = await axios.get(
+                `${API_URL}/get-all-coding-problems`, 
+                getAuthHeaders()
+            );
             return { success: true, payload: response.data.payload };
         } catch (error: any) {
-            return { success: false, message: error.response?.data?.message || "Failed to fetch problems" };
+            return { 
+                success: false, 
+                message: error.response?.data?.message || "Failed to fetch problems" 
+            };
         }
     },
 
     deleteCodingProblem: async (id: string) => {
         try {
-            const response = await axios.delete(`${API_URL}/delete-coding-problem/${id}`, getAuthHeaders());
+            const response = await axios.delete(
+                `${API_URL}/delete-coding-problem/${id}`, 
+                getAuthHeaders()
+            );
             return { success: true, message: response.data.message };
         } catch (error: any) {
-            return { success: false, message: error.response?.data?.message || "Failed to delete problem" };
+            return { 
+                success: false, 
+                message: error.response?.data?.message || "Failed to delete problem" 
+            };
         }
     }
 };

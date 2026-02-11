@@ -4,11 +4,38 @@ import codingProblemService from "../../services/codingProblemService";
 import './CodingProblem.css';
 import AddNewProblem from './AddNewProblem';
 
+export interface CodingProblemWithTestCasesData {
+    id?: string;
+    title: string;
+    difficulty: string;
+    topic: string[];
+    problem_description: string;
+    problem_description_image: string;
+    constraint: string;
+    input_format: string;
+    output_format: string;
+    basic_code_layout: string;
+    sample_input?: string;
+    sample_output?: string;
+    testcases?: {
+        input: string,
+        expected_output: string,
+        is_hidden: boolean,
+        id?: string
+    }[];
+    testCases?: {
+        input: string,
+        expected_output: string,
+        is_hidden: boolean,
+        id?: string
+    }[];
+}
+
 const CodingProblem: React.FC = () => {
     const [problems, setProblems] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [openModal, setOpenModal] = useState(false);
-    const [selectedCodingProblem, setSelectedCodingProblem] = useState<any>(null);
+    const [selectedCodingProblem, setSelectedCodingProblem] = useState<CodingProblemWithTestCasesData | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
 
     const fetchProblems = async () => {
@@ -20,7 +47,9 @@ const CodingProblem: React.FC = () => {
         setLoading(false);
     };
 
-    useEffect(() => { fetchProblems(); }, []);
+    useEffect(() => { 
+        fetchProblems(); 
+    }, []);
 
     const handleCreate = () => {
         setSelectedCodingProblem(null);
@@ -29,11 +58,10 @@ const CodingProblem: React.FC = () => {
     };
 
     const handleUpdate = async (uuid: string) => {
-        // Fetch specific problem using UUID 'id'
-        const res: any = await codingProblemService.getCodingProblem(uuid);
-
+        const res = await codingProblemService.getCodingProblemWithTestCases(uuid);
+        
         if (res.success) {
-            const rawData = res.payload.codingProblem;
+            const rawData: CodingProblemWithTestCasesData = res.payload;
             setIsEditMode(true);
             setSelectedCodingProblem(rawData); 
             setOpenModal(true);
@@ -75,17 +103,25 @@ const CodingProblem: React.FC = () => {
                         <h1 className="title text-2xl font-bold">Code Management</h1>
                         <p className="subtitle text-gray-500">Manage technical coding problems for assessments.</p>
                     </div>
-                    <button onClick={handleCreate} className="bg-[#1DA077] text-white px-6 py-3 border-none rounded-xl font-bold text-base cursor-pointer transition-all duration-300 mt-4 shadow-[0_4px_12px_rgba(29,160,119,0.2)] hover:bg-[#148562] hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(29,160,119,0.3)] disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button 
+                        onClick={handleCreate} 
+                        className="bg-[#1DA077] text-white px-6 py-3 border-none rounded-xl font-bold text-base cursor-pointer transition-all duration-300 mt-4 shadow-[0_4px_12px_rgba(29,160,119,0.2)] hover:bg-[#148562] hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(29,160,119,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         + Add New Problem
                     </button>
                 </header>
 
                 {loading ? (
-                    <div className="loader-container flex justify-center py-20"><div className="loader" /></div>
+                    <div className="loader-container flex justify-center py-20">
+                        <div className="loader" />
+                    </div>
                 ) : (
                     <section className="problem-list grid gap-4 mt-8">
                         {problems.map((problem) => (
-                            <article key={problem.id} className="problem-card bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition-shadow">
+                            <article 
+                                key={problem.id} 
+                                className="problem-card bg-white p-6 rounded-2xl shadow-sm border flex justify-between items-center hover:shadow-md transition-shadow"
+                            >
                                 <div>
                                     <div className="problem-header flex items-center gap-3">
                                         <h3 className="problem-title font-bold text-lg">{problem.title}</h3>
@@ -98,8 +134,18 @@ const CodingProblem: React.FC = () => {
                                     </p>
                                 </div>
                                 <div className="actions flex gap-4">
-                                    <button onClick={() => handleUpdate(problem.id)} className="text-[#1DA077] font-bold hover:underline">Update</button>
-                                    <button onClick={() => handleDelete(problem.id)} className="text-red-500 font-bold hover:underline">Delete</button>
+                                    <button 
+                                        onClick={() => handleUpdate(problem.id)} 
+                                        className="text-[#1DA077] font-bold hover:underline"
+                                    >
+                                        Update
+                                    </button>
+                                    <button 
+                                        onClick={() => handleDelete(problem.id)} 
+                                        className="text-red-500 font-bold hover:underline"
+                                    >
+                                        Delete
+                                    </button>
                                 </div>
                             </article>
                         ))}
@@ -109,8 +155,12 @@ const CodingProblem: React.FC = () => {
                 {openModal && (
                     <div className="modal-overlay fixed inset-0 z-[1100] flex justify-center items-start overflow-y-auto bg-black/40 backdrop-blur-sm py-10">
                         <div className="modal-content bg-white w-[90%] max-w-[750px] p-10 rounded-[24px] shadow-2xl relative m-auto">
-                            <button className="modal-close absolute top-5 right-5 text-2xl text-gray-400 hover:text-red-500" onClick={() => setOpenModal(false)}>&times;</button>
-                            {/* Key prop ensures the form resets correctly */}
+                            <button 
+                                className="modal-close absolute top-5 right-5 text-2xl text-gray-400 hover:text-red-500" 
+                                onClick={() => setOpenModal(false)}
+                            >
+                                &times;
+                            </button>
                             <AddNewProblem 
                                 key={selectedCodingProblem?.id || 'new'}
                                 closeModal={() => setOpenModal(false)} 
