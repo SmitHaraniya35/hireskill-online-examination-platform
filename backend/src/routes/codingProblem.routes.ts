@@ -1,6 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.ts";
-import * as CodingProblemController from "../controllers/codingProblem.Controller.ts";
+import * as CodingProblemController from "../controllers/codingProblem.controller.ts";
 import { validateRequest } from "../validators/request.validate.ts";
 import { CodingProblemSchema, CodinProblemWithTestCasesSchema } from "../validators/codingProblem.schema.ts";
 
