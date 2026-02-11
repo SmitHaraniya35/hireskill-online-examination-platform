@@ -36,12 +36,6 @@ export const createCodingProblem = async (req: AuthRequest, res: Response) => {
 
 export const getCodingProblemById = async (req: AuthRequest, res: Response) => {
     try{
-        const admin = req.user;
-
-        if(!admin || !admin.userId){
-            res.badRequest(ERROR_MESSAGES.USER_UNAUTHORIZED);
-        }
-
         const { id } = req.allParams;
 
         if (!id) {
