@@ -27,6 +27,7 @@ export interface CodingProblemWithTestCasesData {
     testCases: {
         input: string,
         expected_output: string,
-        is_hidden: boolean
+        is_hidden: boolean,
+        id?: string
     }[]
 }

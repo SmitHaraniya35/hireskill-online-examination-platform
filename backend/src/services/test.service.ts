@@ -19,7 +19,7 @@ export const createTestService = async (title: string, duration_minutes: number,
         unique_token,
         expiration_at,
         duration_minutes,
-        is_active: false,
+        is_active: true,
         created_by: admin.id
     });
 

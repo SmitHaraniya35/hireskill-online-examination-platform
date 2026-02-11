@@ -3,8 +3,9 @@ import type { AuthRequest } from "../types/controller/index.ts";
 import type { CodingProblemData, CodingProblemWithTestCasesData } from "../types/controller/codingProblemData.types.ts";
 import { 
     createCodingProblemService, 
-    createCodingWithTestCasesProblemService, 
+    createCodingProblemWithTestCasesService, 
     getCodingProblemWithTestCasesService,
+    updateCodingProblemWithTestCasesService,
     deleteCodingProblemService, 
     getAllCodingProblemsService, 
     getCodingProblemByIdService, 
@@ -36,12 +37,6 @@ export const createCodingProblem = async (req: AuthRequest, res: Response) => {
 
 export const getCodingProblemById = async (req: AuthRequest, res: Response) => {
     try{
-        const admin = req.user;
-
-        if(!admin || !admin.userId){
-            res.badRequest(ERROR_MESSAGES.USER_UNAUTHORIZED);
-        }
-
         const { id } = req.allParams;
 
         if (!id) {
@@ -125,7 +120,7 @@ export const createCodingProblemWithTestCases = async (req: AuthRequest, res: Re
             res.badRequest(ERROR_MESSAGES.INPUT_MISSING);
         }
 
-        const data = await createCodingWithTestCasesProblemService(input, admin!.userId);
+        const data = await createCodingProblemWithTestCasesService(input, admin!.userId);
         res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
 
     } catch (err:any) {
@@ -148,6 +143,28 @@ export const getCodingProblemWithTestCases = async (req: AuthRequest, res: Respo
         }
 
         const data = await getCodingProblemWithTestCasesService(id);
+        res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
+
+    } catch (err:any) {
+        res.badRequest(err.message);
+    }
+};
+
+export const updateCodingProblemWithTestCases = async (req: AuthRequest, res: Response) => {
+    try {
+        const admin = req.user;
+
+        if(!admin || !admin.userId){
+            res.badRequest(ERROR_MESSAGES.USER_UNAUTHORIZED);
+        }
+
+        const input = req.allParams as CodingProblemWithTestCasesData;
+
+        if(!input){
+            res.badRequest(ERROR_MESSAGES.INPUT_MISSING);
+        }
+
+        const data = await updateCodingProblemWithTestCasesService(input, admin!.userId);
         res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
 
     } catch (err:any) {
