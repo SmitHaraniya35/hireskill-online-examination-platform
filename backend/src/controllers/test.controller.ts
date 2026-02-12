@@ -9,6 +9,9 @@ import {
   updateTestService,
   startTestService,
 } from "../services/test.service.ts";
+import type { SubmissionData } from "../types/controller/submissionData.types.ts";
+import { submitStudentAttemptService } from "../services/student_attempt.service.ts";
+import { createSubmissionService } from "../services/submission.service.ts";
 
 export const createTest = async (req: AuthRequest, res: Response) => {
   try {
@@ -120,3 +123,25 @@ export const startTest = async (req: AuthRequest, res: Response) => {
     res.badRequest(err.message);
   }
 };
+
+export const finishTest = async (req: AuthRequest, res: Response) => {
+  try {
+    const input = req.allParams as SubmissionData;
+    
+    const { student_attempt_id } = req.allParams;
+    const student_attempt = await submitStudentAttemptService(student_attempt_id);
+    if(!student_attempt){
+      res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND);
+    }
+
+    const submission = await createSubmissionService(input);
+    if(!submission){
+      res.badRequest(ERROR_MESSAGES.SUBMISSION_CREATE_FAILED)
+    }
+
+    res.ok({ student_attempt, submission }, SUCCESS_MESSAGES.TEST_FINISHED);
+
+  } catch(err: any){
+    res.badRequest(err.message);
+  }
+}

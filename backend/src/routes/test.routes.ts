@@ -4,6 +4,7 @@ import * as TestController from "../controllers/test.controller.ts";
 import { validateRequest } from "../validators/request.validate.ts";
 import { TestSchema } from "../validators/test.schema.ts";
 import { validateTestLink } from "../middlewares/testLink.middleware.ts";
+import { SubmissionSchema } from "../validators/submission.schema.ts";
 
 const router = express();
 
@@ -14,6 +15,7 @@ router.put("/update-test/:id", authMiddleware, validateRequest(TestSchema), Test
 router.delete("/delete-test/:id", authMiddleware, validateRequest(),TestController.deleteTest);
 
 router.get("/:slug/start", validateRequest(), validateTestLink, TestController.startTest);
+router.get("/:slug/finish", validateRequest(SubmissionSchema), TestController.finishTest);
 router.get("/:slug", validateTestLink, TestController.getTestById);
 
 export default router;

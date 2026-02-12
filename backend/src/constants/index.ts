@@ -21,6 +21,7 @@ export const SUCCESS_MESSAGES = {
   TEST_DELETED: "Test deleted successfully",
   TEST_UPDATED: "Test updated successfully",
   TEST_STARTED: "Test started successfully",
+  TEST_FINISHED: "Test finished successfully",
 
   CODING_PROBLEM_CREATED: "Coding problem created successfully",
   CODING_PROBLEM_FIND: "Coding Problem find successfully",
