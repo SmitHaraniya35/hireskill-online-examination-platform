@@ -7,6 +7,6 @@ const router = express();
 
 router.delete("/delete-student-attempt/:id", authMiddleware, validateRequest(), StudentAttemptController.deleteStudentAttempt);
 router.get("/get-student-attempts-details/:testId", authMiddleware, validateRequest(), StudentAttemptController.getStudentAttemptsDetailsByTestId);
-router.put("/submit-student-attempt", validateRequest(), StudentAttemptController.submitStudentAttempt);
+router.put("/submit-student-attempt/:id", validateRequest(), StudentAttemptController.submitStudentAttempt);
 
 export default router;
