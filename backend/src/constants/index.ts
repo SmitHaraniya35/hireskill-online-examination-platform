@@ -48,6 +48,7 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ATTEMPT_CREATED: "Student attempt created successfully",
   STUDENT_ATTEMPT_DELETED: "Student attempt deleted successfully",
   STUDENT_ATTEMPTS_OF_TEST_FETCHED: "Student attemps of test fetched successfully",
+  STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
 
   JUDGE0_SUBMISSION_FETCHED: "Judge0 Submission fetched successfully"
 }

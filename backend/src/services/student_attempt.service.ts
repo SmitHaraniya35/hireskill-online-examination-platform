@@ -76,4 +76,23 @@ export const getStudentAttemptsDetailsByTestIdService = async (test_id: string) 
     }
 
     return { students };
+};
+
+export const submitStudentAttemptService = async (id: string) => {
+    const studentAttempt: StudentAttemptDocument | null = await StudentAttempt.findOneActive({ id });
+
+    if(!studentAttempt){
+        throw new Error(ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND);
+    }
+
+    if(!studentAttempt.is_active || !studentAttempt.is_submitted) {
+        throw new Error("Student is not active or already submitted code")
+    }
+
+    studentAttempt!.is_active = false;
+    studentAttempt!.is_submitted = true;
+
+    await studentAttempt!.save();
+
+    return { studentAttempt };
 }
