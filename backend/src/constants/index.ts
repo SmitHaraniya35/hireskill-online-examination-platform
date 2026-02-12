@@ -116,7 +116,9 @@ export const ERROR_MESSAGES = {
   STUDENT_ATTEMPT_ID_MISSING: "Student attempt Id is missing",
   STUDENT_ATTEMPT_LIST_NOT_FOUND: "Student attempt list is not found",
 
-  JUDGE0_SUBMISSION_ID_MISSING: "Judge0 Submission Id is missing"
+  JUDGE0_SUBMISSION_ID_MISSING: "Judge0 Submission Id is missing",
+
+  SUBMISSION_CREATE_FAILED: "Submission create failed"
 }
 
 export const HttpStatusCode = {
