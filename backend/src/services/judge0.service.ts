@@ -24,7 +24,7 @@ export const executeCode = async (input: Judge0Submission) => {
     }
 }
 
-export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission) => {
+export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission, testCasesIdList: Array<string>) => {
     try {
         const tokenList = await fetch(`${process.env.JUDGE0_API}/batch/?base64_encoded=false&wait=true`,{
             method: "POST",
@@ -34,29 +34,66 @@ export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission) =
             body: JSON.stringify(input)
         });
 
-        const jsonList: Array<{token: string}> = await tokenList.json();
+        const jsonTokenList: Array<{token: string}> = await tokenList.json();
+        console.log(jsonTokenList)
 
-        const tokens = jsonList.map(item => item.token);
-        
-        while(1){
-            const response = await fetch(`${process.env.JUDGE0_API}/batch/?tokens=${tokens.join(',')}&base64_encoded=false`, {
-                method: "GET"
-            });
-            const data: Judge0BatchResult = await response.json();
+        const tokens = jsonTokenList.map(item => item.token);
 
-            let flag = 1;
+        const executionList = jsonTokenList.map((item, index) => ({
+            submissionId:  item.token,
+            testCaseId: testCasesIdList[index]
+        }));
 
-            data.submissions.map((item: any)=>{
-                if(item.status.description !== "Accepted"){
-                    flag = 0;
-                }
-            })
+        return { executionMappingList: executionList };
 
-            if(flag)
-            return data;
-        }
+        // const startTime = Date.now();
+        // while(1){
+        //     const response = await fetch(`${process.env.JUDGE0_API}/batch/?tokens=${tokens.join(',')}&base64_encoded=false`, {
+        //         method: "GET"
+        //     });
+        //     const data: Judge0BatchResult = await response.json();
+
+        //     let flag = 1;
+        //     let totalTesCases = tokens.length;
+        //     let passedTestCases = 0;
+
+        //     data.submissions.map((item: Judge0Result)=>{
+        //         if(item.status.description === "In Queue" || item.status.description === "Processing"){
+        //             flag = 0;
+        //         }
+        //         if(item.status.description === "Accepted"){
+        //             passedTestCases++;
+        //         }
+        //     });
+
+        //     // if(flag){
+        //     //     console.log(Date.now() - startTime);
+        //     //     return { submissions: data.submissions, totalTesCases, passedTestCases };
+        //     // }
+
+        //     if(flag){
+        //         const res = data.submissions.map((item: Judge0Result) => ({
+        //             ...item,
+        //             testCaseId: executionList.find(it => it.token === item.token)?.testCaseId
+        //         }));
+
+        //         return { submissions: res }
+        //     }
+        // }
 
     } catch (err: any){
-        throw new Error("Error while executing the code: ", err);
+        throw new Error(`Error while executing the code: ${err}`);
     }
 }
+
+export const getJudge0SubmissionById = async (submissionId: string) => {
+    try {
+        const response = await fetch(`${process.env.JUDGE0_API}/${submissionId}`, {
+            method: "GET"
+        });
+        const data: Judge0Result = await response.json();
+        return data.status.description;
+    } catch (err: any){
+        throw new Error("Erro while fetching the submmission: ", err);
+    }
+};
