@@ -28,7 +28,6 @@ const TestLinkManager: React.FC = () => {
                 ...rawData,
                 id: rawData?.id || rawData?._id || id,
                 title: rawData?.title || "",
-                // Add any other specific fields your backend uses
             };
 
             setIsEditMode(true);
@@ -119,7 +118,6 @@ const TestLinkManager: React.FC = () => {
                 )}
             </div>
         </>
-        
     );
 };
 
