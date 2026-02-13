@@ -19,7 +19,7 @@ export const validateRequest = function (schema?: ObjectSchema) {
 
             if (error) {
                 return res.status(400).json({
-                    message: ERROR_MESSAGES.INPUT_VALIDATION_ERROR,
+                    message: ERROR_MESSAGES.VALIDATION_FAILED,
                     errors: error.details.map(err => err.message)
                 });
             }

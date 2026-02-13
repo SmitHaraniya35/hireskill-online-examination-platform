@@ -12,7 +12,9 @@ declare global {
             badRequest(message?: string): this;
             unauthorized(message?: string): this;
             notFound(message?: string): this;
-            internalError(message?: string): this;
+            internalServerError(message?: string): this;
+            forbidden(message?: string): this;
+            httpError(status: number, message: string): this;
         }
 
         interface Request {

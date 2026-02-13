@@ -1,9 +1,15 @@
 import Joi from "joi";
+import { uuidv4Rule } from "./index.validator.ts";
 
 export const CodingProblemSchema = Joi.object({
-    id: Joi.string().optional(),
+    id: uuidv4Rule.optional(),
     title: Joi.string().required(),
-    difficulty: Joi.string().required(),
+    difficulty: Joi.string()
+        .valid("Easy", "Medium", "Hard")
+        .messages({
+            "any.only": "Difficulty must be one of Easy, Medium, or Hard",
+            "string.empty": "Difficulty is required",
+        }),
     topic: Joi.array().items(Joi.string().required()).required(),
     problem_description: Joi.string().required(),
     problem_description_image: Joi.string().required(),
@@ -16,9 +22,14 @@ export const CodingProblemSchema = Joi.object({
 })
 
 export const CodinProblemWithTestCasesSchema = Joi.object({
-    id: Joi.string().optional(),
+    id: uuidv4Rule.optional(),
     title: Joi.string().required(),
-    difficulty: Joi.string().required(),
+    difficulty: Joi.string()
+        .valid("Easy", "Medium", "Hard")
+        .messages({
+            "any.only": "Difficulty must be one of Easy, Medium, or Hard",
+            "string.empty": "Difficulty is required",
+        }),
     topic: Joi.array().items(Joi.string().required()).required(),
     problem_description: Joi.string().required(),
     problem_description_image: Joi.string().required(),
@@ -28,7 +39,7 @@ export const CodinProblemWithTestCasesSchema = Joi.object({
     basic_code_layout: Joi.string().required(),
     testCases: Joi.array().items(
         Joi.object().keys({
-            id: Joi.string().optional(),
+            id: uuidv4Rule.optional(),
             input: Joi.string().required(),
             expected_output: Joi.string().required(),
             is_hidden: Joi.boolean().required()

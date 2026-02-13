@@ -1,14 +1,14 @@
+import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import type { 
-    Judge0BatchResult,
     Judge0BatchSubmission, 
     Judge0Result, 
     Judge0Submission 
 } from "../types/controller/submissionData.types.ts";
+import { HttpError } from "../utils/httpError.utils.ts";
 
 export const executeCode = async (input: Judge0Submission) => {
     try {
-        console.log(process.env.JUDGE0_API)
-        const data = await fetch(`${process.env.JUDGE0_API}/?base64_encoded=false&wait=true`, {
+        const response: Response = await fetch(`${process.env.JUDGE0_API}/?base64_encoded=false&wait=true`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -16,17 +16,26 @@ export const executeCode = async (input: Judge0Submission) => {
             body: JSON.stringify(input)
         });
 
-        const jsonData: Judge0Result = await data.json();
+        if(!response.ok){
+            throw new HttpError(
+                ERROR_MESSAGES.CODE_EXECUTION_FAILED,
+                HttpStatusCode.BAD_GATEWAY
+            );
+        }
 
-        return jsonData;
+        const data: Judge0Result = await response.json();
+        return data;
     } catch (err: any){
-        throw new Error(`Error while executing the code: ${err}`);
+        throw new HttpError(
+            err.message,
+            HttpStatusCode.BAD_GATEWAY
+        );
     }
 }
 
 export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission, testCasesIdList: Array<string>) => {
     try {
-        const tokenList = await fetch(`${process.env.JUDGE0_API}/batch/?base64_encoded=false&wait=true`,{
+        const response: Response = await fetch(`${process.env.JUDGE0_API}/batch/?base64_encoded=false&wait=true`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -34,10 +43,16 @@ export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission, t
             body: JSON.stringify(input)
         });
 
-        const jsonTokenList: Array<{token: string}> = await tokenList.json();
-        console.log(jsonTokenList)
+        if(!response.ok){
+            throw new HttpError(
+                ERROR_MESSAGES.CODE_EXECUTION_FAILED,
+                HttpStatusCode.BAD_GATEWAY
+            );
+        }
 
-        const tokens = jsonTokenList.map(item => item.token);
+        const jsonTokenList: Array<{token: string}> = await response.json();
+
+        // const tokens = jsonTokenList.map(item => item.token);
 
         const executionList = jsonTokenList.map((item, index) => ({
             submissionId:  item.token,
@@ -82,18 +97,33 @@ export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission, t
         // }
 
     } catch (err: any){
-        throw new Error(`Error while executing the code: ${err}`);
+        throw new HttpError(
+            err.message,
+            HttpStatusCode.BAD_GATEWAY
+        );
     }
 }
 
 export const getJudge0SubmissionById = async (submissionId: string) => {
     try {
-        const response = await fetch(`${process.env.JUDGE0_API}/${submissionId}`, {
-            method: "GET"
-        });
+        const response: Response = await fetch(
+            `${process.env.JUDGE0_API}/${submissionId}`, 
+            { method: "GET" }
+        );
+
+        if(!response.ok){
+            throw new HttpError(
+                ERROR_MESSAGES.JUDGE0_FETCH_FAILED,
+                HttpStatusCode.BAD_GATEWAY
+            );
+        }
+
         const data: Judge0Result = await response.json();
         return data.status.description;
     } catch (err: any){
-        throw new Error("Erro while fetching the submmission: ", err);
+        throw new HttpError(
+            err.message,
+            HttpStatusCode.BAD_GATEWAY
+        );
     }
 };

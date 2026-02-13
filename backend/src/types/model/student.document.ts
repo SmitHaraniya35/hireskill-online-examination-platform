@@ -1,7 +1,6 @@
-import type { Document } from "mongoose";
-import type { BaseModel } from "./index.ts";
+import type { BaseDocument, BaseModel } from "./index.ts";
 
-export interface StudentDocument extends Document{
+export interface StudentDocument extends BaseDocument{
     name: string;
     email: string;
     phone: number;

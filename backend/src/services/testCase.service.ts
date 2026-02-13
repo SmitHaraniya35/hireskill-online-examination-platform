@@ -1,62 +1,84 @@
-import type { InsertManyResult } from "mongoose";
-import { ERROR_MESSAGES } from "../constants/index.ts";
-import { CodingProblem } from "../models/coding_problem.model.ts";
+import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { TestCase } from "../models/test_case.model.ts";
 import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
-import { getCodingProblemByIdService } from "./codingProblem.service.ts";
 import type { TestCaseDocument } from "../types/model/test_case.document.ts";
+import { HttpError } from "../utils/httpError.utils.ts";
+import { getCodingProblemByIdService } from "./codingProblem.service.ts";
 
 export const createTestCaseService = async (input: TestCaseData) => {
-    const testCase = await TestCase.create({ ...input });
+  const testCase: TestCaseDocument = await TestCase.create({ ...input });
+  if (!testCase) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_CASE_CREATION_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
 
-    if(!testCase){
-        throw new Error(ERROR_MESSAGES.TEST_CASE_CREATE_FAILED);
-    }
-
-    return { testCase };
+  return { testCase };
 };
 
 export const getAllTestCasesByProblemIdService = async (problemId: string) => {
-    const problem = await getCodingProblemByIdService(problemId);
-    if(!problem){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
-    }
+  const problem = await getCodingProblemByIdService(problemId);
+  if (!problem) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    const data = await TestCase.findActive({problem_id: problemId}, {id: 1, input: 1, expected_output: 1, _id: 0}).sort({ id: 1 });
+  const data: TestCaseDocument[]= await TestCase.findActive(
+    { problem_id: problemId },
+    { id: 1, input: 1, expected_output: 1, _id: 0 },
+  ).sort({ id: 1 });
 
-    if(!data.length){
-        throw new Error(ERROR_MESSAGES.TEST_CASES_NOT_FOUND);
-    }
+  if (!data.length) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_CASES_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    return { data };
+  return { data };
 };
 
-export const updateTestCaseService = async (id: string, input: TestCaseData) => {
-    const testCase = await TestCase.updateOne({ id }, { ...input });
+export const updateTestCaseService = async (
+  id: string,
+  input: TestCaseData,
+) => {
+  const testCase = await TestCase.updateOne({ id }, { ...input });
 
-    if(!testCase.matchedCount){
-        throw new Error(ERROR_MESSAGES.TEST_CASE_UPDATE_FAILED);
-    }
+  if (!testCase.matchedCount) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_CASE_UPDATE_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
 
-    return { testCase };
+  return { testCase };
 };
 
 export const deleteTestCaseService = async (id: string) => {
-    const testCase = await TestCase.softDelete({ id });
+  const testCase = await TestCase.softDelete({ id });
 
-    if(!testCase.matchedCount){
-        throw new Error(ERROR_MESSAGES.TEST_CASE_DELETE_FAILED);
-    }
+  if (!testCase.matchedCount) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_CASE_DELETION_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
 
-    return { testCase };
+  return { testCase };
 };
 
 export const createManyTestCasesService = async (input: TestCaseData[]) => {
-    const testCases = await TestCase.insertMany(input);
+  const testCases = await TestCase.insertMany(input);
 
-    if(!testCases){
-        throw new Error(ERROR_MESSAGES.TEST_CASE_CREATE_FAILED);
-    }
+  if (!testCases) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_CASE_CREATION_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
 
-    return { testCases };
-}
+  return { testCases };
+};

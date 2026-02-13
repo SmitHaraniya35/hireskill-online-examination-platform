@@ -1,9 +1,11 @@
 import Joi from "joi";
+import { emailRule, indianPhoneRule, uuidv4Rule } from "./index.validator.ts";
 
 export const StudentSchema = Joi.object({
-    email: Joi.string().email().required(),
+    id: uuidv4Rule.optional(),
+    email: emailRule.required(),
     name: Joi.string().required(),
-    phone: Joi.string().length(10).required(),
+    phone: indianPhoneRule.required(),
     // college: string;
     // degree: string;
     // branch: string;

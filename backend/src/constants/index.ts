@@ -1,122 +1,159 @@
 export const SUCCESS_MESSAGES = {
-  MONGO_DB_CONNECTION_SUCC: "MongoDB connected successfully",
+  // Database
+  DATABASE_CONNECTED: "Database connected successfully",
 
-  OK: "Success",
-  CREATED: "Created",
+  // General
+  OK: "Operation completed successfully",
+  CREATED: "Resource created successfully",
 
-  LOGIN_SUCCESS: "Login successfully",
-  LOGOUT_SUCCESS: "Logout successfullly",
-  PASSWORD_RESET_SUCCESS: "Password reset successfully",
+  // Authentication
+  LOGIN_SUCCESS: "Login successful",
+  LOGOUT_SUCCESS: "Logout successful",
+  PASSWORD_RESET_SUCCESS: "Password reset successful",
   ACCESS_TOKEN_GENERATED: "Access token generated successfully",
-
-  OTP_GENERATED: "Reset password OTP generated successfully",
+  OTP_GENERATED: "Password reset OTP generated successfully",
   OTP_VERIFIED: "OTP verified successfully",
 
+  // Admin
   ADMIN_CREATED: "Admin created successfully",
-  ADMIN_FIND: "Admin find successfully",
+  ADMIN_RETRIEVED: "Admin retrieved successfully",
 
+  // Test
   TEST_CREATED: "Test created successfully",
-  TEST_FIND: "Test find successfully",
-  TEST_LIST_FETCHED: "Test list fetched successfully",
+  TEST_RETRIEVED: "Test retrieved successfully",
+  TESTS_RETRIEVED: "Tests retrieved successfully",
   TEST_DELETED: "Test deleted successfully",
   TEST_UPDATED: "Test updated successfully",
   TEST_STARTED: "Test started successfully",
+  TEST_COMPLETED: "Test completed successfully",
 
+  // Coding Problem
   CODING_PROBLEM_CREATED: "Coding problem created successfully",
-  CODING_PROBLEM_FIND: "Coding Problem find successfully",
-  CODING_PROBLEM_LIST_FETCHED: "Coding Problem list fetched successfully",
-  CODING_PROBLEM_DELETED: "Coding Problem delete successfully",
-  CODING_PROBLEM_UPDATED: "Coding Problem update successfully",
-  
-  TEST_CASES_CREATED: "Test cases created successfully",
-  TEST_CASE_FIND: "Test case find successfully",
-  TEST_CASE_LIST_FETCHED: "Test case list fetched successfully",
+  CODING_PROBLEM_RETRIEVED: "Coding problem retrieved successfully",
+  CODING_PROBLEMS_RETRIEVED: "Coding problems retrieved successfully",
+  CODING_PROBLEM_DELETED: "Coding problem deleted successfully",
+  CODING_PROBLEM_UPDATED: "Coding problem updated successfully",
+
+  // Test Case
+  TEST_CASE_CREATED: "Test case created successfully",
+  TEST_CASE_RETRIEVED: "Test case retrieved successfully",
+  TEST_CASES_RETRIEVED: "Test cases retrieved successfully",
   TEST_CASE_DELETED: "Test case deleted successfully",
   TEST_CASE_UPDATED: "Test case updated successfully",
 
-  VALID_TEST_LINK: "Test link is valid",
+  // Test Link
+  TEST_LINK_VALID: "Test link is valid",
 
+  // Student
   STUDENT_CREATED: "Student created successfully",
-  STUDENT_FIND: "Student find successfully",
-  STUDENT_LIST_FETCHED: "Student list fetched successfully",
+  STUDENT_RETRIEVED: "Student retrieved successfully",
+  STUDENTS_RETRIEVED: "Students retrieved successfully",
   STUDENT_DELETED: "Student deleted successfully",
   STUDENT_UPDATED: "Student updated successfully",
 
+  // Code Execution
   CODE_EXECUTED: "Code executed successfully",
-  TESTCASES_EXECUTED: "All test cases executed successfully",
+  TEST_CASES_EXECUTED: "All test cases executed successfully",
 
+  // Student Attempt
   STUDENT_ATTEMPT_CREATED: "Student attempt created successfully",
   STUDENT_ATTEMPT_DELETED: "Student attempt deleted successfully",
-  STUDENT_ATTEMPTS_OF_TEST_FETCHED: "Student attemps of test fetched successfully",
+  STUDENT_ATTEMPTS_RETRIEVED: "Student attempts retrieved successfully",
+  STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
 
-  JUDGE0_SUBMISSION_FETCHED: "Judge0 Submission fetched successfully"
-}
+  // Judge0
+  JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully"
+};
 
 export const ERROR_MESSAGES = {
-  MONGO_DB_CONNECTION_FAIL: "MongoDB connection failed",
+  // Database
+  DATABASE_CONNECTION_FAILED: "Failed to connect to the database",
 
-  BAD_REQUEST: "Bad Request",
-  UNAUTHORIZED: "Not Authorized",
+  // General HTTP Errors
+  BAD_REQUEST: "Bad request",
+  UNAUTHORIZED: "Unauthorized",
   FORBIDDEN: "Forbidden",
-  NOT_FOUND: "Not Found",
-  INTERNAL_SERVER_ERROR: "Internal Server Error",
+  NOT_FOUND: "Resource not found",
+  INTERNAL_SERVER_ERROR: "Internal server error",
 
-  ACCESS_TOKEN_MISSING: "Access token is missing",
-  REFRESH_TOKEN_MISSING: "Refresh token is missing",
-  ACCESS_TOKEN_INVALID: "Invalid or Expired access token", 
-  REFRESH_TOKEN_INVALID: "Invalid or Expired refresh token", 
+  // Token Errors
+  ACCESS_TOKEN_REQUIRED: "Access token is required",
+  REFRESH_TOKEN_REQUIRED: "Refresh token is required",
+  INVALID_ACCESS_TOKEN: "Access token is invalid or expired",
+  INVALID_REFRESH_TOKEN: "Refresh token is invalid or expired",
 
-  OTP_EXPIRED: "OTP expired or invalid",
-  OTP_REQUIRED: "OTP missing",
+  // OTP Errors
+  OTP_EXPIRED_OR_INVALID: "OTP is expired or invalid",
+  OTP_REQUIRED: "OTP is required",
   OTP_NOT_VERIFIED: "OTP is not verified",
-  
-  INVALID_CREDENTIAL: "Invalid credentials",
+
+  // Authentication & Validation
+  INVALID_CREDENTIALS: "Invalid credentials",
   INVALID_TEST_LINK: "Test link is invalid",
-  EXPIRED_TEST_LINK: "Test link is expired",
-  
-  INPUT_VALIDATION_ERROR: "Input is not valid",
-  INPUT_MISSING: "Required input(s) are missing",
-  EMAIL_PASSWORD_REQUIRED: "Email and Password are required",
+  TEST_LINK_EXPIRED: "Test link has expired",
+
+  VALIDATION_FAILED: "Input validation failed",
+  REQUIRED_FIELDS_MISSING: "Required fields are missing",
+  EMAIL_AND_PASSWORD_REQUIRED: "Email and password are required",
+  EMAIL_AND_NEWPASSWORD_REQUIRED: "Email and new password are required",
   EMAIL_REQUIRED: "Email is required",
 
-  ADMIN_EXISTS: "Admin is already exists",
-  ADMIN_NOT_EXIST: "Admin is not exists",
-  USER_UNAUTHORIZED: "User Not Authorized",
+  // Admin
+  ADMIN_ALREADY_EXISTS: "Admin already exists",
+  ADMIN_NOT_FOUND: "Admin not found",
+  UNAUTHORIZED_USER: "User is not authorized",
 
-  INPUT_DATE_INVALID: "Date is not valid",
-  TEST_ID_MISSING: "Test Id is missing",
-  TEST_NOT_FOUND: "Test is not found",
-  TEST_LIST_NOT_FOUND: "Test list not found",
-  TEST_DELETE_FAILED: "Test delete failed",
-  TEST_UPDATE_FAILED: "Test update failed",
+  // Test
+  INVALID_DATE_FORMAT: "Invalid date format",
+  TEST_ID_REQUIRED: "Test ID is required",
+  TEST_NOT_FOUND: "Test not found",
+  TESTS_NOT_FOUND: "No tests found",
+  TEST_CREATION_FAILED: "Failed to creat test",
+  TEST_DELETION_FAILED: "Failed to delete test",
+  TEST_UPDATE_FAILED: "Failed to update test",
 
-  CODING_PROBLEM_CREATE_FAILED: "Coding Problem create failed",
-  CODING_PROBLEM_NOT_FOUND: "Coding Problem is not found",
-  CODING_PROBLEM_ID_MISSING: "Coding Problem Id is missing",
-  CODING_PROBLEM_LIST_NOT_FOUND: "Coding Problem list is not found",
-  CODING_PROBLEM_UPDATE_FAILED: "Coding Problem update failed",
-  CODING_PROBLEM_DELETE_FAILED: "Coding Problem delete failed",
+  // Coding Problem
+  CODING_PROBLEM_CREATION_FAILED: "Failed to create coding problem",
+  CODING_PROBLEM_NOT_FOUND: "Coding problem not found",
+  CODING_PROBLEM_ID_REQUIRED: "Coding problem ID is required",
+  CODING_PROBLEMS_NOT_FOUND: "No coding problems found",
+  CODING_PROBLEM_UPDATE_FAILED: "Failed to update coding problem",
+  CODING_PROBLEM_DELETION_FAILED: "Failed to delete coding problem",
 
-  TEST_CASE_CREATE_FAILED: "Test case create failed",
-  TEST_CASE_ID_MISSING: "Test case Id is missing",
-  TEST_CASES_NOT_FOUND: "Test cases is not found",
-  TEST_CASE_DELETE_FAILED: "Test case delete failed",
-  TEST_CASE_UPDATE_FAILED: "Test case update failed",
+  // Test Case
+  TEST_CASE_CREATION_FAILED: "Failed to create test case",
+  TEST_CASE_ID_REQUIRED: "Test case ID is required",
+  TEST_CASE_NOT_FOUND: "Test case not found",
+  TEST_CASES_NOT_FOUND: "No test cases found",
+  TEST_CASE_DELETION_FAILED: "Failed to delete test case",
+  TEST_CASE_UPDATE_FAILED: "Failed to update test case",
 
-  STUDENT_EXIST_WITH_EMAIL: "Student exist with this email id",
-  STUDENT_ID_MISSING: "Student id is missing",
-  STUDENT_NOT_FOUND: "Student is not found",
-  STUDENT_LIST_NOT_FOUND: "Student list is not found",
+  // Student
+  STUDENT_ALREADY_EXISTS_WITH_EMAIL: "A student already exists with this email",
+  STUDENT_ID_REQUIRED: "Student ID is required",
+  STUDENT_NOT_FOUND: "Student not found",
+  STUDENTS_NOT_FOUND: "No students found",
+  STUDENT_ALREADY_ACTIVE: "Student is already active",
+  STUDENT_CREATION_FAILED: "Failed to create student",
+  STUDENT_DELETION_FAILED: "Failed to delete student",
+  STUDENT_UPDATE_FAILED: "Failed to update student",
 
-  STUDENT_ALREADY_ACTIVE: "Student already active",
-  STUDENT_ATTEMPT_CREATE_FAILED: "Student attempt create failed",
-  STUDENT_ATTEMPT_NOT_FOUND: "Student attempt is not found",
-  STUDENT_ATTEMPT_DELETE_FAILED: "Student attempt delete failed",
-  STUDENT_ATTEMPT_ID_MISSING: "Student attempt Id is missing",
-  STUDENT_ATTEMPT_LIST_NOT_FOUND: "Student attempt list is not found",
+  // Student Attempt
+  STUDENT_ATTEMPT_CREATION_FAILED: "Failed to create student attempt",
+  STUDENT_ATTEMPT_NOT_FOUND: "Student attempt not found",
+  STUDENT_ATTEMPT_DELETION_FAILED: "Failed to delete student attempt",
+  STUDENT_ATTEMPT_ID_REQUIRED: "Student attempt ID is required",
+  STUDENT_ATTEMPTS_NOT_FOUND: "No student attempts found",
+  STUDENT_ATTEMPT_ALREADY_SUBMITTED_OR_INACTIVE: "Student attempt is already submitted or inactive",
 
-  JUDGE0_SUBMISSION_ID_MISSING: "Judge0 Submission Id is missing"
-}
+  // Judge0
+  JUDGE0_SUBMISSION_ID_REQUIRED: "Judge0 submission ID is required",
+  CODE_EXECUTION_FAILED: "Failed to execute code",
+  JUDGE0_FETCH_FAILED: "Failed to fetch submission result from Judge0",
+
+  // Submission
+  SUBMISSION_CREATION_FAILED: "Failed to create submission"
+};
 
 export const HttpStatusCode = {
   OK: 200,
@@ -125,5 +162,7 @@ export const HttpStatusCode = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500
+  CONFLICT: 409,
+  INTERNAL_SERVER_ERROR: 500,
+  BAD_GATEWAY: 502
 };
