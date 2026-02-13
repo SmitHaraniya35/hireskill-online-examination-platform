@@ -1,151 +1,152 @@
 export const SUCCESS_MESSAGES = {
   // Database
-  MONGO_DB_CONNECTION_SUCC: "MongoDB connected successfully",
+  DATABASE_CONNECTED: "Database connected successfully",
 
-  // General TTP Success
-  OK: "Success",
+  // General
+  OK: "Operation completed successfully",
   CREATED: "Resource created successfully",
 
-  // Auth
-  LOGIN_SUCCESS: "Logged in successfully",
-  LOGOUT_SUCCESS: "Logged out successfully",
-  PASSWORD_RESET_SUCCESS: "Password reset successfully",
+  // Authentication
+  LOGIN_SUCCESS: "Login successful",
+  LOGOUT_SUCCESS: "Logout successful",
+  PASSWORD_RESET_SUCCESS: "Password reset successful",
   ACCESS_TOKEN_GENERATED: "Access token generated successfully",
-
   OTP_GENERATED: "Password reset OTP generated successfully",
   OTP_VERIFIED: "OTP verified successfully",
 
   // Admin
   ADMIN_CREATED: "Admin created successfully",
-  ADMIN_FIND: "Admin retrieved successfully",
+  ADMIN_RETRIEVED: "Admin retrieved successfully",
 
   // Test
   TEST_CREATED: "Test created successfully",
-  TEST_FIND: "Test retrieved successfully",
-  TEST_LIST_FETCHED: "Tests retrieved successfully",
+  TEST_RETRIEVED: "Test retrieved successfully",
+  TESTS_RETRIEVED: "Tests retrieved successfully",
   TEST_DELETED: "Test deleted successfully",
   TEST_UPDATED: "Test updated successfully",
   TEST_STARTED: "Test started successfully",
-  TEST_FINISHED: "Test finished successfully",
+  TEST_COMPLETED: "Test completed successfully",
 
   // Coding Problem
   CODING_PROBLEM_CREATED: "Coding problem created successfully",
-  CODING_PROBLEM_FIND: "Coding problem retrieved successfully",
-  CODING_PROBLEM_LIST_FETCHED: "Coding problems retrieved successfully",
+  CODING_PROBLEM_RETRIEVED: "Coding problem retrieved successfully",
+  CODING_PROBLEMS_RETRIEVED: "Coding problems retrieved successfully",
   CODING_PROBLEM_DELETED: "Coding problem deleted successfully",
   CODING_PROBLEM_UPDATED: "Coding problem updated successfully",
 
   // Test Case
-  TEST_CASES_CREATED: "Test cases created successfully",
-  TEST_CASE_FIND: "Test case retrieved successfully",
-  TEST_CASE_LIST_FETCHED: "Test cases retrieved successfully",
+  TEST_CASE_CREATED: "Test case created successfully",
+  TEST_CASE_RETRIEVED: "Test case retrieved successfully",
+  TEST_CASES_RETRIEVED: "Test cases retrieved successfully",
   TEST_CASE_DELETED: "Test case deleted successfully",
   TEST_CASE_UPDATED: "Test case updated successfully",
 
   // Test Link
-  VALID_TEST_LINK: "Test link is valid",
+  TEST_LINK_VALID: "Test link is valid",
 
   // Student
   STUDENT_CREATED: "Student created successfully",
-  STUDENT_FIND: "Student retrieved successfully",
-  STUDENT_LIST_FETCHED: "Students retrieved successfully",
+  STUDENT_RETRIEVED: "Student retrieved successfully",
+  STUDENTS_RETRIEVED: "Students retrieved successfully",
   STUDENT_DELETED: "Student deleted successfully",
   STUDENT_UPDATED: "Student updated successfully",
 
   // Code Execution
   CODE_EXECUTED: "Code executed successfully",
-  TESTCASES_EXECUTED: "All test cases executed successfully",
+  TEST_CASES_EXECUTED: "All test cases executed successfully",
 
   // Student Attempt
   STUDENT_ATTEMPT_CREATED: "Student attempt created successfully",
   STUDENT_ATTEMPT_DELETED: "Student attempt deleted successfully",
-  STUDENT_ATTEMPTS_OF_TEST_FETCHED: "Student attempts for the test retrieved successfully",
+  STUDENT_ATTEMPTS_RETRIEVED: "Student attempts retrieved successfully",
   STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
 
   // Judge0
-  JUDGE0_SUBMISSION_FETCHED: "Judge0 submission retrieved successfully"
+  JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully"
 };
-
 
 export const ERROR_MESSAGES = {
   // Database
-  MONGO_DB_CONNECTION_FAIL: "Failed to connect to MongoDB",
+  DATABASE_CONNECTION_FAILED: "Failed to connect to the database",
 
   // General HTTP Errors
-  BAD_REQUEST: "Bad Request",
-  UNAUTHORIZED: "Not Authorized",
+  BAD_REQUEST: "Bad request",
+  UNAUTHORIZED: "Unauthorized",
   FORBIDDEN: "Forbidden",
-  NOT_FOUND: "Not Found",
-  INTERNAL_SERVER_ERROR: "Internal Server Error",
+  NOT_FOUND: "Resource not found",
+  INTERNAL_SERVER_ERROR: "Internal server error",
 
   // Token Errors
-  ACCESS_TOKEN_MISSING: "Access token is missing",
-  REFRESH_TOKEN_MISSING: "Refresh token is missing",
-  ACCESS_TOKEN_INVALID: "Access token is invalid or expired", 
-  REFRESH_TOKEN_INVALID: "Refresh token is invalid or expired", 
+  ACCESS_TOKEN_REQUIRED: "Access token is required",
+  REFRESH_TOKEN_REQUIRED: "Refresh token is required",
+  INVALID_ACCESS_TOKEN: "Access token is invalid or expired",
+  INVALID_REFRESH_TOKEN: "Refresh token is invalid or expired",
 
   // OTP Errors
-  OTP_EXPIRED: "OTP is expired or invalid",
+  OTP_EXPIRED_OR_INVALID: "OTP is expired or invalid",
   OTP_REQUIRED: "OTP is required",
-  OTP_NOT_VERIFIED: "OTP has not been verified",
-  
-  // // Authentication & Validation
-  INVALID_CREDENTIAL: "Invalid credentials",
+  OTP_NOT_VERIFIED: "OTP is not verified",
+
+  // Authentication & Validation
+  INVALID_CREDENTIALS: "Invalid credentials",
   INVALID_TEST_LINK: "Test link is invalid",
-  EXPIRED_TEST_LINK: "Test link has expired",
-  
-  INPUT_VALIDATION_ERROR: "Input validation failed",
-  INPUT_MISSING: "Required input(s) are missing",
-  EMAIL_PASSWORD_REQUIRED: "Email and Password are required",
+  TEST_LINK_EXPIRED: "Test link has expired",
+
+  VALIDATION_FAILED: "Input validation failed",
+  REQUIRED_FIELDS_MISSING: "Required fields are missing",
+  EMAIL_AND_PASSWORD_REQUIRED: "Email and password are required",
+  EMAIL_AND_NEWPASSWORD_REQUIRED: "Email and new password are required",
   EMAIL_REQUIRED: "Email is required",
 
   // Admin
-  ADMIN_EXISTS: "Admin already exists",
-  ADMIN_NOT_EXIST: "Admin does not exist",
-  USER_UNAUTHORIZED: "User is Not Authorized",
+  ADMIN_ALREADY_EXISTS: "Admin already exists",
+  ADMIN_NOT_FOUND: "Admin not found",
+  UNAUTHORIZED_USER: "User is not authorized",
 
   // Test
-  INPUT_DATE_INVALID: "Invalid date format",
-  TEST_ID_MISSING: "Test ID is missing",
+  INVALID_DATE_FORMAT: "Invalid date format",
+  TEST_ID_REQUIRED: "Test ID is required",
   TEST_NOT_FOUND: "Test not found",
-  TEST_LIST_NOT_FOUND: "No tests found",
-  TEST_DELETE_FAILED: "Failed to delete test",
+  TESTS_NOT_FOUND: "No tests found",
+  TEST_DELETION_FAILED: "Failed to delete test",
   TEST_UPDATE_FAILED: "Failed to update test",
 
   // Coding Problem
-  CODING_PROBLEM_CREATE_FAILED: "Failed to create coding problem",
+  CODING_PROBLEM_CREATION_FAILED: "Failed to create coding problem",
   CODING_PROBLEM_NOT_FOUND: "Coding problem not found",
-  CODING_PROBLEM_ID_MISSING: "Coding problem ID is missing",
-  CODING_PROBLEM_LIST_NOT_FOUND: "No coding problems found",
+  CODING_PROBLEM_ID_REQUIRED: "Coding problem ID is required",
+  CODING_PROBLEMS_NOT_FOUND: "No coding problems found",
   CODING_PROBLEM_UPDATE_FAILED: "Failed to update coding problem",
-  CODING_PROBLEM_DELETE_FAILED: "Failed to delete coding problem",
+  CODING_PROBLEM_DELETION_FAILED: "Failed to delete coding problem",
 
   // Test Case
-  TEST_CASE_CREATE_FAILED: "Failed to create test case",
-  TEST_CASE_ID_MISSING: "Test case ID is missing",
+  TEST_CASE_CREATION_FAILED: "Failed to create test case",
+  TEST_CASE_ID_REQUIRED: "Test case ID is required",
+  TEST_CASE_NOT_FOUND: "Test case not found",
   TEST_CASES_NOT_FOUND: "No test cases found",
-  TEST_CASE_DELETE_FAILED: "Failed to delete test case",
+  TEST_CASE_DELETION_FAILED: "Failed to delete test case",
   TEST_CASE_UPDATE_FAILED: "Failed to update test case",
 
   // Student
-  STUDENT_EXIST_WITH_EMAIL: "A student already exists with this email",
-  STUDENT_ID_MISSING: "Student ID is missing",
+  STUDENT_ALREADY_EXISTS_WITH_EMAIL: "A student already exists with this email",
+  STUDENT_ID_REQUIRED: "Student ID is required",
   STUDENT_NOT_FOUND: "Student not found",
-  STUDENT_LIST_NOT_FOUND: "No students found",
-
+  STUDENTS_NOT_FOUND: "No students found",
   STUDENT_ALREADY_ACTIVE: "Student is already active",
-  STUDENT_ATTEMPT_CREATE_FAILED: "Failed to create student attempt",
+
+  // Student Attempt
+  STUDENT_ATTEMPT_CREATION_FAILED: "Failed to create student attempt",
   STUDENT_ATTEMPT_NOT_FOUND: "Student attempt not found",
-  STUDENT_ATTEMPT_DELETE_FAILED: "Failed to delete student attempt",
-  STUDENT_ATTEMPT_ID_MISSING: "Student attempt ID is missing",
-  STUDENT_ATTEMPT_LIST_NOT_FOUND: "No student attempts found",
+  STUDENT_ATTEMPT_DELETION_FAILED: "Failed to delete student attempt",
+  STUDENT_ATTEMPT_ID_REQUIRED: "Student attempt ID is required",
+  STUDENT_ATTEMPTS_NOT_FOUND: "No student attempts found",
 
   // Judge0
-  JUDGE0_SUBMISSION_ID_MISSING: "Judge0 submission ID is missing",
+  JUDGE0_SUBMISSION_ID_REQUIRED: "Judge0 submission ID is required",
 
   // Submission
-  SUBMISSION_CREATE_FAILED: "Failed to create submission"
-}
+  SUBMISSION_CREATION_FAILED: "Failed to create submission"
+};
 
 export const HttpStatusCode = {
   OK: 200,
@@ -154,5 +155,6 @@ export const HttpStatusCode = {
   UNAUTHORIZED: 401,
   FORBIDDEN: 403,
   NOT_FOUND: 404,
+  CONFLICT: 409,
   INTERNAL_SERVER_ERROR: 500
 };
