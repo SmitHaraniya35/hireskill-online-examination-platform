@@ -45,9 +45,18 @@ export default function responseMiddleware(
     message = ERROR_MESSAGES.NOT_FOUND
   ) => failure(HttpStatusCode.NOT_FOUND)(message);
 
-  res.internalError = (
+  res.internalServerError = (
     message = ERROR_MESSAGES.INTERNAL_SERVER_ERROR
   ) => failure(HttpStatusCode.INTERNAL_SERVER_ERROR)(message);
+
+  res.forbidden = (
+    message = ERROR_MESSAGES.FORBIDDEN
+  ) => failure(HttpStatusCode.FORBIDDEN)(message);
+
+  res.httpError = (
+    status,
+    message
+  ) => failure(status)(message);
 
   next();
 }
