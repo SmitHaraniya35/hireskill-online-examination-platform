@@ -20,30 +20,30 @@ const GenerateNewTest: React.FC<GenerateProps> = ({ closeModal, refreshLinks, ed
     const [duration,setDuration] = useState("");
 
     useEffect(() => {
-    if (isEditMode && editData) {
-        const testObj = editData.test || {};
-        setTitle(testObj.title || "");
-        setTime(String(testObj.duration_minutes || ""));
+        if (isEditMode && editData) {
+            const testObj = editData.test || {};
+            setTitle(testObj.title || "");
+            setTime(String(testObj.duration_minutes || ""));
 
-        const exp = testObj.expiration_at;
-        if (exp) {
-            const parsed = new Date(exp); // Automatically handles UTC string to Local Date
-            if (!isNaN(parsed.getTime())) {
-                setSelectDate(parsed);
-                
-                // Format HH:mm for the local time input
-                const hh = String(parsed.getHours()).padStart(2, '0');
-                const mm = String(parsed.getMinutes()).padStart(2, '0');
-                setExpiryTime(`${hh}:${mm}`);
+            const exp = testObj.expiration_at;
+            if (exp) {
+                const parsed = new Date(exp); // Automatically handles UTC string to Local Date
+                if (!isNaN(parsed.getTime())) {
+                    setSelectDate(parsed);
+                    
+                    // Format HH:mm for the local time input
+                    const hh = String(parsed.getHours()).padStart(2, '0');
+                    const mm = String(parsed.getMinutes()).padStart(2, '0');
+                    setExpiryTime(`${hh}:${mm}`);
+                }
             }
+        } else {
+            setTitle("");
+            setSelectDate(null);
+            setTime("");
+            setExpiryTime("23:59");
         }
-    } else {
-        setTitle("");
-        setSelectDate(null);
-        setTime("");
-        setExpiryTime("23:59");
-    }
-}, [editData, isEditMode]);
+    }, [editData, isEditMode]);
 
    // Inside handleSubmit in GenerateNewTest.tsx
 
