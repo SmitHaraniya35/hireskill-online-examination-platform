@@ -9,6 +9,7 @@ import codingProblemRoutes from "./routes/codingProblem.routes.ts";
 import testCaseRoutes from "./routes/testCase.routes.ts";
 import studentRoutes from "./routes/student.routes.ts";
 import submissionRoutes from "./routes/submission.routes.ts";
+import studentAttemptRoutes from "./routes/studentAttempt.routes.ts";
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/coding-problem", codingProblemRoutes);
 app.use("/api/test-case", testCaseRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/submission", submissionRoutes);
+app.use("/api/student-attempt", studentAttemptRoutes);
 
 export default app;
 

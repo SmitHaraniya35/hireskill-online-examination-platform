@@ -28,6 +28,7 @@ export const CodinProblemWithTestCasesSchema = Joi.object({
     basic_code_layout: Joi.string().required(),
     testCases: Joi.array().items(
         Joi.object().keys({
+            id: Joi.string().optional(),
             input: Joi.string().required(),
             expected_output: Joi.string().required(),
             is_hidden: Joi.boolean().required()

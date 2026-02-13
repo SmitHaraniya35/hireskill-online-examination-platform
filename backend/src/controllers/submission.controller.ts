@@ -1,7 +1,7 @@
 import type { Response } from "express";
 import type { AuthRequest } from "../types/controller/index.ts";
 import type { SubmitCodeRequest, Judge0Submission, Judge0BatchSubmission } from "../types/controller/submissionData.types.ts";
-import { executeAllHiddentTestCases, executeCode } from "../services/judge0.service.ts";
+import { executeAllHiddentTestCases, executeCode, getJudge0SubmissionById } from "../services/judge0.service.ts";
 import { getAllTestCasesByProblemIdService } from "../services/testCase.service.ts";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
 
@@ -27,6 +27,8 @@ export const submitCode = async (req: AuthRequest, res: Response) => {
 
         const { data: testCasesList } = await getAllTestCasesByProblemIdService(problem_id);
 
+        const testCasesIdList: Array<string> = [] 
+
         for (let i = 0; i < testCasesList.length; i++) {
             let obj = {
                 source_code,
@@ -36,12 +38,26 @@ export const submitCode = async (req: AuthRequest, res: Response) => {
             } as Judge0Submission;
 
             inputs.submissions.push(obj);
+            testCasesIdList.push(testCasesList[i]!.id);
         }
 
-        const data = await executeAllHiddentTestCases(inputs);
+        const data = await executeAllHiddentTestCases(inputs, testCasesIdList);
         res.ok(data, SUCCESS_MESSAGES.TESTCASES_EXECUTED);
     } catch (err: any) {
         res.badRequest(err.message);
     }
 };
 
+export const fetchOutput = async (req: AuthRequest, res: Response) => {
+    try {
+        const { submissionId } = req.allParams;
+        if(!submissionId){
+            res.notFound(ERROR_MESSAGES.JUDGE0_SUBMISSION_ID_MISSING);
+        }
+
+        const data = await getJudge0SubmissionById(submissionId);
+        res.ok({status: data}, SUCCESS_MESSAGES.JUDGE0_SUBMISSION_FETCHED); 
+    } catch (err: any) {
+        res.badRequest(err.message)
+    }
+};

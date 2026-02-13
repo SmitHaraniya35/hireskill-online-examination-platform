@@ -3,7 +3,7 @@ import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
 import type { CodingProblemData, CodingProblemWithTestCasesData } from "../types/controller/codingProblemData.types.ts";
 import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
-import { createManyTestCasesService } from "./testCase.service.ts";
+import { createManyTestCasesService, createTestCaseService, updateTestCaseService } from "./testCase.service.ts";
 
 export const createCodingProblemService = async (input: CodingProblemData, adminId: string) => {
     const admin = await User.findOneActive({ id: adminId });
@@ -71,7 +71,7 @@ export const deleteCodingProblemService = async (id: string) => {
     return { codingProblem };
 };
 
-export const createCodingWithTestCasesProblemService = async (input: CodingProblemWithTestCasesData, adminId: string) => {
+export const createCodingProblemWithTestCasesService = async (input: CodingProblemWithTestCasesData, adminId: string) => {
     const admin = await User.findOneActive({ id: adminId });
 
     if(!admin){
@@ -138,6 +138,7 @@ export const getCodingProblemWithTestCasesService = async (id: string) => {
         { _id: 0, createdAt: 0, deletedAt: 0, updatedAt: 0, isDeleted: 0}
     ).populate({
         path: "testcases",
+        match: { isDeleted: false },
         select: "id input expected_output is_hidden -_id"
     });
 
@@ -146,4 +147,48 @@ export const getCodingProblemWithTestCasesService = async (id: string) => {
     }
 
     return { codingProblemWithTestCases }
+};
+
+export const updateCodingProblemWithTestCasesService = async (input: CodingProblemWithTestCasesData, adminId: string) => {
+    const admin = await User.findOneActive({ id: adminId });
+
+    if(!admin){
+        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+    }
+
+    const problem_id = input.id;
+    if(!problem_id){
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_ID_MISSING);
+    }
+
+    const { testCases, ...codeWithoutTestCase }  = input;
+    const sampleTestCase = testCases.find((item) => {
+        if(!item.is_hidden){
+            return item;
+        }
+    });
+
+    const codeInput = {
+        ...codeWithoutTestCase,
+        sample_input: sampleTestCase!.input,
+        sample_output: sampleTestCase!.expected_output,
+    };
+
+    const codingProblem = await CodingProblem.findOneAndUpdate({ id: problem_id }, { ...codeInput });
+    if(!codingProblem){
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_UPDATE_FAILED);
+    }
+    await codingProblem.save();
+
+    testCases.map(async (testcase) => {
+        if(testcase.id){
+            await updateTestCaseService(testcase.id, { problem_id, ...testcase });
+        } else {
+            await createTestCaseService({ problem_id, ...testcase });
+        }
+    });
+
+    const data = await getCodingProblemWithTestCasesService(problem_id);
+
+    return { updatedCodingProblem: data }
 }

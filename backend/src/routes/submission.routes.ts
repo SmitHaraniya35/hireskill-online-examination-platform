@@ -6,5 +6,6 @@ const router = express();
 
 router.post("/run", validateRequest(), SubmissionController.runCode);
 router.post("/submit", validateRequest(), SubmissionController.submitCode);
+router.get("/:submissionId", validateRequest(), SubmissionController.fetchOutput);
 
 export default router;
