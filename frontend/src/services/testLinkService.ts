@@ -9,6 +9,7 @@ const getAuthHeaders = () => {
     return {
         headers: {
             Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "69420"
         },
         withCredentials: true
     };
@@ -44,6 +45,7 @@ const testLinkService = {
             return { success: false, message: error.response?.data?.message || "Failed to fetch details" };
         }
     },
+    
     // PUT update-test-link
     updateTestLink: async (id: string, updateData: any) => {
         try {
