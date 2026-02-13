@@ -20,3 +20,19 @@ export const passwordRule = Joi.string()
     "string.pattern.base":  "Password must contain at least one letter and one number",
     "string.empty": "Password is required"
   });
+
+export const indianPhoneRule = Joi.string()
+  .length(10)
+  .pattern(/^[6-9]\d{9}$/)
+  .messages({
+    "string.pattern.base":
+      "Phone number must be a valid 10-digit Indian mobile number",
+    "string.empty": "Phone number is required",
+    "string.length": "Phone number must be 10 digit"
+  });
+
+export const uuidv4Rule = Joi.string().guid({version: 'uuidv4'});
+
+export const IdSchema = Joi.object({
+  id: uuidv4Rule.required()
+});

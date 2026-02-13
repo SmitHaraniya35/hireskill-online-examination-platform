@@ -1,22 +1,22 @@
 import Joi from "joi";
 import { emailRule, passwordRule } from "./index.validator.ts";
 
-export const loginSchema = Joi.object({
+export const LoginSchema = Joi.object({
   email: emailRule.required(),
   password: passwordRule.required(),
 }).options({ abortEarly: false });
 
-export const createAdminSchema = Joi.object({
+export const CreateAdminSchema = Joi.object({
   email: emailRule.label("Email").required(),
   password: passwordRule.label("Password").required(),
 }).options({ abortEarly: false });
 
-export const resetPasswordSchema = Joi.object({
+export const ResetPasswordSchema = Joi.object({
   email: emailRule.required(),
   newPassword: passwordRule.required(),
 }).options({ abortEarly: true });
 
-export const otpSchema = Joi.object({
+export const OtpSchema = Joi.object({
   email: emailRule.required(), 
   otp: Joi.string()
     .length(6)
@@ -27,4 +27,8 @@ export const otpSchema = Joi.object({
       "string.empty": "OTP is required",
     })
     .required()
-});
+}).options({ abortEarly: true });
+
+export const ForgotPasswordSchema =  Joi.object({
+  email: emailRule.required()
+}).options({ abortEarly: true });
