@@ -1,194 +1,266 @@
-import { ERROR_MESSAGES } from "../constants/index.ts";
+import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
-import type { CodingProblemData, CodingProblemWithTestCasesData } from "../types/controller/codingProblemData.types.ts";
+import type {
+  CodingProblemData,
+  CodingProblemWithTestCasesData,
+} from "../types/controller/codingProblemData.types.ts";
 import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
-import { createManyTestCasesService, createTestCaseService, updateTestCaseService } from "./testCase.service.ts";
+import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
+import type { UserDocument } from "../types/model/user.document.ts";
+import { HttpError } from "../utils/httpError.utils.ts";
+import {
+  createManyTestCasesService,
+  createTestCaseService,
+  updateTestCaseService,
+} from "./testCase.service.ts";
 
-export const createCodingProblemService = async (input: CodingProblemData, adminId: string) => {
-    const admin = await User.findOneActive({ id: adminId });
+export const createCodingProblemService = async (
+  input: CodingProblemData,
+  adminId: string,
+) => {
+  const admin: UserDocument | null = await User.findOneActive({ id: adminId });
+  if (!admin) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if(!admin){
-        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
-    }
+  const codingProblem: CodingProblemDocument = await CodingProblem.create({
+    ...input,
+    created_by: adminId,
+  });
 
-    const codingProblem = await CodingProblem.create({ ...input, created_by: adminId });
+  if (!codingProblem) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_CREATION_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
 
-    if(!codingProblem){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_CREATE_FAILED);
-    }
+  console.log(codingProblem.id);
 
-    return { codingProblem };
+  return { codingProblem };
 };
 
 export const getCodingProblemByIdService = async (id: string) => {
-    const codingProblem = await CodingProblem.findByIdActive(id);
+  const codingProblem: CodingProblemDocument | null =
+    await CodingProblem.findByIdActive(id);
 
-    if(!codingProblem){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
-    }
+  if (!codingProblem) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    return { codingProblem }
-
+  return { codingProblem };
 };
 
 export const getAllCodingProblemsService = async () => {
-    const codingProblemList = await CodingProblem.findActive();
+  const codingProblemList: CodingProblemDocument[] =
+    await CodingProblem.findActive();
+  if (!codingProblemList.length) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEMS_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if(!codingProblemList){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_LIST_NOT_FOUND);
-    }
-
-    return { codingProblemList };
+  return { codingProblemList };
 };
 
-export const updateCodingProblemService = async (id: string, updatedInput: CodingProblemData) => {
-    const { id: _omit, ...fieldsToUpdate } = updatedInput as CodingProblemData & { id?: string };
-    const result = await CodingProblem.updateOne(
-        { id, isDeleted: false },
-        { $set: fieldsToUpdate }
+export const updateCodingProblemService = async (
+  id: string,
+  updatedInput: CodingProblemData,
+) => {
+  const { id: _omit, ...fieldsToUpdate } = updatedInput as CodingProblemData & {
+    id?: string;
+  };
+
+  const result = await CodingProblem.updateOne(
+    { id, isDeleted: false },
+    { $set: fieldsToUpdate },
+  );
+  if (!result.acknowledged) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_UPDATE_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
+  }
 
-    if (!result.acknowledged) {
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_UPDATE_FAILED);
-    }
+  const codingProblem: CodingProblemDocument | null =
+    await CodingProblem.findByIdActive(id);
+  if (!codingProblem) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    const codingProblem = await CodingProblem.findByIdActive(id);
-    if (!codingProblem) {
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
-    }
-
-    return { codingProblem };
+  return { codingProblem };
 };
 
 export const deleteCodingProblemService = async (id: string) => {
-    const codingProblem = await CodingProblem.softDelete({ id });
+  const codingProblem = await CodingProblem.softDelete({ id });
+  if (!codingProblem) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_DELETION_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
 
-    if(!codingProblem){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_DELETE_FAILED);
-    }
-
-    return { codingProblem };
+  return { codingProblem };
 };
 
-export const createCodingProblemWithTestCasesService = async (input: CodingProblemWithTestCasesData, adminId: string) => {
-    const admin = await User.findOneActive({ id: adminId });
+export const createCodingProblemWithTestCasesService = async (
+  input: CodingProblemWithTestCasesData,
+  adminId: string,
+) => {
+  const admin: UserDocument | null = await User.findOneActive({ id: adminId });
+  if (!admin) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if(!admin){
-        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+  const { testCases, ...codeWithoutTestCase } = input;
+  const sampleTestCase = testCases.find((item) => {
+    if (!item.is_hidden) {
+      return item;
     }
+  });
 
-    const { testCases, ...codeWithoutTestCase }  = input;
-    const sampleTestCase = testCases.find((item) => {
-        if(!item.is_hidden){
-            return item;
-        }
-    });
+  const codeInput = {
+    ...codeWithoutTestCase,
+    sample_input: sampleTestCase!.input,
+    sample_output: sampleTestCase!.expected_output,
+    created_by: adminId,
+  };
 
-    console.log(sampleTestCase)
+  const codingProblem: CodingProblemDocument = await CodingProblem.create({
+    ...codeInput,
+  });
+  if (!codingProblem) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_CREATION_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+  await codingProblem.save();
 
-    const codeInput = {
-        ...codeWithoutTestCase,
-        sample_input: sampleTestCase!.input,
-        sample_output: sampleTestCase!.expected_output,
-        created_by: adminId
-    };
+  const { id: problem_id } = codingProblem;
 
-    console.log(codeInput)
-
-    const codingProblem = await CodingProblem.create({ ...codeInput });
-    if(!codingProblem){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_CREATE_FAILED);
+  const hiddenTestCases = testCases.filter((item) => {
+    if (item.is_hidden) {
+      return item;
     }
-    await codingProblem.save();
+  });
 
-    const { id: problem_id }  = codingProblem;
+  const inputTestCases: TestCaseData[] = hiddenTestCases.map((item) => {
+    return { problem_id, ...item };
+  });
 
-    const hiddenTestCases = testCases.filter((item) => {
-        if(item.is_hidden){
-            return item;
-        }
-    });
+  const data = await createManyTestCasesService(inputTestCases);
 
-    const inputTestCases: TestCaseData[] = hiddenTestCases.map((item) => {
-        return { problem_id, ...item };
-    });
-
-    const data = await createManyTestCasesService(inputTestCases)
-
-    return { codingProblem, data };
+  return { codingProblem, data };
 };
 
 export const selectRandomProblemService = async () => {
-    const problems = await CodingProblem.find();
+  const problems: CodingProblemDocument[] = await CodingProblem.findActive();
+  if (!problems.length) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if(!problems.length){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
-    }
+  const len = problems.length;
+  const index = Math.floor(Math.random() * len);
 
-    const len = problems.length;
-    const index = Math.floor(Math.random() * len);
-    
-    return problems[index];
+  return problems[index];
 };
 
 export const getCodingProblemWithTestCasesService = async (id: string) => {
-    const codingProblemWithTestCases = await CodingProblem.findByIdActive(
-        id, 
-        { _id: 0, createdAt: 0, deletedAt: 0, updatedAt: 0, isDeleted: 0}
-    ).populate({
-        path: "testcases",
-        match: { isDeleted: false },
-        select: "id input expected_output is_hidden -_id"
-    });
+  const codingProblemWithTestCases = await CodingProblem.findByIdActive(id, {
+    _id: 0,
+    createdAt: 0,
+    deletedAt: 0,
+    updatedAt: 0,
+    isDeleted: 0,
+  }).populate({
+    path: "testcases",
+    match: { isDeleted: false },
+    select: "id input expected_output is_hidden -_id",
+  });
 
-    if(!codingProblemWithTestCases){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND);
-    }
+  if (!codingProblemWithTestCases) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    return { codingProblemWithTestCases }
+  return { codingProblemWithTestCases };
 };
 
-export const updateCodingProblemWithTestCasesService = async (input: CodingProblemWithTestCasesData, adminId: string) => {
-    const admin = await User.findOneActive({ id: adminId });
+export const updateCodingProblemWithTestCasesService = async (
+  input: CodingProblemWithTestCasesData,
+  adminId: string,
+) => {
+  const admin: UserDocument | null = await User.findOneActive({ id: adminId });
+  if (!admin) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if(!admin){
-        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+  const problem_id = input.id;
+  if (!problem_id) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_ID_REQUIRED,
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  const { testCases, ...codeWithoutTestCase } = input;
+  const sampleTestCase = testCases.find((item) => {
+    if (!item.is_hidden) {
+      return item;
     }
+  });
 
-    const problem_id = input.id;
-    if(!problem_id){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_ID_MISSING);
+  const codeInput = {
+    ...codeWithoutTestCase,
+    sample_input: sampleTestCase!.input,
+    sample_output: sampleTestCase!.expected_output,
+  };
+
+  const codingProblem = await CodingProblem.findOneAndUpdate(
+    { id: problem_id },
+    { ...codeInput },
+  );
+  if (!codingProblem) {
+    throw new HttpError(
+      ERROR_MESSAGES.CODING_PROBLEM_UPDATE_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+  await codingProblem.save();
+
+  testCases.map(async (testcase) => {
+    if (testcase.id) {
+      await updateTestCaseService(testcase.id, { problem_id, ...testcase });
+    } else {
+      await createTestCaseService({ problem_id, ...testcase });
     }
+  });
 
-    const { testCases, ...codeWithoutTestCase }  = input;
-    const sampleTestCase = testCases.find((item) => {
-        if(!item.is_hidden){
-            return item;
-        }
-    });
+  const updatedCodingProblem =
+    await getCodingProblemWithTestCasesService(problem_id);
 
-    const codeInput = {
-        ...codeWithoutTestCase,
-        sample_input: sampleTestCase!.input,
-        sample_output: sampleTestCase!.expected_output,
-    };
-
-    const codingProblem = await CodingProblem.findOneAndUpdate({ id: problem_id }, { ...codeInput });
-    if(!codingProblem){
-        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_UPDATE_FAILED);
-    }
-    await codingProblem.save();
-
-    testCases.map(async (testcase) => {
-        if(testcase.id){
-            await updateTestCaseService(testcase.id, { problem_id, ...testcase });
-        } else {
-            await createTestCaseService({ problem_id, ...testcase });
-        }
-    });
-
-    const data = await getCodingProblemWithTestCasesService(problem_id);
-
-    return { updatedCodingProblem: data }
-}
+  return { updatedCodingProblem };
+};

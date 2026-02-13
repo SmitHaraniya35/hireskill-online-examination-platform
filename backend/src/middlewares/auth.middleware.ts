@@ -7,15 +7,14 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   const accessToken = req.headers.authorization?.split(" ")[1];
 
   if (!accessToken) {
-    return res.unauthorized(ERROR_MESSAGES.ACCESS_TOKEN_MISSING);
+    return res.badRequest(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
   }
   
   try {
     const data = verifyAccessToken(accessToken) as AuthJwtPayload;
-    console.log("Protect middleware - verified token data:", data);
     req.user = data;
     next();
   } catch {
-    return res.unauthorized(ERROR_MESSAGES.ACCESS_TOKEN_INVALID);
+    return res.unauthorized(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
   }
 };

@@ -108,6 +108,7 @@ export const ERROR_MESSAGES = {
   TEST_ID_REQUIRED: "Test ID is required",
   TEST_NOT_FOUND: "Test not found",
   TESTS_NOT_FOUND: "No tests found",
+  TEST_CREATION_FAILED: "Failed to creat test",
   TEST_DELETION_FAILED: "Failed to delete test",
   TEST_UPDATE_FAILED: "Failed to update test",
 
@@ -133,6 +134,9 @@ export const ERROR_MESSAGES = {
   STUDENT_NOT_FOUND: "Student not found",
   STUDENTS_NOT_FOUND: "No students found",
   STUDENT_ALREADY_ACTIVE: "Student is already active",
+  STUDENT_CREATION_FAILED: "Failed to create student",
+  STUDENT_DELETION_FAILED: "Failed to delete student",
+  STUDENT_UPDATE_FAILED: "Failed to update student",
 
   // Student Attempt
   STUDENT_ATTEMPT_CREATION_FAILED: "Failed to create student attempt",
@@ -140,9 +144,12 @@ export const ERROR_MESSAGES = {
   STUDENT_ATTEMPT_DELETION_FAILED: "Failed to delete student attempt",
   STUDENT_ATTEMPT_ID_REQUIRED: "Student attempt ID is required",
   STUDENT_ATTEMPTS_NOT_FOUND: "No student attempts found",
+  STUDENT_ATTEMPT_ALREADY_SUBMITTED_OR_INACTIVE: "Student attempt is already submitted or inactive",
 
   // Judge0
   JUDGE0_SUBMISSION_ID_REQUIRED: "Judge0 submission ID is required",
+  CODE_EXECUTION_FAILED: "Failed to execute code",
+  JUDGE0_FETCH_FAILED: "Failed to fetch submission result from Judge0",
 
   // Submission
   SUBMISSION_CREATION_FAILED: "Failed to create submission"
@@ -156,5 +163,6 @@ export const HttpStatusCode = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
-  INTERNAL_SERVER_ERROR: 500
+  INTERNAL_SERVER_ERROR: 500,
+  BAD_GATEWAY: 502
 };

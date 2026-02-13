@@ -1,81 +1,115 @@
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.model.ts";
-import { ERROR_MESSAGES } from "../constants/index.ts";
-import { generateAccessToken, generateRefreshToken, generateRefreshTokenId } from "../utils/jwt.utils.ts";
+import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  generateRefreshTokenId,
+} from "../utils/jwt.utils.ts";
 import { generateResetPasswordOTP } from "../utils/helper.utils.ts";
 import type { UserDocument } from "../types/model/user.document.ts";
+import { HttpError } from "../utils/httpError.utils.ts";
 
 export const loginService = async (email: string, password: string) => {
-    const user = await User.findOneActive({ email });
-    if (!user) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
+  const user: UserDocument | null = await User.findOneActive({ email });
+  if (!user) {
+    throw new HttpError(
+      ERROR_MESSAGES.INVALID_CREDENTIALS,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
 
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) throw new Error(ERROR_MESSAGES.INVALID_CREDENTIAL);
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    throw new HttpError(
+      ERROR_MESSAGES.INVALID_CREDENTIALS,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
 
-    const accessToken = generateAccessToken(user.id, user.email);
+  const accessToken = generateAccessToken(user.id, user.email);
 
-    user.refreshTokenId = (await generateRefreshTokenId()).toString();
-    await user.save();
+  user.refreshTokenId = (await generateRefreshTokenId()).toString();
+  await user.save();
 
-    const refreshToken = generateRefreshToken(user.id, user.refreshTokenId);
+  const refreshToken = generateRefreshToken(user.id, user.refreshTokenId);
 
-    return { user, accessToken, refreshToken };
+  return { user, accessToken, refreshToken };
 };
 
 export const getMeService = async (id: string, email: string) => {
+  const user: UserDocument | null = await User.findOneActive(
+    { id, email },
+    { id: 1, email: 1, role: 1, _id: 0 },
+  );
 
-    const user = await User.findOneActive({ id, email }, { id: 1, email: 1, role: 1, _id: 0});
+  if (!user) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if(!user){
-        throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
-    }
-
-    return { user };
-}
-
-export const createAdminService = async (email: string, password: string) => {
-    const adminExists: UserDocument | null = await User.findOneActive({ email });
-    if (adminExists){
-        throw new Error(ERROR_MESSAGES.ADMIN_EXISTS);
-    }
-
-    const hashedPassword: string = await bcrypt.hash(password, 10);
-
-    const admin: UserDocument = await User.create({
-        email,
-        password: hashedPassword,
-    });
-
-    admin.save();
-
-    return { admin };
+  return { user };
 };
 
-export const refreshTokenService = async (userId: string, refreshTokenId: string) => {
-    const user = await User.findOneActive({id: userId});
+export const createAdminService = async (email: string, password: string) => {
+  const userExists: UserDocument | null = await User.findOneActive({ email });
+  if (userExists) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_ALREADY_EXISTS,
+      HttpStatusCode.CONFLICT,
+    );
+  }
 
-    if(!user){
-      throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
-    }
+  const hashedPassword: string = await bcrypt.hash(password, 10);
 
-    if(user.refreshTokenId !== refreshTokenId){
-        throw new Error(ERROR_MESSAGES.REFRESH_TOKEN_INVALID); 
-    }
+  const user: UserDocument = await User.create({
+    email,
+    password: hashedPassword,
+  });
+  user.save();
 
-    const accessToken: string = generateAccessToken(user.id, user.email);
+  return { user };
+};
 
-    return { accessToken };
+export const refreshTokenService = async (
+  userId: string,
+  refreshTokenId: string,
+) => {
+  const user: UserDocument | null = await User.findOneActive({ id: userId });
+  if (!user) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
+
+  if (user.refreshTokenId !== refreshTokenId) {
+    throw new HttpError(
+      ERROR_MESSAGES.INVALID_REFRESH_TOKEN,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
+
+  const accessToken: string = generateAccessToken(user.id, user.email);
+  return { accessToken };
 };
 
 export const forgetPasswordService = async (email: string) => {
-  const admin = await User.findOne({ email });
-  if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+  const user: UserDocument | null = await User.findOne({ email });
+  if (!user) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
   const otp = generateResetPasswordOTP();
 
-  admin.password_reset_otp = otp;
-  admin.password_reset_otp_expires = Date.now() + 2 * 60 * 1000; // 2 min
-  await admin.save();
+  user.password_reset_otp = otp;
+  user.password_reset_otp_expires = Date.now() + 2 * 60 * 1000; // 2 min
+  await user.save();
 
   // Logic: Send otp to admin's email...
 
@@ -83,54 +117,78 @@ export const forgetPasswordService = async (email: string) => {
 };
 
 export const verifyOtpService = async (email: string, otp: string) => {
-    const admin: UserDocument | null = await User.findOneActive({ email });
+  const user: UserDocument | null = await User.findOneActive({ email });
+  if (!user) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+  if (
+    user.password_reset_otp !== otp ||
+    user.password_reset_otp_expires! < Date.now()
+  ) {
+    throw new HttpError(
+      ERROR_MESSAGES.OTP_EXPIRED_OR_INVALID,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
 
-    if (admin.password_reset_otp !== otp || admin.password_reset_otp_expires! < Date.now()) {
-        throw new Error(ERROR_MESSAGES.OTP_EXPIRED);
-    }
+  user.is_otp_verified = true;
+  await user.save();
+};
 
-    admin.is_otp_verified = true;
-    await admin.save();
-}
+export const resetPasswordService = async (
+  email: string,
+  newPassword: string,
+) => {
+  const user: UserDocument | null = await User.findOneActive({ email });
+  if (!user) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-export const resetPasswordService = async (email: string, newPassword: string) => {
+  if (user.password_reset_otp_expires! < Date.now()) {
+    throw new HttpError(
+      ERROR_MESSAGES.OTP_EXPIRED_OR_INVALID,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
 
-    const admin: UserDocument | null = await User.findOneActive({ email });
+  if (!user.is_otp_verified) {
+    throw new HttpError(
+      ERROR_MESSAGES.OTP_NOT_VERIFIED,
+      HttpStatusCode.UNAUTHORIZED,
+    );
+  }
 
-    if (!admin) throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
+  const oldPassword = user.password;
 
-    if (admin.password_reset_otp_expires! < Date.now()) {
-        throw new Error(ERROR_MESSAGES.OTP_EXPIRED);
-    }
+  const hashed: string = await bcrypt.hash(newPassword, 10);
+  user.password = hashed;
 
-    if(!admin.is_otp_verified){
-        throw new Error(ERROR_MESSAGES.OTP_NOT_VERIFIED);
-    }
+  user.password_reset_otp = null;
+  user.password_reset_otp_expires = null;
+  user.is_otp_verified = false;
 
-    const oldPassword = admin.password;
-    
-    const hashed: string = await bcrypt.hash(newPassword, 10);
-    admin.password = hashed;
+  await user.save();
 
-    admin.password_reset_otp = null;
-    admin.password_reset_otp_expires = null;
-    admin.is_otp_verified = false;
-
-    await admin.save();
-
-    return { oldPassword, newPassword: hashed };
+  return { oldPassword, newPassword: hashed };
 };
 
 export const logoutService = async (userId: string) => {
-    const admin = await User.findOneActive({id: userId});
+  const user = await User.findOneActive({ id: userId });
+  if (!user) {
+    throw new HttpError(
+      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
 
-    if(!admin){
-      throw new Error(ERROR_MESSAGES.ADMIN_NOT_EXIST);
-    }
-
-    admin.refreshTokenId = null;
-    await admin.save();
-    return;
-}
+  user.refreshTokenId = null;
+  await user.save();
+  return;
+};
