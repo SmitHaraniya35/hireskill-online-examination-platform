@@ -1,7 +1,7 @@
 import express from "express";
 import * as AdminController from "../controllers/auth.controller.ts";
 import { loginSchema, createAdminSchema, resetPasswordSchema, otpSchema } from "../validators/auth.schema.ts";
-import { validateRequest } from "../validators/request.validate.ts";
+import { validateRequest } from "../validators/request.validator.ts";
 import { authMiddleware } from "../middlewares/auth.middleware.ts";
 
 const router = express.Router();

@@ -1,6 +1,6 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.ts";
-import { validateRequest } from "../validators/request.validate.ts";
+import { validateRequest } from "../validators/request.validator.ts";
 import * as TestCaseController from "../controllers/testCase.controller.ts";
 import { TestCaseSchema } from "../validators/testCase.schema.ts";
 

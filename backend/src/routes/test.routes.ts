@@ -1,7 +1,7 @@
 import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.ts";
 import * as TestController from "../controllers/test.controller.ts";
-import { validateRequest } from "../validators/request.validate.ts";
+import { validateRequest } from "../validators/request.validator.ts";
 import { TestSchema } from "../validators/test.schema.ts";
 import { validateTestLink } from "../middlewares/testLink.middleware.ts";
 import { SubmissionSchema } from "../validators/submission.schema.ts";
