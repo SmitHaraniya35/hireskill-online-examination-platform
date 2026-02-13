@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import codingProblemService from "../../services/codingProblemService";
+import Editor, { DiffEditor, useMonaco, loader } from '@monaco-editor/react';
+import apiService from "../../services/apiService";
+import ShowTestCase from "./ShowTestCase";
 
 interface LocationState {
   test?: any;
   studentId?: string;
 }
+const languageMap: { [key: string]: string } = {
+  "63": "javascript",
+  "54": "cpp",
+};
 
 interface CodingProblemWithTestCases {
   id: string;
@@ -35,6 +42,100 @@ const CodeEditor: React.FC = () => {
 
   const [problem, setProblem] = useState<CodingProblemWithTestCases | null>(null);
   const [loading, setLoading] = useState(true);
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("63");
+  const [output, setOutput] = useState(" ");
+  const [executingMappingList, setExecutingMappingList] = useState<any[]>([]);
+  const [testCases, setTestCases] = useState<any[]>([]);
+
+  // const handleCodeChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  //   setCode(event.target.value);
+  // }
+
+const runCode = async () => {
+  const inputData = {
+    language_id: parseInt(language),
+    source_code: code,
+    stdin: problem!.sample_input,
+    expected_output: problem!.sample_output
+  };
+
+  // Set to "Processing" immediately so the UI shows activity
+  setTestCases([{ 
+    status: "Processing", 
+    input: problem!.sample_input, 
+    expected_output: problem!.sample_output 
+  }]);
+
+  const { payload } = await apiService.runCodeService(inputData);
+  
+  // Update the testCases state with the actual result from the 'run' API
+  // Usually, 'run' API payload contains stdout and status
+  setTestCases([{
+    status: payload.status?.description || (payload.stdout === problem!.sample_output ? "Accepted" : "Wrong Answer"),
+    input: problem!.sample_input,
+    output: payload.stdout,
+    expected_output: problem!.sample_output
+  }]);
+  
+  setOutput(payload.stdout);
+};
+
+const submitCode = async () => {
+  const inputData = {
+    source_code: code,
+    language_id: language,     
+    problem_id: problemId!,
+  };
+  
+  const res = await apiService.submitCodeService(inputData);
+  
+  if (res.success) {
+    // Map the backend response and initialize status as "In Queue"
+    const initialMapping = res.payload.executionMappingList.map((item: any) => ({
+      submissionId: item.submissionId,
+      testCaseId: item.testCaseId,
+      status: "In Queue",
+      // We don't have input/output for hidden test cases yet
+    }));
+    
+    setTestCases(initialMapping);
+  }
+};
+
+  useEffect(() => {
+  const pendingCases = testCases.filter(tc => 
+    ["In Queue", "Processing"].includes(tc.status)
+  );
+
+  if (testCases.length === 0 || pendingCases.length === 0) return;
+
+  const interval = setInterval(() => {
+    // Loop through each test case and fetch status if it's pending
+    testCases.forEach(async (tc, index) => {
+      if (!["In Queue", "Processing"].includes(tc.status)) return;
+
+      try {
+        const res = await apiService.fetchTestCaseOutput(tc.submissionId);
+        const newStatus = res.payload.status || "Processing";
+
+        // Only update state if the status has actually changed (e.g., In Queue -> Accepted)
+        if (newStatus !== tc.status) {
+          setTestCases(prev => {
+            const newState = [...prev];
+            newState[index] = { ...newState[index], status: newStatus };
+            return newState;
+          });
+        }
+      } catch (error) {
+        console.error(`Error polling ${tc.submissionId}:`, error);
+      }
+    });
+  }, 1000); // Polling every 1 second
+
+  return () => clearInterval(interval);
+}, [testCases]); // Reacting to state changes allows for staggered updates
+
 
   useEffect(() => {
     const fetchProblem = async () => {
@@ -141,20 +242,43 @@ const CodeEditor: React.FC = () => {
 
         <section className="md:w-1/2 w-full bg-white rounded-2xl shadow p-5 flex flex-col">
           <h2 className="font-semibold mb-3 text-gray-900">Code Editor</h2>
-
-          <textarea
-            defaultValue={problem.basic_code_layout}
-            className="flex-1 w-full border border-gray-300 rounded-xl p-3 font-mono text-sm outline-none focus:ring-2 focus:ring-[#1DA077] focus:border-[#1DA077]"
+          <select 
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="mb-3 w-max border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-[#1DA077] focus:border-[#1DA077]"
+          >
+            <option value="63">JavaScript</option>
+            <option value="54">C++</option>
+          </select>
+          <Editor
+            height="50%"
+            language={languageMap[language]} 
+            value={code}
+            // theme="vs-dark" 
+            onChange={(value) => setCode(value || "")}
+            options={{
+              minimap: { enabled: false }, 
+              fontSize: 16,
+              scrollBeyondLastLine: false,
+            }}
+            className="flex-1 w-full border border-gray-300 rounded-xl overflow-hidden font-mono text-sm outline-none focus:ring-2 focus:ring-[#1DA077]"
           />
-
+          {/* <div>
+            <p>{output}</p>
+          </div> */}
           <div className="flex justify-end gap-3 mt-4">
-            <button className="px-4 py-2 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
+            <button onClick={runCode} className="px-4 py-2 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">
               Run Code
             </button>
-            <button className="px-4 py-2 text-sm rounded-lg bg-[#1DA077] text-white font-semibold hover:bg-[#148562]">
+            <button onClick={submitCode} className="px-4 py-2 text-sm rounded-lg bg-[#1DA077] text-white font-semibold hover:bg-[#148562]">
               Submit
             </button>
           </div>
+          <ShowTestCase
+            sampleInput = {problem.sample_input}
+            sampleOutput = {problem.sample_output}
+            testResults={testCases}
+          />
         </section>
       </main>
     </div>
