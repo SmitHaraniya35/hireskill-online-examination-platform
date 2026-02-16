@@ -121,7 +121,7 @@ export const submitStudentAttemptService = async (id: string) => {
     );
   }
 
-  if (!studentAttempt.is_active || !studentAttempt.is_submitted) {
+  if (!studentAttempt.is_active || studentAttempt.is_submitted) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED_OR_INACTIVE,
       HttpStatusCode.BAD_REQUEST,

@@ -2,6 +2,7 @@ import Joi from "joi";
 import { uuidv4Rule } from "./index.validator.ts";
 
 export const SubmissionSchema = Joi.object({
+    slug: Joi.string().required(),
     student_attempt_id: uuidv4Rule.required(),
     problem_id: uuidv4Rule.required(),
     language: Joi.string().required(),
