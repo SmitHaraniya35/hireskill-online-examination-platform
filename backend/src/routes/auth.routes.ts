@@ -15,4 +15,6 @@ router.post("/verify-otp", validateRequest(OtpSchema), AdminController.verifyOtp
 router.post("/reset-password", validateRequest(ResetPasswordSchema), AdminController.resetPassword);
 router.post("/logout", authMiddleware, AdminController.logout);
 
+router.post("/create-client", AdminController.createClient);
+
 export default router;

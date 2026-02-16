@@ -11,17 +11,19 @@ import studentRoutes from "./routes/student.routes.ts";
 import submissionRoutes from "./routes/submission.routes.ts";
 import studentAttemptRoutes from "./routes/studentAttempt.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
+import { validateApiKey } from "./middlewares/apikey.middleware.ts";
 
 const app = express();
 
 // Security & core
 app.use(cors({
-    origin: "http://192.168.0.113:5173",
+    origin: "http://192.168.0.104:5173",
     credentials: true
 }));
 
 // we will see this later...
 // app.use(helmet());
+// app.use(validateApiKey);
 
 // Parsers
 app.use(express.json());

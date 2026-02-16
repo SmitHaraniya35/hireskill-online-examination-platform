@@ -6,9 +6,10 @@ import {
   generateRefreshToken,
   generateRefreshTokenId,
 } from "../utils/jwt.utils.ts";
-import { generateResetPasswordOTP } from "../utils/helper.utils.ts";
+import { generateApiKey, generateResetPasswordOTP } from "../utils/helper.utils.ts";
 import type { UserDocument } from "../types/model/user.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
+import { Client } from "../models/client.model.ts";
 
 export const loginService = async (email: string, password: string) => {
   const user: UserDocument | null = await User.findOneActive({ email });
@@ -191,4 +192,16 @@ export const logoutService = async (userId: string) => {
   user.refreshTokenId = null;
   await user.save();
   return;
+};
+
+export const createClientService = async (client_id: string) => {
+  const api_key = generateApiKey();
+
+  const newClient = await Client.create({
+    client_id,
+    api_key,
+    is_active: true,
+  });
+
+  return { newClient };
 };

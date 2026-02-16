@@ -17,6 +17,7 @@ export const SUCCESS_MESSAGES = {
   // Admin
   ADMIN_CREATED: "Admin created successfully",
   ADMIN_RETRIEVED: "Admin retrieved successfully",
+  CLIENT_CREATED: "Client created successfully",
 
   // Test
   TEST_CREATED: "Test created successfully",
@@ -75,6 +76,9 @@ export const ERROR_MESSAGES = {
   FORBIDDEN: "Forbidden",
   NOT_FOUND: "Resource not found",
   INTERNAL_SERVER_ERROR: "Internal server error",
+
+  INVALID_API_CREDENTIALS: "Invalid API credentials",
+  CLIENT_ID_AND_CLIENT_API_KEY_REQUIRED: "x-client-id and x-api-key are required",
 
   // Token Errors
   ACCESS_TOKEN_REQUIRED: "Access token is required",
