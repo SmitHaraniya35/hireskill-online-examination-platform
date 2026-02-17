@@ -165,6 +165,13 @@ export const finishTest = async (
     }
 
     const submission = await createSubmissionService(input);
+
+    res.clearCookie("studentToken", {
+      httpOnly: true,
+      sameSite: "none",
+      secure: true,
+    });
+
     res.ok({ student_attempt, submission }, SUCCESS_MESSAGES.TEST_COMPLETED);
   } catch (err: any) {
     next(err);
