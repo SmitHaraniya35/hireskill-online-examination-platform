@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import codingProblemService from "../../services/codingProblemService";
 import Editor, { DiffEditor, useMonaco, loader } from '@monaco-editor/react';
-import apiService from "../../services/apiService";
+import apiService from "../../services/submissionService";
 import ShowTestCase from "./ShowTestCase";
+import {useStopwatch} from 'react-timer-hook';
 
 interface LocationState {
   test?: any;
@@ -35,6 +36,7 @@ interface CodingProblemWithTestCases {
   }[];
 }
 
+
 const CodeEditor: React.FC = () => {
   const { slug, problemId } = useParams();
   const location = useLocation();
@@ -51,90 +53,116 @@ const CodeEditor: React.FC = () => {
   // const handleCodeChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
   //   setCode(event.target.value);
   // }
+  // const {
+  //   seconds,
+  //   minutes,
+  //   hours,
+  // } = useStopwatch({ autoStart: true});
+      const getInitialOffset = () => {
+        const savedStart = localStorage.getItem("test_start_time");
 
-const runCode = async () => {
-  const inputData = {
-    language_id: parseInt(language),
-    source_code: code,
-    stdin: problem!.sample_input,
-    expected_output: problem!.sample_output
-  };
+        if (!savedStart) return 0;
 
-  // Set to "Processing" immediately so the UI shows activity
-  setTestCases([{ 
-    status: "Processing", 
-    input: problem!.sample_input, 
-    expected_output: problem!.sample_output 
-  }]);
+        const startTime = new Date(savedStart).getTime();
+        const now = Date.now();
 
-  const { payload } = await apiService.runCodeService(inputData);
-  
-  // Update the testCases state with the actual result from the 'run' API
-  // Usually, 'run' API payload contains stdout and status
-  setTestCases([{
-    status: payload.status?.description || (payload.stdout === problem!.sample_output ? "Accepted" : "Wrong Answer"),
-    input: problem!.sample_input,
-    output: payload.stdout,
-    expected_output: problem!.sample_output
-  }]);
-  
-  setOutput(payload.stdout);
-};
+        // elapsed seconds
+        return Math.floor((now - startTime) / 1000);
+      };
+      const {
+      seconds,
+      minutes,
+      hours,
+    } = useStopwatch({
+      autoStart: true,
+      offsetTimestamp: new Date(Date.now() - getInitialOffset() * 1000),
+    });
 
-const submitCode = async () => {
-  const inputData = {
-    source_code: code,
-    language_id: language,     
-    problem_id: problemId!,
-  };
-  
-  const res = await apiService.submitCodeService(inputData);
-  
-  if (res.success) {
-    // Map the backend response and initialize status as "In Queue"
-    const initialMapping = res.payload.executionMappingList.map((item: any) => ({
-      submissionId: item.submissionId,
-      testCaseId: item.testCaseId,
-      status: "In Queue",
-      // We don't have input/output for hidden test cases yet
-    }));
+  const runCode = async () => {
+    const inputData = {
+      language_id: parseInt(language),
+      source_code: code,
+      stdin: problem!.sample_input,
+      expected_output: problem!.sample_output
+    };
+
+    // Set to "Processing" immediately so the UI shows activity
+    setTestCases([{ 
+      status: "Processing", 
+      input: problem!.sample_input, 
+      expected_output: problem!.sample_output 
+    }]);
+
+    const { payload } = await apiService.runCodeService(inputData);
     
-    setTestCases(initialMapping);
-  }
-};
+    // Update the testCases state with the actual result from the 'run' API
+    // Usually, 'run' API payload contains stdout and status
+    setTestCases([{
+      status: payload.status?.description || (payload.stdout === problem!.sample_output ? "Accepted" : "Wrong Answer"),
+      input: problem!.sample_input,
+      output: payload.stdout,
+      expected_output: problem!.sample_output
+    }]);
+    
+    setOutput(payload.stdout);
+  };
+
+  const submitCode = async () => {
+    const inputData = {
+      source_code: code,
+      language_id: language,     
+      problem_id: problemId!,
+    };
+    
+    const res = await apiService.submitCodeService(inputData);
+    
+    if (res.success) {
+      // Map the backend response and initialize status as "In Queue"
+      const initialMapping = res.payload.executionMappingList.map((item: any) => ({
+        submissionId: item.submissionId,
+        testCaseId: item.testCaseId,
+        status: "In Queue",
+        // We don't have input/output for hidden test cases yet
+      }));
+      
+      setTestCases(initialMapping);
+    }
+    localStorage.removeItem("test_start_time");
+
+  };
 
   useEffect(() => {
-  const pendingCases = testCases.filter(tc => 
-    ["In Queue", "Processing"].includes(tc.status)
-  );
+    const pendingCases = testCases.filter(tc => 
+      ["In Queue", "Processing"].includes(tc.status)
+    );
 
-  if (testCases.length === 0 || pendingCases.length === 0) return;
+    if (testCases.length === 0 || pendingCases.length === 0) return;
 
-  const interval = setInterval(() => {
-    // Loop through each test case and fetch status if it's pending
-    testCases.forEach(async (tc, index) => {
-      if (!["In Queue", "Processing"].includes(tc.status)) return;
+    const interval = setInterval(() => {
+      // Loop through each test case and fetch status if it's pending
+      testCases.forEach(async (tc, index) => {
+        if (!["In Queue", "Processing"].includes(tc.status)) return;
 
-      try {
-        const res = await apiService.fetchTestCaseOutput(tc.submissionId);
-        const newStatus = res.payload.status || "Processing";
+        try {
+          const res = await apiService.fetchTestCaseOutput(tc.submissionId);
+          const newStatus = res.payload.status || "Processing";
 
-        // Only update state if the status has actually changed (e.g., In Queue -> Accepted)
-        if (newStatus !== tc.status) {
-          setTestCases(prev => {
-            const newState = [...prev];
-            newState[index] = { ...newState[index], status: newStatus };
-            return newState;
-          });
+          // Only update state if the status has actually changed (e.g., In Queue -> Accepted)
+          if (newStatus !== tc.status) {
+            setTestCases(prev => {
+              const newState = [...prev];
+              newState[index] = { ...newState[index], status: newStatus };
+              return newState;
+            });
+          }
+        } catch (error) {
+          console.error(`Error polling ${tc.submissionId}:`, error);
         }
-      } catch (error) {
-        console.error(`Error polling ${tc.submissionId}:`, error);
-      }
-    });
-  }, 1000); // Polling every 1 second
+      });
+    }, 1000); // Polling every 1 second
 
-  return () => clearInterval(interval);
-}, [testCases]); // Reacting to state changes allows for staggered updates
+    return () => clearInterval(interval);
+  }, [testCases]); // Reacting to state changes allows for staggered updates
 
 
   useEffect(() => {
@@ -174,6 +202,18 @@ const submitCode = async () => {
         </div>
         <div className="text-xs text-gray-500">
           Student ID: <span className="font-mono">{state.studentId || "-"}</span>
+        </div>
+        
+        <div className="p-3 flex border-inherit rounded-md items-center bg-gray-100">
+          <div>
+            <span className="font-semibold font-mono text-2xl">Timer: </span>
+          </div>
+          <div className="mt-0.4 flex font-mono text-red-500 text-2xl">
+            <span>{hours}</span>:<span>{minutes}</span>:<span>{seconds}</span>
+          </div>
+        </div>
+        <div>
+
         </div>
       </header>
 
@@ -272,6 +312,9 @@ const submitCode = async () => {
             </button>
             <button onClick={submitCode} className="px-4 py-2 text-sm rounded-lg bg-[#1DA077] text-white font-semibold hover:bg-[#148562]">
               Submit
+            </button>
+            <button onClick={submitCode} className="px-4 py-2 text-sm rounded-lg bg-red-400 text-white font-semibold hover:bg-red-500">
+              Finish
             </button>
           </div>
           <ShowTestCase

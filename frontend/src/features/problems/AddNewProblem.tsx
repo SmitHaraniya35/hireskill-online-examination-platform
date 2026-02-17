@@ -392,11 +392,13 @@ const AddNewProblem: React.FC<Props> = ({
     e.preventDefault();
 
     if (!title || !difficulty) {
+      console.log("[AddNewProblem] validation failed - required fields missing", { title, difficulty });
       alert("Please fill required fields.");
       return;
     }
 
     if (testCases.length === 0) {
+      console.log("[AddNewProblem] validation failed - no test cases", { testCasesLength: testCases.length, testCases });
       alert("Please add at least one test case.");
       return;
     }
@@ -405,6 +407,7 @@ const AddNewProblem: React.FC<Props> = ({
       (tc) => !tc.input.trim() || !tc.output.trim()
     );
     if (hasEmptyTestCase) {
+      console.log("[AddNewProblem] validation failed - empty test case found", testCases);
       alert("Please fill in all test case inputs and outputs.");
       return;
     }
@@ -433,11 +436,17 @@ const AddNewProblem: React.FC<Props> = ({
         "https://via.placeholder.com/300x200?text=Problem+Image",
     };
 
+    // debug: show final payload that will be sent to the API
+    console.log("[AddNewProblem] prepared problemData", {
+      problemData,
+      testCasesPayload: testCases.map((tc) => ({ input: tc.input.trim(), output: tc.output.trim(), visible: tc.visible })),
+    });
+
     try {
       let res;
 
       if (isEditMode && editData?.id) {
-        // For update - REMOVE sample_input and sample_output completely
+        // For update - build payload and log it
         const updatePayload = {
           ...problemData,
           testCases: testCases.map((tc) => ({
@@ -447,29 +456,30 @@ const AddNewProblem: React.FC<Props> = ({
             is_hidden: !tc.visible
           }))
         };
-        
-        console.log('Update Payload:', updatePayload);
+
+        console.log('[AddNewProblem] CALL updateCodingProblemWithTestCases', { id: editData.id, updatePayload });
         res = await codingProblemService.updateCodingProblemWithTestCases(
           editData.id,
           updatePayload
         );
+        console.log('[AddNewProblem] UPDATE RESPONSE', res);
       } else {
-        // For create - ONLY include sample_input and sample_output for creation
-        const createData = {
-          ...problemData,
-          sample_input: testCases.length > 0 ? testCases[0].input.trim() : "",
-          sample_output: testCases.length > 0 ? testCases[0].output.trim() : "",
-        };
-        
+        // For create - send only fields in the schema; backend will derive sample input/output from testCases
+        const createPayloadTestCases = testCases.map((tc) => ({
+          input: tc.input.trim(),
+          output: tc.output.trim(),
+          visible: tc.visible
+        }));
+
+        console.log('[AddNewProblem] CALL createCodingProblemWithTestCases', { problemData, createPayloadTestCases });
         res = await codingProblemService.createCodingProblemWithTestCases(
-          createData,
-          testCases.map((tc) => ({
-            input: tc.input.trim(),
-            output: tc.output.trim(),
-            visible: tc.visible,
-          }))
+          problemData,
+          createPayloadTestCases
         );
+        console.log('[AddNewProblem] CREATE RESPONSE', res);
       }
+
+      console.log('[AddNewProblem] final service response', res);
 
       if (res?.success) {
         alert(
@@ -480,11 +490,15 @@ const AddNewProblem: React.FC<Props> = ({
         await refreshLinks();
         closeModal();
       } else {
+        // show backend validation (if any)
+        console.log('[AddNewProblem] service returned error', res);
         alert(res?.message || "Validation error");
       }
-    } catch (err) {
-      console.error(err);
-      alert("Server error");
+    } catch (err: any) {
+      console.error("[AddNewProblem] request failed:", err, err?.response?.data || null);
+      // show detailed backend validation message in console (if any)
+      if (err?.response?.data) console.error('[AddNewProblem] backend response:', err.response.data);
+      alert("Server error — check console for details.");
     } finally {
       setLoading(false);
     }

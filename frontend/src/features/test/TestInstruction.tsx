@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import testService from "../../services/testService";
+import testService from "../../services/testFlowService";
 
 
 
@@ -18,30 +18,39 @@ const TestInstruction: React.FC = () => {
   const test = state.test;
   const studentId = state.studentId;
 
-  const handleStartTest = async () => {
-    if (!slug || !test?.id || !studentId) {
-      alert("Missing required test information. Please reopen the test link.");
-      navigate(`/test/${slug}`);
-      return;
-    }
+const handleStartTest = async () => {
+  if (!slug || !test?.id || !studentId) {
+    alert("Missing required test information. Please reopen the test link.");
+    // Save test start timestamp
+    localStorage.setItem("test_start_time", new Date().toISOString());
+    navigate(`/test/${slug}`);
+    return;
+  } 
 
-    try {
-      const res = await testService.startTest(slug, test.id, studentId);
+  try {
+    const res = await testService.startTest(slug, test.id, studentId);
 
-      if (res?.success && res.payload?.problemId) {
-        navigate(`/test/${slug}/editor/${res.payload.problemId}`, {
-          state: {
-            test,
-            studentId,
-          },
-        });
-      } else {
-        alert(res?.message || "Unable to start test. Please try again.");
+    if (res?.success && res.payload?.problemId) {
+
+      // Request fullscreen
+      const elem = document.documentElement;
+
+      if (elem.requestFullscreen) {
+        await elem.requestFullscreen();
       }
-    } catch (err) {
-      alert("Unable to start test. Please try again later.");
+
+      navigate(`/test/${slug}/editor/${res.payload.problemId}`, {
+        state: { test, studentId },
+      });
+
+    } else {
+      alert(res?.message || "Unable to start test. Please try again.");
     }
-  };
+  } catch {
+    alert("Unable to start test. Please try again later.");
+  }
+};
+
 
   if (!test) {
     return (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import testService from "../../services/testService";
+import testService from "../../services/testFlowService";
 
 const TestEntry: React.FC = () => {
   const { slug } = useParams();
