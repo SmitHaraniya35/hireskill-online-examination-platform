@@ -134,6 +134,7 @@ export const ERROR_MESSAGES = {
 
   // Student
   STUDENT_ALREADY_EXISTS_WITH_EMAIL: "A student already exists with this email",
+  STUDENT_ALREADY_EXISTS_WITH_PHONE: "A student already exists with this phone",
   STUDENT_ID_REQUIRED: "Student ID is required",
   STUDENT_NOT_FOUND: "Student not found",
   STUDENTS_NOT_FOUND: "No students found",

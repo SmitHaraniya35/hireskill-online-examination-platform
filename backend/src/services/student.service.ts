@@ -6,11 +6,22 @@ import { HttpError } from "../utils/httpError.utils.ts";
 import { generateAccessToken } from "../utils/jwt.utils.ts";
 
 export const createStudentService = async (input: StudentData) => {
-    const { email } = input;
-    const studentExists: StudentDocument | null = await Student.findOneActive({ email });
-    if (studentExists){
+    const { email, phone } = input;
+    const studentExists: StudentDocument | null = await Student.findOneActive({
+        $or: [
+            { email },
+            { phone }
+        ]
+    });
+
+    if (studentExists && studentExists.email === email){
         throw new HttpError(
             ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_EMAIL,
+            HttpStatusCode.CONFLICT
+        );
+    } else if(studentExists && studentExists.phone.toString() === phone.toString()){
+        throw new HttpError(
+            ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_PHONE,
             HttpStatusCode.CONFLICT
         );
     }
@@ -56,8 +67,29 @@ export const getAllStudentService = async () => {
     return { student };
 };
 
-export const updateStudentService = async (id: string, input: StudentData) => {
-    const student = await Student.updateOneByFilter({ id }, { ...input });
+export const updateStudentService = async (studentId: string, input: StudentData) => {
+    const { email, phone } = input;
+    const studentExists = await Student.findOneActive({
+        $or: [
+            {email: input.email},
+            {phone: input.phone}
+        ],
+        id: { $ne: studentId }
+    });
+
+    if (studentExists && studentExists.email === email){
+        throw new HttpError(
+            ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_EMAIL,
+            HttpStatusCode.CONFLICT
+        );
+    } else if(studentExists && studentExists.phone.toString() === phone.toString()){
+        throw new HttpError(
+            ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_PHONE,
+            HttpStatusCode.CONFLICT
+        );
+    }
+
+    const student = await Student.updateOneByFilter({ id: studentId }, { ...input });
     if(!student){
         throw new HttpError(
             ERROR_MESSAGES.STUDENT_UPDATE_FAILED,
