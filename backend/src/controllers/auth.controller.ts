@@ -9,9 +9,11 @@ import {
   resetPasswordService,
   logoutService,
   verifyOtpService,
+  createClientService,
 } from "../services/auth.service.ts";
 import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
+import { generateApiKey } from "../utils/helper.utils.ts";
 
 export const login = async (
   req: Request,
@@ -199,5 +201,16 @@ export const logout = async (
     res.ok(SUCCESS_MESSAGES.LOGOUT_SUCCESS);
   } catch (err: any) {
     next(err);
+  }
+};
+
+export const createClient = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { client_id } = req.body;
+    const data = await createClientService(client_id);
+    
+    res.created(data, SUCCESS_MESSAGES.CLIENT_CREATED);
+  } catch (err: any) {
+    next(err);  
   }
 };

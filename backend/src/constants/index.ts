@@ -17,6 +17,7 @@ export const SUCCESS_MESSAGES = {
   // Admin
   ADMIN_CREATED: "Admin created successfully",
   ADMIN_RETRIEVED: "Admin retrieved successfully",
+  CLIENT_CREATED: "Client created successfully",
 
   // Test
   TEST_CREATED: "Test created successfully",
@@ -60,6 +61,7 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ATTEMPT_DELETED: "Student attempt deleted successfully",
   STUDENT_ATTEMPTS_RETRIEVED: "Student attempts retrieved successfully",
   STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
+  STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED : "Student attempt validated successfully. Editor access granted.",
 
   // Judge0
   JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully"
@@ -75,6 +77,9 @@ export const ERROR_MESSAGES = {
   FORBIDDEN: "Forbidden",
   NOT_FOUND: "Resource not found",
   INTERNAL_SERVER_ERROR: "Internal server error",
+
+  INVALID_API_CREDENTIALS: "Invalid API credentials",
+  CLIENT_ID_AND_CLIENT_API_KEY_REQUIRED: "x-client-id and x-api-key are required",
 
   // Token Errors
   ACCESS_TOKEN_REQUIRED: "Access token is required",
@@ -130,6 +135,7 @@ export const ERROR_MESSAGES = {
 
   // Student
   STUDENT_ALREADY_EXISTS_WITH_EMAIL: "A student already exists with this email",
+  STUDENT_ALREADY_EXISTS_WITH_PHONE: "A student already exists with this phone",
   STUDENT_ID_REQUIRED: "Student ID is required",
   STUDENT_NOT_FOUND: "Student not found",
   STUDENTS_NOT_FOUND: "No students found",

@@ -10,10 +10,11 @@ export const TestSchema = Joi.object({
         .messages({
             "date.base": "Invalid date format",
             "date.format": "Date must be in ISO format",
-        })
+        }).required()
 }); 
 
 export const StartTestScehma = Joi.object({
+    slug: Joi.string().required(),
     test_id: uuidv4Rule.required(),
     student_id: uuidv4Rule.required()
 })
