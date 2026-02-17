@@ -104,3 +104,89 @@ const authService = {
 };
 
 export default authService;
+
+// import axios from "axios";
+// import type { AdminObject, ForgotPassword, ForgotPasswordResponse, Login, LoginResponse, ResetPassword, ResetPasswordResponse, VerifyOtp, VerifyOtpResponse } from "./types/authAdmin";
+
+// const API_URL = 'https://marvella-uncontributed-stephania.ngrok-free.dev/api/auth';
+
+// const authService = {
+
+//     login: async(data: Login): Promise<LoginResponse> => {
+//         const response = await axios.post(`${API_URL}/login`,data,{withCredentials: true});
+//         if(response.data.payload?.user){
+//             // save jwt token in local storage
+//             localStorage.setItem('admin_token',response.data.payload.user.accessToken);
+//             localStorage.setItem('admin_user',JSON.stringify(response.data.payload.user.admin));
+//         }
+//         return response.data;
+//     },
+
+//     logout: () => {
+//         localStorage.removeItem('admin_token');
+//         localStorage.removeItem('admin_user');
+//     },
+
+//     forgotPassword: async (data: ForgotPassword): Promise<ForgotPasswordResponse> => {
+//         try {
+//             const response = await axios.post(
+//             `${API_URL}/forgot-password`,
+//             data,
+//             { withCredentials: true }
+//             );
+
+//            return response.data;
+
+//         } catch (error: unknown) {
+//             if (axios.isAxiosError(error)) {
+//             // safely access axios error response
+//             throw new Error(error.response?.data?.message || "User does not exist");
+//             }
+
+//             // non-axios unexpected error
+//             throw new Error("Something went wrong");
+//         }
+//     },
+
+//     verifyOtp: async (data: VerifyOtp): Promise<VerifyOtpResponse> => {
+//         try {
+//             const response = await axios.post(`${API_URL}/verify-otp`, data, { withCredentials: true });
+//             return response.data;
+
+//         } catch (error: unknown) {
+//             if (axios.isAxiosError(error)) {
+//                 throw new Error(error.response?.data?.message || "Invalid OTP");
+//             }
+//             throw new Error("Something went wrong");
+//         }
+//     },
+
+//     resetPassword: async (data: ResetPassword): Promise<ResetPasswordResponse> => {
+//         try {
+//             const payload = data;
+//             console.log("Sending reset password request with:", payload);
+//             const response = await axios.post(`${API_URL}/reset-password`, payload);
+//             console.log("Reset password response:", response.data);
+//             return response.data;
+//         } catch (error: unknown) {
+//             if (axios.isAxiosError(error)) {
+//                 console.error("Axios error response:", error.response);
+//                 throw new Error(error.response?.data?.message || "Failed to reset password");
+//             }
+//             console.error("Unexpected error:", error);
+//             throw new Error("Something went wrong");
+//         }
+//     },
+
+//     getCurrentAdmin: (): AdminObject | null => {
+//         const user = localStorage.getItem('admin_user');
+//         if (!user || user === 'undefined') return null;
+//         try {
+//             return JSON.parse(user) as AdminObject;
+//         } catch (e) {
+//             return null;
+//         }
+//     }
+// };
+
+// export default authService;

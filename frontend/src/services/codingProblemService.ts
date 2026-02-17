@@ -32,17 +32,18 @@ const codingProblemService = {
                 },
                 getAuthHeaders()
             );
+            console.log("API response from createCodingProblemWithTestCases:", response.data.message, response.data.payload);
 
             return {
                 success: true,
                 payload: response.data.payload
             };
         } catch (error: any) {
+            console.error('[codingProblemService] createCodingProblemWithTestCases error', error?.response?.data || error.message || error);
             return {
                 success: false,
-                message:
-                    error.response?.data?.message ||
-                    "Failed to create coding problem with test cases"
+                message: error.response?.data?.message || "Failed to create coding problem with test cases",
+                errors: error.response?.data?.errors || null
             };
         }
     },
