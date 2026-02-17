@@ -2,10 +2,12 @@ import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { CodingProblem } from "../models/coding_problem.model.ts";
 import { StudentAttempt } from "../models/student_attempt.model.ts";
 import { Test } from "../models/test.model.ts";
+import type { AuthJwtPayload } from "../types/controller/index.ts";
 import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
 import type { StudentAttemptDocument } from "../types/model/student_attempt.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
+import { verifyAccessToken } from "../utils/jwt.utils.ts";
 import { getTestByIdService } from "./test.service.ts";
 
 export const createStudentAttemptService = async (
@@ -134,3 +136,24 @@ export const submitStudentAttemptService = async (id: string) => {
   await studentAttempt!.save();
   return { studentAttempt };
 };
+
+export const  validateStudentAttemptAndGetCodingProblemIdService = async (id: string, studenTokenData: AuthJwtPayload) => {
+  const studentAttempt: any = await StudentAttempt.findOneActive({ id }).populate('student');
+  if(!studentAttempt){
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND
+    );
+  }
+
+  if(studentAttempt.student.email !== studenTokenData.email || studentAttempt.student.id !== studenTokenData.userId){
+    throw new HttpError(
+      ERROR_MESSAGES.UNAUTHORIZED_USER,
+      HttpStatusCode.UNAUTHORIZED
+    );
+  }
+
+  const problem_id = studentAttempt.problem_id;
+  return { problem_id };
+};
+

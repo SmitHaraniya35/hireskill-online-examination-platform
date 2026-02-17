@@ -1,11 +1,13 @@
 import type { Response, NextFunction } from "express";
-import type { AuthRequest } from "../types/controller/index.ts";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
+import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
+import { ERROR_MESSAGES, HttpStatusCode, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
   deleteStudentAttemptService,
   getStudentAttemptsDetailsByTestIdService,
   submitStudentAttemptService,
+  validateStudentAttemptAndGetCodingProblemIdService,
 } from "../services/student_attempt.service.ts";
+import { verifyAccessToken } from "../utils/jwt.utils.ts";
 
 export const deleteStudentAttempt = async (
   req: AuthRequest,
@@ -62,6 +64,29 @@ export const submitStudentAttempt = async (
     const data = await submitStudentAttemptService(id);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_UPDATED);
   } catch (err: any) {
+    next(err);
+  }
+};
+
+export const validateStudentAttemptAndGetCodingProblemId = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.allParams;
+    const studentToken = req.cookies["studentToken"];
+    if(!studentToken){
+      return res.badRequest(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
+    }
+
+    let studentTokenData = null;
+    try{
+      studentTokenData = verifyAccessToken(studentToken) as AuthJwtPayload;
+    } catch (err: any){
+      return res.unauthorized(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
+    }
+    
+    const data = await validateStudentAttemptAndGetCodingProblemIdService(id, studentTokenData);
+
+    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED);
+  } catch(err: any) {
     next(err);
   }
 };

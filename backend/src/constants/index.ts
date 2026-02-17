@@ -61,6 +61,7 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ATTEMPT_DELETED: "Student attempt deleted successfully",
   STUDENT_ATTEMPTS_RETRIEVED: "Student attempts retrieved successfully",
   STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
+  STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED : "Student attempt validated successfully. Editor access granted.",
 
   // Judge0
   JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully"
