@@ -5,7 +5,6 @@ import App from './App.tsx'
 import { BrowserRouter } from 'react-router-dom'
 import {AdminAuthProvider} from "./context/AdminAuthContext.tsx";
 import {UserAuthProvider} from "./context/UserAuthContext.tsx";
-import "react-datepicker/dist/react-datepicker.css";
 
 
 createRoot(document.getElementById('root')!).render(

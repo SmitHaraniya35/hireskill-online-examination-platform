@@ -6,3 +6,25 @@
     box-sizing: border-box; 
     font-family: 'Inter', serif;
 } */
+
+/* Thin, modern scrollbar for modal panels */
+/* width of scrollbar */
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+/* track (background) */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: #1DA077;   /* red color like image */
+  border-radius: 10px;
+}
+
+/* hover effect */
+::-webkit-scrollbar-thumb:hover {
+  background: #148562;
+}
