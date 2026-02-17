@@ -11,7 +11,7 @@ import studentRoutes from "./routes/student.routes.ts";
 import submissionRoutes from "./routes/submission.routes.ts";
 import studentAttemptRoutes from "./routes/studentAttempt.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
-import { validateApiKey } from "./middlewares/apikey.middleware.ts";
+// import { validateApiKey } from "./middlewares/apikey.middleware.ts";
 
 const app = express();
 
