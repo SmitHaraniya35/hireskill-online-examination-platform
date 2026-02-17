@@ -157,3 +157,16 @@ export const  validateStudentAttemptAndGetCodingProblemIdService = async (id: st
   return { problem_id };
 };
 
+export const getStudentAttemptByIdService = async (id: string) => {
+  const studentAttempt = await StudentAttempt.findOneActive({ id });
+
+  if (!studentAttempt) {
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
+
+  return { studentAttempt };
+};
+

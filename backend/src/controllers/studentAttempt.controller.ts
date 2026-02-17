@@ -6,6 +6,7 @@ import {
   getStudentAttemptsDetailsByTestIdService,
   submitStudentAttemptService,
   validateStudentAttemptAndGetCodingProblemIdService,
+  getStudentAttemptByIdService
 } from "../services/student_attempt.service.ts";
 import { verifyAccessToken } from "../utils/jwt.utils.ts";
 
@@ -87,6 +88,21 @@ export const validateStudentAttemptAndGetCodingProblemId = async (req: AuthReque
 
     res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED);
   } catch(err: any) {
+    next(err);
+  }
+};
+
+export const getStudentAttemptById = async (req: AuthRequest, res: Response, next: NextFunction) => {
+  try {
+    const { id } = req.allParams;
+    if(!id){
+      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    }
+
+    const data = await getStudentAttemptByIdService(id);
+
+    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPTS_RETRIEVED);
+  } catch(err: any){
     next(err);
   }
 };
