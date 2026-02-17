@@ -1,0 +1,10 @@
+<svg width="600" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="10" y="15" width="12" height="12" fill="#17C1B9" />
+    <rect x="22" y="27" width="12" height="12" fill="#17C1B9" />
+    <rect x="10" y="39" width="12" height="12" fill="#17C1B9" />
+    <rect x="34" y="39" width="12" height="12" fill="#17C1B9" />
+    <text x="55" y="45" fill="#0F212E"
+        style="font-family: monospace; font-weight: bold; font-size: 32px; letter-spacing: -1px;">
+        Hireskill</text>
+    <rect x="160" y="21" width="6.5" height="6.5" fill="#17C1B9" />
+</svg>
