@@ -1,4 +1,3 @@
-// Define what we send to the server
 export interface CreateTestInput {
     title: string;
     duration_minutes: number;
@@ -11,7 +10,6 @@ export interface UpdateTestInput {
     expiration_at: string;
 }
 
-// Define the full object we get from the database
 export interface TestObject {
     id: string;
     _id: string;
@@ -27,7 +25,6 @@ export interface TestObject {
     updatedAt: string;
 }
 
-// Individual response types for every action
 export interface CreateResponse {
     success: boolean;
     message: string;
