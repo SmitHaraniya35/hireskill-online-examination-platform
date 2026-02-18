@@ -10,12 +10,12 @@ import codingProblemService from "../../services/codingProblemService";
 interface Props {
   closeModal: () => void;
   refreshLinks: () => void;
-  editData: any;
+  editData?: any;
   isEditMode?: boolean;
 }
 
 type TestCase = {
-  id?: string; 
+  id?: string;
   input: string;
   output: string;
   visible: boolean;
@@ -30,13 +30,7 @@ function SectionBox({ label, children }: any) {
   );
 }
 
-const TiptapEditor = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (html: string) => void;
-}) => {
+const TiptapEditor = ({value,onChange,}: {value: string; onChange: (html: string) => void;}) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -65,7 +59,6 @@ const TiptapEditor = ({
     },
   });
 
-  // Update editor content when value changes externally
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
       editor.commands.setContent(value);
@@ -141,7 +134,7 @@ const TiptapEditor = ({
         </select>
 
         {/* Font Size */}
-        <select
+        {/* <select
           onChange={(e) => setFontSize(e.target.value)}
           className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[70px] outline-none"
           defaultValue="16px"
@@ -152,7 +145,7 @@ const TiptapEditor = ({
           <option value="18px">18pt</option>
           <option value="20px">20pt</option>
           <option value="24px">24pt</option>
-        </select>
+        </select> */}
 
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
@@ -336,7 +329,7 @@ const AddNewProblem: React.FC<Props> = ({
   const updateTestCase = (
     index: number,
     field: "input" | "output",
-    value: string
+    value: string,
   ) => {
     const updated = [...testCases];
     updated[index][field] = value;
@@ -357,24 +350,24 @@ const AddNewProblem: React.FC<Props> = ({
   useEffect(() => {
     if (isEditMode && editData) {
       console.log("Loading edit data:", editData);
-      
+
       setTitle(editData.title || "");
       setDifficulty(editData.difficulty?.toLowerCase() || "easy");
-      
+
       if (Array.isArray(editData.topic)) {
         setTopic(editData.topic.join(", "));
       } else {
         setTopic(editData.topic || "");
       }
-      
+
       setProblemDescription(editData.problem_description || "");
       setConstraint(editData.constraint || "");
       setInputFormat(editData.input_format || "");
       setOutputFormat(editData.output_format || "");
       setBasicCodeLayout(editData.basic_code_layout || "");
-      
+
       const testCasesList = editData.testcases || editData.testCases || [];
-      
+
       if (testCasesList.length > 0) {
         setTestCases(
           testCasesList.map((tc: any) => ({
@@ -382,7 +375,7 @@ const AddNewProblem: React.FC<Props> = ({
             input: tc.input || "",
             output: tc.expected_output || tc.output || "",
             visible: tc.is_hidden === false,
-          }))
+          })),
         );
       }
     }
@@ -392,22 +385,19 @@ const AddNewProblem: React.FC<Props> = ({
     e.preventDefault();
 
     if (!title || !difficulty) {
-      console.log("[AddNewProblem] validation failed - required fields missing", { title, difficulty });
       alert("Please fill required fields.");
       return;
     }
 
     if (testCases.length === 0) {
-      console.log("[AddNewProblem] validation failed - no test cases", { testCasesLength: testCases.length, testCases });
       alert("Please add at least one test case.");
       return;
     }
 
     const hasEmptyTestCase = testCases.some(
-      (tc) => !tc.input.trim() || !tc.output.trim()
+      (tc) => !tc.input.trim() || !tc.output.trim(),
     );
     if (hasEmptyTestCase) {
-      console.log("[AddNewProblem] validation failed - empty test case found", testCases);
       alert("Please fill in all test case inputs and outputs.");
       return;
     }
@@ -415,13 +405,17 @@ const AddNewProblem: React.FC<Props> = ({
     setLoading(true);
 
     const topicArray = topic.includes(",")
-      ? topic.split(",").map((t) => t.trim()).filter(Boolean)
-      : topic.trim() ? [topic.trim()] : [];
-    
+      ? topic
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : topic.trim()
+        ? [topic.trim()]
+        : [];
+
     const capitalizedDifficulty =
       difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
 
-    // Base problem data without sample_input and sample_output
     const problemData = {
       title: title.trim(),
       difficulty: capitalizedDifficulty,
@@ -436,68 +430,52 @@ const AddNewProblem: React.FC<Props> = ({
         "https://via.placeholder.com/300x200?text=Problem+Image",
     };
 
-    // debug: show final payload that will be sent to the API
-    console.log("[AddNewProblem] prepared problemData", {
-      problemData,
-      testCasesPayload: testCases.map((tc) => ({ input: tc.input.trim(), output: tc.output.trim(), visible: tc.visible })),
-    });
-
     try {
       let res;
 
       if (isEditMode && editData?.id) {
-        // For update - build payload and log it
         const updatePayload = {
           ...problemData,
           testCases: testCases.map((tc) => ({
             ...(tc.id && { id: tc.id }),
             input: tc.input.trim(),
             expected_output: tc.output.trim(),
-            is_hidden: !tc.visible
-          }))
+            is_hidden: !tc.visible,
+          })),
         };
 
-        console.log('[AddNewProblem] CALL updateCodingProblemWithTestCases', { id: editData.id, updatePayload });
         res = await codingProblemService.updateCodingProblemWithTestCases(
           editData.id,
-          updatePayload
+          updatePayload,
         );
-        console.log('[AddNewProblem] UPDATE RESPONSE', res);
       } else {
-        // For create - send only fields in the schema; backend will derive sample input/output from testCases
         const createPayloadTestCases = testCases.map((tc) => ({
           input: tc.input.trim(),
           output: tc.output.trim(),
-          visible: tc.visible
+          visible: tc.visible,
         }));
 
-        console.log('[AddNewProblem] CALL createCodingProblemWithTestCases', { problemData, createPayloadTestCases });
         res = await codingProblemService.createCodingProblemWithTestCases(
           problemData,
-          createPayloadTestCases
+          createPayloadTestCases,
         );
-        console.log('[AddNewProblem] CREATE RESPONSE', res);
       }
-
-      console.log('[AddNewProblem] final service response', res);
 
       if (res?.success) {
         alert(
           isEditMode
             ? "Problem Updated Successfully!"
-            : "Problem Created Successfully!"
+            : "Problem Created Successfully!",
         );
         await refreshLinks();
         closeModal();
       } else {
-        // show backend validation (if any)
-        console.log('[AddNewProblem] service returned error', res);
         alert(res?.message || "Validation error");
       }
     } catch (err: any) {
-      console.error("[AddNewProblem] request failed:", err, err?.response?.data || null);
-      // show detailed backend validation message in console (if any)
-      if (err?.response?.data) console.error('[AddNewProblem] backend response:', err.response.data);
+      console.error("[AddNewProblem] request failed:", err);
+      if (err?.response?.data)
+        console.error("Backend response:", err.response.data);
       alert("Server error — check console for details.");
     } finally {
       setLoading(false);
@@ -505,7 +483,7 @@ const AddNewProblem: React.FC<Props> = ({
   };
 
   return (
-    <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-3xl max-h-[90vh] overflow-y-auto">
+    <div className="bg-white w-full max-w-4xl mx-auto p-8 rounded-3xl">
       <form onSubmit={handleSubmit} className="flex flex-col gap-6">
         <div className="mb-4">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
@@ -559,16 +537,20 @@ const AddNewProblem: React.FC<Props> = ({
           />
         </SectionBox>
 
+        {/* Input and Output Formats side by side */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <SectionBox label="Input Format">
+            <TiptapEditor value={inputFormat} onChange={setInputFormat} />
+          </SectionBox>
+
+          <SectionBox label="Output Format">
+            <TiptapEditor value={outputFormat} onChange={setOutputFormat} />
+          </SectionBox>
+        </div>
+
+        {/* Constraints after Input/Output */}
         <SectionBox label="Constraints">
           <TiptapEditor value={constraint} onChange={setConstraint} />
-        </SectionBox>
-
-        <SectionBox label="Input Format">
-          <TiptapEditor value={inputFormat} onChange={setInputFormat} />
-        </SectionBox>
-
-        <SectionBox label="Output Format">
-          <TiptapEditor value={outputFormat} onChange={setOutputFormat} />
         </SectionBox>
 
         <div className="space-y-6">
