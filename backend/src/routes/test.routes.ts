@@ -16,7 +16,7 @@ router.put("/update-test/:id", authMiddleware, validateRequest(TestSchema), Test
 router.delete("/delete-test/:id", authMiddleware, validateRequest(IdSchema),TestController.deleteTest);
 
 router.get("/:slug/start", validateRequest(StartTestScehma), validateTestLink, TestController.startTest);
-router.get("/:slug/finish", validateRequest(SubmissionSchema), TestController.finishTest);
+router.post("/:slug/finish", validateRequest(SubmissionSchema), TestController.finishTest);
 router.get("/:slug", validateTestLink, TestController.getTestById);
 
 export default router;

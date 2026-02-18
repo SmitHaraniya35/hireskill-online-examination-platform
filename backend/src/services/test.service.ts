@@ -113,7 +113,7 @@ export const updateTestService = async (
 };
 
 export const deleteTestService = async (id: string) => {
-  const test = await Test.softDelete({ id });
+  const test = await Test.updateOneByFilter({ id }, { $set: { isDeleted: true, is_active: false } });
 
   if (!test) {
     throw new HttpError(

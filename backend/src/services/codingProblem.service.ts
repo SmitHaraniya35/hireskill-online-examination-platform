@@ -143,6 +143,7 @@ export const createCodingProblemWithTestCasesService = async (
   const codingProblem: CodingProblemDocument = await CodingProblem.create({
     ...codeInput,
   });
+  
   if (!codingProblem) {
     throw new HttpError(
       ERROR_MESSAGES.CODING_PROBLEM_CREATION_FAILED,
@@ -153,13 +154,7 @@ export const createCodingProblemWithTestCasesService = async (
 
   const { id: problem_id } = codingProblem;
 
-  const hiddenTestCases = testCases.filter((item) => {
-    if (item.is_hidden) {
-      return item;
-    }
-  });
-
-  const inputTestCases: TestCaseData[] = hiddenTestCases.map((item) => {
+  const inputTestCases: TestCaseData[] = testCases.map((item) => {
     return { problem_id, ...item };
   });
 
