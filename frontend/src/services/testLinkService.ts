@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from '../services/axiosInstance';
 import type { 
     CreateTestInput, 
     UpdateTestInput, 
@@ -24,8 +24,7 @@ const testLinkService = {
 
     createTestLink: async (examData: CreateTestInput) => {
         try {
-            // Detailed logging for debugging date formats
-            console.group("🚀 API CALL: createTestLink");
+            console.group("API CALL: createTestLink");
             console.log("Endpoint:", `${API_URL}/create-test`);
             console.log("Data Payload:", examData);
             console.log("Expiration String Sent:", examData.expiration_at);
@@ -35,7 +34,7 @@ const testLinkService = {
             const data: CreateResponse = response.data;
             return { success: true, payload: data.payload };
         } catch (error: any) {
-            console.error("❌ Error in createTestLink:", error.response?.data || error.message);
+            console.error("Error in createTestLink:", error.response?.data || error.message);
             return { success: false, message: error.response?.data?.message || "Failed to create link" };
         }
     },
@@ -46,7 +45,7 @@ const testLinkService = {
             const data: GetAllResponse = response.data;
             return { success: true, payload: data.payload };
         } catch (error: any) {
-            console.error("❌ Error in getAllTestLinks:", error);
+            console.error("Error in getAllTestLinks:", error);
             return { success: false, message: error.response?.data?.message || "Failed to fetch links" };
         }
     },
@@ -57,14 +56,14 @@ const testLinkService = {
             const data: GetDetailsResponse = response.data;
             return { success: true, payload: data.payload };
         } catch (error: any) {
-            console.error("❌ Error in getTestLinkDetails:", error);
+            console.error("Error in getTestLinkDetails:", error);
             return { success: false, message: error.response?.data?.message || "Failed to fetch details" };
         }
     },
 
     updateTestLink: async (id: string, updateData: UpdateTestInput) => {
         try {
-            console.group("🔄 API CALL: updateTestLink");
+            console.group("API CALL: updateTestLink");
             console.log("Target ID:", id);
             console.log("Update Payload:", updateData);
             console.log("Expiration String Sent:", updateData.expiration_at);
@@ -74,7 +73,7 @@ const testLinkService = {
             const data: ActionSuccessResponse = response.data;
             return { success: true, payload: data.payload };
         } catch (error: any) {
-            console.error("❌ Error in updateTestLink:", error.response?.data || error.message);
+            console.error("Error in updateTestLink:", error.response?.data || error.message);
             return { success: false, message: error.response?.data?.message || "Failed to update link" };
         }
     },
@@ -85,10 +84,10 @@ const testLinkService = {
             const data: ActionSuccessResponse = response.data;
             return { success: true, message: data.message };
         } catch (error: any) {
-            console.error("❌ Error in deleteTestLink:", error);
+            console.error("Error in deleteTestLink:", error);
             return { success: false, message: error.response?.data?.message || "Failed to delete link" };
         }
-    }
+    },
 };
 
 export default testLinkService;

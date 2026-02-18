@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from '../services/axiosInstance';
 
 const API_URL = 'https://marvella-uncontributed-stephania.ngrok-free.dev/api/coding-problem';
 

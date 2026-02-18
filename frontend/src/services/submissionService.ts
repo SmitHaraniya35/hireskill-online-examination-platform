@@ -1,9 +1,19 @@
-import axios from "axios";
+import axios from '../services/axiosInstance';
 
-// Base URL following your test-link naming convention
 const API_URL = 'https://marvella-uncontributed-stephania.ngrok-free.dev/api/submission';
 
-// Helper function to get auth headers
+export interface SubmissionData {
+  student_attempt_id: string;
+  problem_id: string;
+  language: string;
+  source_code: string;
+  total_test_cases: number;
+  passed_test_cases: number;
+  status: string;
+  execution_time?: string;
+  memory_used?: string;
+} 
+
 const getAuthHeaders = () => {
     const token = localStorage.getItem('admin_token');
     return {
@@ -14,6 +24,7 @@ const getAuthHeaders = () => {
         withCredentials: true
     };
 };
+
 
 const apiService = {
     runCodeService: async (inputData: any) => {
@@ -35,8 +46,9 @@ const apiService = {
     },
     fetchTestCaseOutput: async (submissionId: string) => {
         try{
-            const {data} = await axios.get(`${API_URL}/${submissionId}`, getAuthHeaders());
-            return data;
+            const res = await axios.get(`${API_URL}/${submissionId}`, getAuthHeaders());
+            console.log(res.data);
+            return res.data;
         }catch(error : any){
 
         }
