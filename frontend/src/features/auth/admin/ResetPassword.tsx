@@ -36,7 +36,7 @@ const ResetPassword: React.FC = () => {
     const isMismatch = passwords.new !== passwords.confirm && passwords.confirm !== '';
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-sans p-4">
+        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-mono p-4">
             <div className="bg-white p-10 rounded-[24px] shadow-[0_20px_40px_rgba(0,0,0,0.04),0_1px_3px_rgba(29,160,119,0.1)] w-full max-w-[420px] animate-[slideUp_0.6s_ease-out]">
                 
                 <div className="text-center mb-8">
@@ -49,7 +49,7 @@ const ResetPassword: React.FC = () => {
                     </p>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">                    
+                <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="flex flex-col">
                         <label className="text-sm font-medium mb-2 text-gray-700">New Password</label>
                         <input 

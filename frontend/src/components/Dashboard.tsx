@@ -3,7 +3,7 @@ import './Dashboard.css';
 import Navbar from './shared/Navbar';
 
 const Dashboard: React.FC = () => {
-    // Static data for preview
+    
     const stats = [
         { label: 'Total Exams', count: '12', icon: '📝', color: '#1DA077' },
         { label: 'Active Students', count: '148', icon: '👥', color: '#3b82f6' },
@@ -20,14 +20,12 @@ const Dashboard: React.FC = () => {
     return (
         <>
             <Navbar/>
-            {/* <TestLinkManager/> */}
             <div className="dashboard-container font-mono!">
                 <header className="dashboard-header">
                     <h1>Overview</h1>
                     <p>Welcome back! Here's what's happening with Hireskill today.</p>
                 </header>
 
-                {/* Metric Cards */}
                 <div className="stats-grid">
                     {stats.map((stat, index) => (
                         <div className="stat-card" key={index}>
@@ -42,7 +40,6 @@ const Dashboard: React.FC = () => {
                     ))}
                 </div>
 
-                {/* Recent Activity Table */}
                 <div className="dashboard-content">
                     <div className="table-card">
                         <div className="table-header">

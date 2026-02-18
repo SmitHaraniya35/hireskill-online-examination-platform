@@ -34,7 +34,7 @@ const VerifyOtp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-sans p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-mono p-4">
       <div className="bg-white p-10 rounded-[24px] shadow-[0_20px_40px_rgba(0,0,0,0.04),0_1px_3px_rgba(29,160,119,0.1)] w-full max-w-[420px] animate-[slideUp_0.6s_ease-out]">
         
         <div className="text-center mb-8">
@@ -97,7 +97,7 @@ const VerifyOtp: React.FC = () => {
           <button 
             type="button"
             onClick={() => navigate("/admin/forgot-password")}
-            className="text-[#1DA077] font-semibold text-sm hover:text-[#148562] transition-colors"
+            className="text-[#1DA077] font-semibold text-sm hover:text-[#148562] transition-colors cursor-pointer"
           >
             Resend Code?
           </button>
