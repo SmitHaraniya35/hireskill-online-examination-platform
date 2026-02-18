@@ -16,12 +16,16 @@ export const validateTestLink = async (
 
     const test: TestDocument | null = await Test.findOneActive({ unique_token: slug });
     if (!test) {
-      return res.notFound(ERROR_MESSAGES.INVALID_TEST_LINK);
+      return res.notFound(ERROR_MESSAGES.TESTS_NOT_FOUND);
+    }
+
+    if(!test.is_active){
+      return res.forbidden(ERROR_MESSAGES.TEST_CLOSED_BY_ADMIN);
     }
 
     const currentDateTime = new Date();
-    if (currentDateTime > test.expiration_at || !test.is_active) {
-      return res.notFound(ERROR_MESSAGES.TEST_LINK_EXPIRED);
+    if (currentDateTime > test.expiration_at) {
+      return res.forbidden(ERROR_MESSAGES.TEST_LINK_EXPIRED);
     }
 
     req.allParams = {
