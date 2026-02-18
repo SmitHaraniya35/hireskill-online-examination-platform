@@ -24,10 +24,8 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-sans">
-            <div className="bg-white p-12 rounded-[24px] shadow-[0_20px_40px_rgba(0,0,0,0.04),0_1px_3px_rgba(29,160,119,0.1)] w-full max-w-[420px] animate-[slideUp_0.6s_ease-out]">
-                
-                {/* Brand Icon (Added back from your CSS) */}
+        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-mono">
+            <div className="bg-white p-8 rounded-[24px] shadow-[0_20px_40px_rgba(0,0,0,0.04),0_1px_3px_rgba(29,160,119,0.1)] w-full max-w-[420px] animate-[slideUp_0.6s_ease-out]">
                 <div className="w-12.5 h-12.5 bg-[#1DA077] text-white rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
                     H
                 </div>
@@ -82,7 +80,7 @@ const Login: React.FC = () => {
                             <input type="checkbox" className="accent-[#1DA077] w-4 h-4 cursor-pointer" /> 
                             <span className="text-gray-600">Remember me</span>
                         </label>
-                        <Link to="/admin/forgot-password" size-sm className="text-[#1DA077] font-semibold hover:text-[#148562]">
+                        <Link to="/admin/forgot-password" className="text-sm text-[#1DA077] font-semibold hover:text-[#148562]">
                             Forgot Password?
                         </Link>
                     </div>

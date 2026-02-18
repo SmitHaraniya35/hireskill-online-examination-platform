@@ -1,7 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import authService from "../services/authAdminService";
 
-// shape of Auth State
 interface AuthContextType {
     admin: any | null;
     login: (email: string, password: string) => Promise<void>
@@ -9,7 +8,6 @@ interface AuthContextType {
     loading: boolean;
 }
 
-// create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // provider component
@@ -22,18 +20,31 @@ export const AdminAuthProvider: React.FC<{children: ReactNode}> = ({children}) =
         const storedAdmin = authService.getCurrentAdmin();
         if(storedAdmin){
             setAdmin(storedAdmin);
+        }else{
+            setAdmin(null);
         }
         setLoading(false);
     },[]);
 
     const login = async(email: string,password: string) => {
         const data = await authService.login(email,password);
-        setAdmin(data.user);
+        // authService.login returns response.data which contains payload.user
+        if(data.payload){
+            localStorage.setItem('admin_token',data.payload.accessToken);
+            localStorage.setItem('admin_user',JSON.stringify(data.payload.user));
+        }
+        const user = data?.payload?.user || data?.user || authService.getCurrentAdmin();
+        if (!user) throw new Error('Login failed');
+        setAdmin(user);
+        return data;
     }
 
-    const logout = () => {
-        authService.logout();
+    const logout = async () => {
+        await authService.logout();
+        localStorage.removeItem('admin_user');
+        localStorage.removeItem('admin_token');
         setAdmin(null);
+
     }
 
     return (
