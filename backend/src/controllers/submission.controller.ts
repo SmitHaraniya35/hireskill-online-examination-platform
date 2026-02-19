@@ -63,7 +63,7 @@ export const fetchOutput = async (req: AuthRequest, res: Response, next: NextFun
         }
 
         const data = await getJudge0SubmissionById(submissionId);
-        res.ok({status: data}, SUCCESS_MESSAGES.JUDGE0_SUBMISSION_RETRIEVED); 
+        res.ok(data, SUCCESS_MESSAGES.JUDGE0_SUBMISSION_RETRIEVED); 
     } catch (err: any) {
         next(err);
     }

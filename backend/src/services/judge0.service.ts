@@ -119,7 +119,7 @@ export const getJudge0SubmissionById = async (submissionId: string) => {
         }
 
         const data: Judge0Result = await response.json();
-        return data.status.description;
+        return { data };
     } catch (err: any){
         throw new HttpError(
             err.message,
