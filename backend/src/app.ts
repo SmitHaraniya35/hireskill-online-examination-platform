@@ -12,6 +12,8 @@ import submissionRoutes from "./routes/submission.routes.ts";
 import studentAttemptRoutes from "./routes/studentAttempt.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
 // import { validateApiKey } from "./middlewares/apikey.middleware.ts";
+import type { Request, Response } from "express";
+import { executeCode } from "./services/executor.service.ts";
 
 const app = express();
 
@@ -41,6 +43,25 @@ app.use("/api/test-case", testCaseRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/submission", submissionRoutes);
 app.use("/api/student-attempt", studentAttemptRoutes);
+
+// app.post("/api/execute", async (req: Request, res: Response) => {
+//   const { language, code, input, expected_output } = req.body;
+
+//   if (!language || !code) {
+//     return res.status(400).json({
+//       error: "Language and code are required",
+//     });
+//   }
+
+//   try {
+//     const result = await executeCode(language, code, input, expected_output);
+//     return res.json(result);
+//   } catch (err) {
+//     return res.status(500).json({
+//       error: `Execution failed: ${err}`,
+//     });
+//   }
+// });
 
 // Custom Error Middleware
 app.use(errorHandlerMiddleware);
