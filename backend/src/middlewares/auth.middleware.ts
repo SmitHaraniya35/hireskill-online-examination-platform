@@ -7,7 +7,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   const accessToken = req.headers.authorization?.split(" ")[1];
 
   if (!accessToken) {
-    return res.badRequest(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
+    return res.unauthorized(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
   }
   
   try {
