@@ -160,7 +160,7 @@ export const createCodingProblemWithTestCasesService = async (
 
   const data = await createManyTestCasesService(inputTestCases);
 
-  return { codingProblem, data };
+  return { codingProblem, testCases: data.testCases };
 };
 
 export const selectRandomProblemService = async () => {
