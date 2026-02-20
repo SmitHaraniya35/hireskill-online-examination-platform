@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
 import codingProblemService from "../../../../services/codingProblemService";
 import Editor from "@monaco-editor/react";
-import apiService, {
-  type SubmissionData,
-} from "../../../../services/submissionService";
+import apiService from "../../../../services/submissionService";
+import type{ SubmissionData } from "./types";
 import ShowTestCase from "./ShowTestCase";
 import { useStopwatch } from "react-timer-hook";
 import testService from "../../../../services/testFlowService";
 import StudentAttemptService from "../../../../services/studentAttemptService";
+import type{ CodingProblemWithTestCasesObject } from "../../../../types/codingProblem.types";
+import type { RunCodeResponse, RunCodeResult } from "../../../../types/submission.types";
 
 interface LocationState {
   test?: any;
@@ -19,32 +20,32 @@ const languageMap: { [key: string]: string } = {
   "54": "cpp",
 };
 
-interface CodingProblemWithTestCases {
-  id: string;
-  title: string;
-  difficulty: string;
-  topic: string[];
-  problem_description: string;
-  problem_description_image?: string;
-  constraint: string;
-  input_format: string;
-  output_format: string;
-  sample_input: string;
-  sample_output: string;
-  basic_code_layout: string;
-  testcases: {
-    id?: string;
-    input: string;
-    expected_output: string;
-    is_hidden: boolean;
-  }[];
-}
+// interface CodingProblemWithTestCases {
+//   id: string;
+//   title: string;
+//   difficulty: string;
+//   topic: string[];
+//   problem_description: string;
+//   problem_description_image?: string;
+//   constraint: string;
+//   input_format: string;
+//   output_format: string;
+//   sample_input: string;
+//   sample_output: string;
+//   basic_code_layout: string;
+//   testcases: {
+//     id?: string;
+//     input: string;
+//     expected_output: string;
+//     is_hidden: boolean;
+//   }[];
+// }
 
 interface TestCaseAndSubmission{
   testCaseId: string;
   submissionId: string;
   status: string;
-  apiRes: object
+  apiRes: RunCodeResult;
 }
 
 const CodeEditor: React.FC = () => {
@@ -52,7 +53,7 @@ const CodeEditor: React.FC = () => {
   const location = useLocation();
   const state = (location.state || {}) as LocationState;
 
-  const [problem, setProblem] = useState<CodingProblemWithTestCases | null>(
+  const [problem, setProblem] = useState<CodingProblemWithTestCasesObject | null>(
     null,
   );
   const [problemId, setProblemId] = useState<string | null>(null);
@@ -82,7 +83,7 @@ const CodeEditor: React.FC = () => {
 
   const runCode = async () => {
     const inputData = {
-      language_id: parseInt(language),
+      language_id: language,
       source_code: code,
       stdin: problem!.sample_input,
       expected_output: problem!.sample_output,
@@ -98,28 +99,15 @@ const CodeEditor: React.FC = () => {
     //   },
     // ]);
 
-    const { payload } = await apiService.runCodeService(inputData);
-    console.log(payload);
+    const res = await apiService.runCodeService(inputData) as RunCodeResponse; 
+    if(!res.success){
+      alert(res.message);
+      return;
+    }
     
-    // Update the testCases state with the actual result from the 'run' API
-    // Usually, 'run' API payload contains stdout and status
-    // setTestCases([
-    //   {
-    //     status:
-    //       payload.status?.description ||
-    //       (payload.stdout === problem!.sample_output
-    //         ? "Accepted"
-    //         : "Wrong Answer"),
-    //     input: problem!.sample_input,
-    //     output: payload.stdout,
-    //     expected_output: problem!.sample_output,
-    //     data: payload
-    //   },
-    // ]);
-    
-    // setTestCases([
-    //   test
-    // ])
+    const code_output: RunCodeResult = res.payload;
+    setTestCases([
+    ])
 
   };
 

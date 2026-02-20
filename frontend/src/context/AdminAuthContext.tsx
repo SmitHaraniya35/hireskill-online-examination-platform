@@ -1,18 +1,12 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import authService from "../services/authAdminService";
-
-interface AuthContextType {
-    admin: any | null;
-    login: (email: string, password: string) => Promise<void>
-    logout: () => void;
-    loading: boolean;
-}
+import type { AuthContextType,Admin } from "../types/auth.types";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // provider component
 export const AdminAuthProvider: React.FC<{children: ReactNode}> = ({children}) => {
-    const [admin, setAdmin] = useState<any | null>(null);
+    const [admin, setAdmin] = useState<Admin | null>(null);
     const [loading, setLoading] = useState(true);
 
     // check if admin is already logged in when app loads
@@ -44,7 +38,6 @@ export const AdminAuthProvider: React.FC<{children: ReactNode}> = ({children}) =
         localStorage.removeItem('admin_user');
         localStorage.removeItem('admin_token');
         setAdmin(null);
-
     }
 
     return (
