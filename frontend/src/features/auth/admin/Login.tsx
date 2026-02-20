@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from '../../../context/AdminAuthContext';
+import { useAuth } from '../../../context/authContext';
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState('');
@@ -19,7 +19,8 @@ const Login: React.FC = () => {
             await login(email, password);
             navigate('/admin/dashboard');
         } catch (err: any) {
-            setError('Invalid email or password. Please try again.');
+            console.log(err.message)
+            setError(err.message || 'Invalid email or password. Please try again.');
         }
     };
 

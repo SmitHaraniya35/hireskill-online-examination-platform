@@ -1,14 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import authService from '../../../services/authAdminService';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
+import authService from '../../../services/auth.services';
 
 const ResetPassword: React.FC = () => {
     const [passwords, setPasswords] = useState({ new: '', confirm: '' });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
-    const navigate = useNavigate();
-    const email = localStorage.getItem('forgot_email');
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const { email } = location.state;
+    
+    const isMismatch = passwords.new !== passwords.confirm && passwords.confirm !== '';
+    
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -20,20 +25,14 @@ const ResetPassword: React.FC = () => {
 
         setLoading(true);
         setError('');
-
-        const result = await authService.resetPassword(email, passwords.new);
-        setLoading(false);
-
-        if (result.success) {
-            localStorage.removeItem('forgot_email');
-            localStorage.removeItem('forgot_otp');
+        try{
+            await authService.resetPassword({email,newPassword: passwords.new});
+            setLoading(false);
             navigate('/admin/login');
-        } else {
-            setError(result.message);
+        }catch(err: any){
+            setError(err.response.data.message)
         }
     };
-
-    const isMismatch = passwords.new !== passwords.confirm && passwords.confirm !== '';
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-mono p-4">

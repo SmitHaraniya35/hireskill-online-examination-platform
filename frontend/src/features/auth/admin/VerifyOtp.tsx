@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import authService from "../../../services/authAdminService";
+import authService from "../../../services/auth.services";
 
 const VerifyOtp: React.FC = () => {
   const [otp, setOtp] = useState("");
@@ -22,12 +22,11 @@ const VerifyOtp: React.FC = () => {
     setLoading(true);
     setError("");
 
-    const result = await authService.verifyOtp(email, otp);
+    const result = await authService.verifyOtp({email, otp});
     setLoading(false);
 
     if (result.success) {
-      localStorage.removeItem("forgot_otp");
-      navigate("/admin/reset-password");
+      navigate("/admin/reset-password",{state:{email}});
     } else {
       setError(result.message);
     }

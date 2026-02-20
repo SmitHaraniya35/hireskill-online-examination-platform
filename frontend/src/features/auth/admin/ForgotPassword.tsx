@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import authService from "../../../services/authAdminService";
+import authService from "../../../services/auth.services";
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -8,27 +8,27 @@ const ForgotPassword: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    const result = await authService.forgotPassword(email);
-    setLoading(false);
+  try {
+    const result = await authService.forgotPassword({ email });
 
     if (!result.success) {
       setError(result.message);
       return;
     }
     
-    // TEMP: store OTP for frontend verification
-    localStorage.setItem("forgot_otp", result.otp);
-    localStorage.setItem("forgot_email", email);
-
-    console.log("OTP from backend:", result.otp);
-
     navigate("/admin/verify-otp", { state: { email } });
-  };
+
+  } catch (err: any) {
+    setError(err.response.data.errors || err.response.data.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-mono p-4">

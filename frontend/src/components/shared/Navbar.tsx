@@ -1,7 +1,7 @@
 import LOGO from '../../assets/logo.svg'
 import { NavLink, useNavigate } from 'react-router-dom'
-import authAdminService from '../../services/authAdminService'
-import { useAuth } from '../../context/AdminAuthContext';
+import authAdminService from '../../services/auth.services'
+import { useAuth } from '../../context/authContext';
 
 const Navbar: React.FC = () => {
     const navigate = useNavigate();
