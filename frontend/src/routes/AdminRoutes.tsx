@@ -3,9 +3,9 @@ import { useAuth } from "../context/authContext"
 
 
 const AdminRoutes: React.FC = () => {
-    const {admin, loading} = useAuth();
+    const {admin, isLoading} = useAuth();
 
-    if(loading){
+    if(isLoading){
         return <div className="loading-screen">
             Loading...
         </div>

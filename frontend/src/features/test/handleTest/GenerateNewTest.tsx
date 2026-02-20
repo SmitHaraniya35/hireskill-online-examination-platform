@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import testLinkService from "../../../services/testLinkService";
+import testLinkService from "../../../services/test.services";
 import useLockBodyScroll from "../../../hooks/useLockBodyScroll";
+import type { Test } from "../../../types/test.types";
 
 interface GenerateProps {
   closeModal: () => void;
@@ -20,6 +21,8 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
   const [expiryTime, setExpiryTime] = useState<string>("23:59");
   const [duration, setDuration] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
@@ -36,10 +39,10 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
   // Initialize data for Edit Mode
   useEffect(() => {
     if (isEdit && editData) {
-      const testObj = editData.test || editData || {};
+      const testObj: Test = editData;
 
-      setTitle(testObj.title || "");
-      setDuration(String(testObj.duration_minutes || ""));
+      setTitle(testObj.title);
+      setDuration(String(testObj.duration_minutes));
 
       const exp = testObj.expiration_at;
       if (exp) {
@@ -140,24 +143,18 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
     };
 
     try {
-      let res;
-      const editId = editData?.test?.id || editData?.id;
+      const testId = editData?.id;
 
-      if (isEdit && editId) {
-        res = await testLinkService.updateTestLink(editId, testData);
+      if (isEdit && testId) {
+        await testLinkService.updateTest(testId, testData);
       } else {
-        res = await testLinkService.createTestLink(testData);
+        await testLinkService.createTest(testData);
       }
-
-      if (res?.success) {
-        refreshLinks();
-        closeModal();
-      } else {
-        alert(res?.message || "Invalid input");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Server error. Check console.");
+      refreshLinks();
+      closeModal();
+    } catch (err: any) {
+      setIsError(true);
+      setErrorMsg(err.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -188,36 +185,40 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-gray-700">Select Date</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Select Date
+          </label>
           <div className="flex items-center gap-2">
-            <input 
-              ref={dayRef} 
-              placeholder="DD" 
-              value={day} 
-              onChange={(e) => handleDayChange(e.target.value)} 
-              className="w-[72px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none" 
+            <input
+              ref={dayRef}
+              placeholder="DD"
+              value={day}
+              onChange={(e) => handleDayChange(e.target.value)}
+              className="w-[72px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none"
             />
             <span className="text-gray-500 font-bold">/</span>
-            <input 
-              ref={monthRef} 
-              placeholder="MM" 
-              value={month} 
-              onChange={(e) => handleMonthChange(e.target.value)} 
-              className="w-[72px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none" 
+            <input
+              ref={monthRef}
+              placeholder="MM"
+              value={month}
+              onChange={(e) => handleMonthChange(e.target.value)}
+              className="w-[72px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none"
             />
             <span className="text-gray-500 font-bold">/</span>
-            <input 
-              ref={yearRef} 
-              placeholder="YYYY" 
-              value={year} 
-              onChange={(e) => handleYearChange(e.target.value)} 
-              className="w-[104px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none" 
+            <input
+              ref={yearRef}
+              placeholder="YYYY"
+              value={year}
+              onChange={(e) => handleYearChange(e.target.value)}
+              className="w-[104px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none"
             />
           </div>
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-gray-700">Duration (minutes)</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Duration (minutes)
+          </label>
           <input
             placeholder="Enter duration"
             value={duration}
@@ -228,7 +229,9 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-gray-700">Expiry Time</label>
+          <label className="text-sm font-semibold text-gray-700">
+            Expiry Time
+          </label>
           <input
             type="time"
             value={expiryTime}
@@ -243,7 +246,13 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
           disabled={loading}
           className="w-full bg-[#1DA077] text-white py-4 rounded-2xl font-bold text-lg shadow-md hover:bg-[#148562] hover:-translate-y-0.5 transition disabled:opacity-50"
         >
-          {loading ? (isEdit ? "Updating..." : "Creating...") : isEdit ? "Update test" : "Create test"}
+          {loading
+            ? isEdit
+              ? "Updating..."
+              : "Creating..."
+            : isEdit
+              ? "Update test"
+              : "Create test"}
         </button>
       </form>
     </div>
