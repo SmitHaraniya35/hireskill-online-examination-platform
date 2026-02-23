@@ -1,54 +1,30 @@
-
 import React, { useEffect, useState } from 'react';
-import Navbar from "../../components/shared/Navbar";
-import codingProblemService from "../../services/codingProblemService";
+import codingProblemService from "../../services/codingProblem.services";
 import AddNewProblem from './AddNewProblem';
 import Edit from '../../assets/Edit.svg';
 import Delete from '../../assets/Delete.svg';
-
-export interface CodingProblemWithTestCasesData {
-  id?: string;
-  title: string;
-  difficulty: string;
-  topic: string[];
-  problem_description: string;
-  problem_description_image: string;
-  constraint: string;
-  input_format: string;
-  output_format: string;
-  basic_code_layout: string;
-  sample_input?: string;
-  sample_output?: string;
-  testcases?: {
-    input: string;
-    expected_output: string;
-    is_hidden: boolean;
-    id?: string;
-  }[];
-  testCases?: {
-    input: string;
-    expected_output: string;
-    is_hidden: boolean;
-    id?: string;
-  }[];
-}
+import type { CodingProblemData } from '../../types/codingProblem.types';
 
 type ViewMode = 'list' | 'form';
 
 const CodingProblem: React.FC = () => {
-  const [problems, setProblems] = useState<any[]>([]);
+  const [codingProblemList, setCodingProblemList] = useState<CodingProblemData[] | undefined>([]);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewMode>('list');
-  const [selectedCodingProblem, setSelectedCodingProblem] =
-    useState<CodingProblemWithTestCasesData | null>(null);
+  const [selectedCodingProblemWithTestCases, setSelectedCodingProblemWithTestCases] = useState<CodingProblemData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const fetchProblems = async () => {
     setLoading(true);
-    const res = await codingProblemService.getAllCodingProblem();
-    if (res.success) {
-      setProblems(res.payload.codingProblemList || []);
+    try {
+      const res = await codingProblemService.getAllCodingProblems();
+      setCodingProblemList(res.payload?.codingProblemList);
+    } catch(err: any) {
+      setIsError(true);
+      setErrorMsg(err.response.data.message);
     }
     setLoading(false);
   };
@@ -58,7 +34,7 @@ const CodingProblem: React.FC = () => {
   }, []);
 
   const handleCreate = () => {
-    setSelectedCodingProblem(null);
+    setSelectedCodingProblemWithTestCases(null);
     setIsEditMode(false);
     setCurrentView('form');
   };
@@ -67,36 +43,33 @@ const CodingProblem: React.FC = () => {
     setFormLoading(true);
     try {
       const res = await codingProblemService.getCodingProblemWithTestCases(uuid);
-      if (res.success) {
-        const rawData: CodingProblemWithTestCasesData = res.payload;
         setIsEditMode(true);
-        setSelectedCodingProblem(rawData);
+        setSelectedCodingProblemWithTestCases(res.payload!.codingProblemWithTestCases!);
         setCurrentView('form');
-      } else {
-        alert('Could not fetch data: ' + res.message);
-      }
-    } catch (error) {
-      console.error('Error fetching problem:', error);
-      alert('Failed to fetch problem data');
+    } catch (err: any) {
+      setIsError(true);
+      setErrorMsg(err.response.data.message);
     } finally {
       setFormLoading(false);
     }
   };
 
   const handleDelete = async (uuid: string) => {
-    if (window.confirm('Are you sure you want to delete this coding problem?')) {
-      const res = await codingProblemService.deleteCodingProblem(uuid);
-      if (res.success) {
-        setProblems((prev) => prev.filter((p) => p.id !== uuid));
-      } else {
-        alert(res.message);
+    if (window.confirm('Are you sure you want to delete this coding problem?'))
+    {
+      try{
+        await codingProblemService.deleteCodingProblem(uuid);
+        setCodingProblemList((prev) => prev ? prev.filter((p) => p.id !== uuid): []);
+      }catch(err: any){
+        setIsError(true);
+        setErrorMsg(err.response.data.message);
       }
     }
   };
 
   const handleBackToList = () => {
     setCurrentView('list');
-    setSelectedCodingProblem(null);
+    setSelectedCodingProblemWithTestCases(null);
     setIsEditMode(false);
   };
 
@@ -143,12 +116,12 @@ const CodingProblem: React.FC = () => {
         </div>
       ) : (
         <section className="flex flex-col gap-4 mt-8 font-mono">
-          {problems.length === 0 ? (
+          {codingProblemList && codingProblemList.length === 0 ? (
             <div className="text-center py-20 text-gray-500">
               No problems found. Click "Add New Problem" to create one.
             </div>
           ) : (
-            problems.map((problem) => (
+            codingProblemList!.map((problem) => (
               <article
                 key={problem.id}
                 className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
@@ -175,7 +148,7 @@ const CodingProblem: React.FC = () => {
 
                 <div className="flex gap-5">
                   <button
-                    onClick={() => handleUpdate(problem.id)}
+                    onClick={() => handleUpdate(problem.id!)}
                     disabled={formLoading}
                     className="disabled:opacity-50"
                   >
@@ -187,7 +160,7 @@ const CodingProblem: React.FC = () => {
                   </button>
 
                   <button
-                    onClick={() => handleDelete(problem.id)}
+                    onClick={() => handleDelete(problem.id!)}
                     disabled={formLoading}
                     className="disabled:opacity-50"
                   >
@@ -232,10 +205,10 @@ const CodingProblem: React.FC = () => {
         </div>
       ) : (
         <AddNewProblem
-          key={selectedCodingProblem?.id || 'new'}
+          key={selectedCodingProblemWithTestCases?.id || 'new'}
           closeModal={handleBackToList}
           refreshLinks={handleFormSuccess}
-          editData={selectedCodingProblem}
+          editData={selectedCodingProblemWithTestCases}
           isEditMode={isEditMode}
         />
       )}
@@ -244,7 +217,6 @@ const CodingProblem: React.FC = () => {
 
   return (
     <>
-      <Navbar />
       <div className="min-h-screen bg-[#f5f6f8]">
         <main className="max-w-[900px] mx-auto p-6">
           {currentView === 'list' ? renderListView() : renderFormView()}

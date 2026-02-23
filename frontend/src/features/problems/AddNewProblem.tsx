@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { FontFamily } from "@tiptap/extension-font-family";
-import codingProblemService from "../../services/codingProblemService";
+import codingProblemService from "../../services/codingProblem.services";
+import type { TestCaseData } from "../../types/codingProblem.types";
 
 interface Props {
   closeModal: () => void;
@@ -13,13 +14,6 @@ interface Props {
   editData?: any;
   isEditMode?: boolean;
 }
-
-type TestCase = {
-  id?: string;
-  input: string;
-  output: string;
-  visible: boolean;
-};
 
 function SectionBox({ label, children }: any) {
   return (
@@ -30,7 +24,13 @@ function SectionBox({ label, children }: any) {
   );
 }
 
-const TiptapEditor = ({value,onChange,}: {value: string; onChange: (html: string) => void;}) => {
+const TiptapEditor = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (html: string) => void;
+}) => {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -317,30 +317,42 @@ const AddNewProblem: React.FC<Props> = ({
   const [inputFormat, setInputFormat] = useState("");
   const [outputFormat, setOutputFormat] = useState("");
 
-  const [testCases, setTestCases] = useState<TestCase[]>([
-    { input: "", output: "", visible: true },
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const [testCases, setTestCases] = useState<TestCaseData[]>([
+    { input: "", expected_output: "", is_hidden: false   },
   ]);
   const [basicCodeLayout, setBasicCodeLayout] = useState("");
 
   const addTestCase = () => {
-    setTestCases([...testCases, { input: "", output: "", visible: false }]);
+    setTestCases([
+      ...testCases,
+      { input: "", expected_output: "", is_hidden: true },
+    ]);
   };
 
   const updateTestCase = (
     index: number,
-    field: "input" | "output",
+    field: "input" | "expected_output",
     value: string,
   ) => {
     const updated = [...testCases];
+    console.log("updated data: ",updated);
     updated[index][field] = value;
     setTestCases(updated);
   };
 
   const toggleVisibility = (index: number) => {
     const updated = [...testCases];
-    updated[index].visible = !updated[index].visible;
+    updated[index].is_hidden = !updated[index].is_hidden;
     setTestCases(updated);
   };
+  // const toggleVisibility = (index: number) => {
+  //   const updated = [...testCases];
+  //   updated[index].is_hidden = !updated[index].is_hidden;
+  //   setTestCases(updated);
+  // };
 
   const removeTestCase = (index: number) => {
     const updated = testCases.filter((_, i) => i !== index);
@@ -366,15 +378,17 @@ const AddNewProblem: React.FC<Props> = ({
       setOutputFormat(editData.output_format || "");
       setBasicCodeLayout(editData.basic_code_layout || "");
 
-      const testCasesList = editData.testcases || editData.testCases || [];
+      const testCasesList = editData.testcases || [];
+
+      
 
       if (testCasesList.length > 0) {
         setTestCases(
           testCasesList.map((tc: any) => ({
             id: tc.id,
-            input: tc.input || "",
-            output: tc.expected_output || tc.output || "",
-            visible: tc.is_hidden === false,
+            input: tc.input,
+            expected_output: tc.expected_output,
+            is_hidden: !tc.is_hidden,
           })),
         );
       }
@@ -395,7 +409,7 @@ const AddNewProblem: React.FC<Props> = ({
     }
 
     const hasEmptyTestCase = testCases.some(
-      (tc) => !tc.input.trim() || !tc.output.trim(),
+      (tc) => !tc.input.trim() || !tc.expected_output.trim(),
     );
     if (hasEmptyTestCase) {
       alert("Please fill in all test case inputs and outputs.");
@@ -421,44 +435,54 @@ const AddNewProblem: React.FC<Props> = ({
       difficulty: capitalizedDifficulty,
       topic: topicArray,
       problem_description: problemDescription.trim(),
+      problem_description_image:
+        editData?.problem_description_image ||
+        "https://via.placeholder.com/300x200?text=Problem+Image",
       constraint: constraint.trim(),
       input_format: inputFormat.trim(),
       output_format: outputFormat.trim(),
       basic_code_layout: basicCodeLayout.trim(),
-      problem_description_image:
-        editData?.problem_description_image ||
-        "https://via.placeholder.com/300x200?text=Problem+Image",
     };
 
     try {
       let res;
-
       if (isEditMode && editData?.id) {
         const updatePayload = {
           ...problemData,
           testCases: testCases.map((tc) => ({
             ...(tc.id && { id: tc.id }),
             input: tc.input.trim(),
-            expected_output: tc.output.trim(),
-            is_hidden: !tc.visible,
+            expected_output: tc.expected_output.trim(),
+            is_hidden: tc.is_hidden=== false,
           })),
         };
-
-        res = await codingProblemService.updateCodingProblemWithTestCases(
-          editData.id,
-          updatePayload,
-        );
+        try{
+          res = await codingProblemService.updateCodingProblemWithTestCases(editData.id, updatePayload);
+        }catch(err: any){
+          console.log("error",err)
+          setIsError(true);
+          setErrorMsg(err.response.data.message);
+        }
       } else {
         const createPayloadTestCases = testCases.map((tc) => ({
           input: tc.input.trim(),
-          output: tc.output.trim(),
-          visible: tc.visible,
+          expected_output: tc.expected_output.trim(),
+          is_hidden: tc.is_hidden,
         }));
-
-        res = await codingProblemService.createCodingProblemWithTestCases(
-          problemData,
-          createPayloadTestCases,
-        );
+        const createPayload = {
+          ...problemData,
+          testCases: createPayloadTestCases,
+        }
+        console.log("creating payload",createPayload);
+        try{
+          res = await codingProblemService.createCodingProblemWithTestCases(createPayload);
+        }catch(err: any){
+          console.log("hello");
+          setIsError(true);
+          console.log(err.response.data);
+          setErrorMsg(err.response.data.message);
+        }
+        
       }
 
       if (res?.success) {
@@ -473,10 +497,8 @@ const AddNewProblem: React.FC<Props> = ({
         alert(res?.message || "Validation error");
       }
     } catch (err: any) {
-      console.error("[AddNewProblem] request failed:", err);
-      if (err?.response?.data)
-        console.error("Backend response:", err.response.data);
-      alert("Server error — check console for details.");
+      setIsError(true);
+      setErrorMsg(err.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -559,7 +581,7 @@ const AddNewProblem: React.FC<Props> = ({
             <div
               key={tc.id ?? `tc-${index}`}
               className={`border rounded-2xl p-4 shadow-sm transition ${
-                tc.visible ? "bg-white" : "bg-gray-50"
+                tc.is_hidden ? "bg-white" : "bg-gray-50"
               }`}
             >
               <div className="flex justify-between items-center mb-4">
@@ -568,19 +590,19 @@ const AddNewProblem: React.FC<Props> = ({
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2 text-sm">
                     <span className="text-gray-600">
-                      {tc.visible ? "Visible" : "Hidden"}
+                      {tc.is_hidden ? "Hidden" : "Visible"}
                     </span>
 
                     <button
                       type="button"
                       onClick={() => toggleVisibility(index)}
                       className={`w-11 h-6 flex items-center rounded-full p-1 transition ${
-                        tc.visible ? "bg-green-500" : "bg-gray-300"
+                        tc.is_hidden ?  "bg-gray-300": "bg-green-500"
                       }`}
                     >
                       <div
                         className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
-                          tc.visible ? "translate-x-5" : "translate-x-0"
+                          tc.is_hidden ? "translate-x-0": "translate-x-5" 
                         }`}
                       />
                     </button>
@@ -614,9 +636,9 @@ const AddNewProblem: React.FC<Props> = ({
                 <SectionBox label="Expected Output">
                   <textarea
                     className="w-full px-4 py-3 border-[1.5px] border-gray-200 rounded-xl text-base bg-gray-50 font-mono resize-none h-28 outline-none transition-all focus:bg-white focus:border-gray-400"
-                    value={tc.output}
+                    value={tc.expected_output}
                     onChange={(e) =>
-                      updateTestCase(index, "output", e.target.value)
+                      updateTestCase(index, "expected_output", e.target.value)
                     }
                     placeholder="Enter expected output"
                     required
