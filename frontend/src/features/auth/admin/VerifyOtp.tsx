@@ -1,86 +1,111 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import authService from "../../../services/auth.services";
+import { verifyOtpSchema, type VerifyOtpInput } from  '../../../validators/auth.validator'
 
 const VerifyOtp: React.FC = () => {
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email = location.state?.email || localStorage.getItem("forgot_email");
+  const email = location.state?.email;
 
-  const handleVerify = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!email) {
-      setError("Session expired. Please try forgot password again.");
+  const {
+    register,
+    handleSubmit,
+    setValue, 
+    formState: { errors, isSubmitting },
+  } = useForm<VerifyOtpInput>({
+    resolver: zodResolver(verifyOtpSchema),
+    defaultValues: {
+      email: email, 
+      otp: "",
+    },
+    mode: "onChange",
+  });
+
+  const onFormSubmit = async (data: VerifyOtpInput) => {
+    setServerError("");
+
+    if (!data.email) {
+      setServerError("Session expired. Please try forgot password again.");
       return;
     }
 
-    setLoading(true);
-    setError("");
+    try {
+      const result = await authService.verifyOtp({
+        email: data.email,
+        otp: data.otp,
+      });
 
-    const result = await authService.verifyOtp({email, otp});
-    setLoading(false);
-
-    if (result.success) {
-      navigate("/admin/reset-password",{state:{email}});
-    } else {
-      setError(result.message);
+      if (result.success) {
+        navigate("/admin/reset-password", { state: { email: data.email } });
+      } else {
+        setServerError(result.message);
+      }
+    } catch (err: any) {
+      setServerError(
+        err.response?.data?.message || "Something went wrong. Please try again."
+      );
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,_#f0fdf4,_#ffffff)] font-mono p-4">
-      <div className="bg-white p-10 rounded-[24px] shadow-[0_20px_40px_rgba(0,0,0,0.04),0_1px_3px_rgba(29,160,119,0.1)] w-full max-w-[420px] animate-[slideUp_0.6s_ease-out]">
+    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,#f0fdf4,#ffffff)] font-mono p-4">
+      <div className="bg-white p-10 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.04)] w-full max-w-105">
         
         <div className="text-center mb-8">
-          <div className="w-[50px] h-[50px] bg-[#1DA077] text-white rounded-[12px] flex items-center justify-center text-2xl font-bold mx-auto mb-6">
+          <div className="w-12.5 h-12.5 bg-[#1DA077] text-white rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
             📩
           </div>
           <h2 className="text-[1.75rem] text-gray-900 font-bold mb-2">Verify OTP</h2>
           <p className="text-gray-500 text-[0.95rem]">
             We've sent a code to <br />
-            <strong className="text-gray-800 break-all">{email}</strong>
+            <strong className="text-gray-800 break-all">{email || "your email"}</strong>
           </p>
         </div>
 
-        <form onSubmit={handleVerify} className="space-y-6">
+        <form onSubmit={handleSubmit(onFormSubmit)} className="space-y-6">
+          {/* Hidden Email Field (Required for Zod Schema) */}
+          <input type="hidden" {...register("email")} />
+
           <div className="flex flex-col">
             <label className="text-sm font-medium mb-3 text-center text-gray-700">
               Enter 6-Digit Code
             </label>
             <input
+              {...register("otp", {
+                onChange: (e) => {
+                    const val = e.target.value.replace(/[^0-9]/g, "");
+                    setValue("otp", val);
+                }
+              })}
               type="text"
               maxLength={6}
-              required
-              value={otp}
-              className={`w-full p-4 border rounded-xl transition-all duration-200 bg-gray-50 focus:outline-none focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 text-center text-2xl font-bold tracking-[8px] ${
-                error ? "border-red-200" : "border-gray-200"
+              placeholder="000000"
+              className={`w-full p-4 border rounded-xl transition-all text-center text-2xl font-bold tracking-[8px] bg-gray-50 focus:outline-none focus:bg-white focus:border-[#1DA077] ${
+                errors.otp || serverError ? "border-red-300" : "border-gray-200"
               }`}
-              onChange={(e) => {
-                // Allow only numbers
-                const val = e.target.value.replace(/[^0-9]/g, "");
-                setOtp(val);
-                setError("");
-              }}
             />
+            {errors.otp && (
+              <p className="text-red-500 text-xs mt-2 text-center">{errors.otp.message}</p>
+            )}
           </div>
 
-          {error && (
-            <div className="bg-red-50 text-red-500 p-[10px_14px] rounded-lg text-[0.85rem] flex items-center gap-2 border border-red-100 animate-[shake_0.4s_ease-in-out]">
-              <span>⚠️</span> {error}
+          {serverError && (
+            <div className="bg-red-50 text-red-500 p-[10px_14px] rounded-lg text-[0.85rem] flex items-center gap-2 border border-red-100">
+              <span>⚠️</span> {serverError}
             </div>
           )}
 
           <button 
             type="submit" 
-            disabled={loading || otp.length < 6}
-            className="w-full p-4 bg-[#1DA077] text-white rounded-xl text-base font-semibold shadow-[0_4px_10px_rgba(29,160,119,0.2)] transition-all duration-300 hover:bg-[#148562] hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(29,160,119,0.3)] active:translate-y-0 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-70 disabled:transform-none"
+            disabled={isSubmitting}
+            className="w-full p-4 bg-[#1DA077] text-white rounded-xl text-base font-semibold shadow-md transition-all hover:bg-[#148562] disabled:bg-gray-400"
           >
-            {loading ? (
+            {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
@@ -96,7 +121,7 @@ const VerifyOtp: React.FC = () => {
           <button 
             type="button"
             onClick={() => navigate("/admin/forgot-password")}
-            className="text-[#1DA077] font-semibold text-sm hover:text-[#148562] transition-colors cursor-pointer"
+            className="text-[#1DA077] font-semibold text-sm hover:underline"
           >
             Resend Code?
           </button>

@@ -51,6 +51,15 @@ export const verifyOtpSchema = z.object({
 export const resetPasswordSchema = z.object({
   email: emailSchema,
   newPassword: passwordSchema,
+  confirmPassword: z.string(),
+}).superRefine(({ confirmPassword, newPassword }, ctx) => {
+  if (confirmPassword !== newPassword) {
+    ctx.addIssue({
+      code: "custom",
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
+    });
+  }
 });
 
 // Type inference from schemas
