@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import codingProblemService from "../../../../services/codingProblemService";
+import codingProblemService from "../../../../services/codingProblem.services";
 import Editor from "@monaco-editor/react";
-import apiService from "../../../../services/submissionService";
-import type{ SubmissionData } from "./types";
+import submissionService from "../../../../services/submissionService";
 import ShowTestCase from "./ShowTestCase";
 import { useStopwatch } from "react-timer-hook";
-import testService from "../../../../services/testFlowService";
-import StudentAttemptService from "../../../../services/studentAttemptService";
-import type{ CodingProblemWithTestCasesObject } from "../../../../types/codingProblem.types";
-import type { RunCodeResponse, RunCodeResult } from "../../../../types/submission.types";
+import testFlowService from "../../../../services/testFlow.services";
+import type{ CodingProblemData } from "../../../../types/codingProblem.types";
+import type { GetSubmissionResponse, RunData, RunResponse } from "../../../../types/submission.types";
+import type { FinishData } from "../../../../types/testFlow.types";
 
 interface LocationState {
   test?: any;
@@ -20,32 +19,11 @@ const languageMap: { [key: string]: string } = {
   "54": "cpp",
 };
 
-// interface CodingProblemWithTestCases {
-//   id: string;
-//   title: string;
-//   difficulty: string;
-//   topic: string[];
-//   problem_description: string;
-//   problem_description_image?: string;
-//   constraint: string;
-//   input_format: string;
-//   output_format: string;
-//   sample_input: string;
-//   sample_output: string;
-//   basic_code_layout: string;
-//   testcases: {
-//     id?: string;
-//     input: string;
-//     expected_output: string;
-//     is_hidden: boolean;
-//   }[];
-// }
-
 interface TestCaseAndSubmission{
   testCaseId: string;
   submissionId: string;
   status: string;
-  apiRes: RunCodeResult;
+  apiRes: RunResponse;
 }
 
 const CodeEditor: React.FC = () => {
@@ -53,7 +31,7 @@ const CodeEditor: React.FC = () => {
   const location = useLocation();
   const state = (location.state || {}) as LocationState;
 
-  const [problem, setProblem] = useState<CodingProblemWithTestCasesObject | null>(
+  const [problem, setProblem] = useState<CodingProblemData | null>(
     null,
   );
   const [problemId, setProblemId] = useState<string | null>(null);
@@ -99,13 +77,13 @@ const CodeEditor: React.FC = () => {
     //   },
     // ]);
 
-    const res = await apiService.runCodeService(inputData) as RunCodeResponse; 
+    const res = await submissionService.runCodeService(inputData) 
     if(!res.success){
       alert(res.message);
       return;
     }
     
-    const code_output: RunCodeResult = res.payload;
+    const code_output: RunResponse = res.payload;
     setTestCases([
     ])
 
@@ -118,12 +96,12 @@ const CodeEditor: React.FC = () => {
       problem_id: problemId!,
     };
 
-    const res = await apiService.submitCodeService(inputData);
+    const res = await submissionService.submitCodeService(inputData);
 
     if (res.success) {
       setIsFirstSubmit(true);
       // Map the backend response and initialize status as "In Queue"
-      const initialMapping = res.payload.executionMappingList.map(
+      const initialMapping = res.payload!.executionMappingList.map(
         (item: any) => ({
           submissionId: item.submissionId,
           testCaseId: item.testCaseId,
@@ -141,7 +119,7 @@ const CodeEditor: React.FC = () => {
   const finishTest = () => {
     if (!window.confirm("Are you sure you want to finish the test?")) return;
     localStorage.removeItem("test_start_time");
-    const input: SubmissionData = {
+    const input: FinishData = {
       student_attempt_id: studentAttemptId!,
       problem_id: problemId!,
       language: language,
@@ -151,7 +129,7 @@ const CodeEditor: React.FC = () => {
         .length,
       status: "Finished",
     };
-    const res = testService.finishTest(input, slug!);
+    const res = testFlowService.finishTest(slug!, input);
     console.log(res);
   };
 
@@ -169,7 +147,7 @@ const CodeEditor: React.FC = () => {
 
         try {
           console.log(tc.submissionId);
-          const res = await apiService.fetchTestCaseOutput(tc.submissionId);
+          const res = await submissionService.getSubmissionService(tc.submissionId);
           console.log(res)
           const newStatus = res.payload.status.description || "Processing";
 
@@ -221,7 +199,7 @@ const CodeEditor: React.FC = () => {
       }
 
       try {
-        const data = await StudentAttemptService.validateStudentAttempt(studentAttemptId);
+        const data = await testFlowService.validateStudentAttempt(studentAttemptId);
         console.log("Validation Result:", data);
 
         if (!data || !data.success) {
@@ -232,7 +210,7 @@ const CodeEditor: React.FC = () => {
           return;
         }
 
-        setProblemId(data.payload.problem_id);
+        setProblemId(data.payload!.problem_id);
       } catch (err: any) {
         console.error("Validation request failed:", err);
         const userMessage = err?.response?.data?.message || err?.message || "Unable to validate the attempt.";

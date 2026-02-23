@@ -1,6 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import testService from "../../../services/testFlowService";
+import testService from "../../../services/testFlow.services";
 
 interface LocationState {
   test: any;
@@ -26,7 +26,7 @@ const handleStartTest = async () => {
   } 
 
   try {
-    const res = await testService.startTest(slug, test.id, studentId);
+    const res = await testService.startTest(slug,test.id,studentId);
     console.log("Start Test Response:", res);
     if (res?.success && res.payload?.problemId) {
 
@@ -44,7 +44,8 @@ const handleStartTest = async () => {
     } else {
       alert(res?.message || "Unable to start test. Please try again.");
     }
-  } catch {
+  } catch(err: any) {
+    // console.log(err.response.data.message);
     alert("Unable to start test. Please try again later.");
   }
 };
