@@ -40,7 +40,7 @@ export const createStudentService = async (input: StudentData) => {
     await student.save();
 
     const studentToken = generateAccessToken(student.id, student.email);
-    return { studentToken };
+    return { studentId: student.id, studentToken };
 };
 
 export const getStudentByIdService = async (id: string) => {
