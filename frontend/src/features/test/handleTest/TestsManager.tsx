@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import testLinkService from "../../../services/test.services";
-import studentAttemptService from "../../../services/studentAttemptService";
+import studentAttemptService from "../../../services/studentAttempt.services";
 import GenerateNewTest from "./GenerateNewTest";
 
 import View from "../../../assets/viewIcon.svg";
@@ -27,9 +27,7 @@ const TestLinkManager: React.FC = () => {
 
   const loadLinks = async () => {
     try {
-      const res: axiosResponse<TestList> =
-        await testLinkService.getAllTest();
-      console.log(res.payload?.testList);
+      const res: axiosResponse<TestList> = await testLinkService.getAllTest();
       setTestList(res.payload?.testList);
     } catch (err: any) {
       console.error(err);
@@ -52,13 +50,11 @@ const TestLinkManager: React.FC = () => {
   const handleEdit = async (id: string) => {
     try {
       const res = await testLinkService.getTestDetails(id);
-      if (res.success && res.payload) {
-        const testData = res.payload.test;
+        const testData = res.payload!.test;
         setSelectedTest(testData);
         setMode("edit");
         setOpenModal(true);
-      }
-    } catch (err: any) {
+    }catch (err: any) {
       setIsError(true);
       setErrorMsg(err.response.data.message);
     }
@@ -68,6 +64,7 @@ const TestLinkManager: React.FC = () => {
     if (!window.confirm("Delete this test link?")) return;
     try {
       await testLinkService.deleteTest(id);
+      setTestList((prevLinks) => prevLinks!.filter(link => link.id !== id))
     } catch (err: any) {
       setIsError(true);
       setErrorMsg(err.response.data.message);
@@ -78,12 +75,14 @@ const TestLinkManager: React.FC = () => {
     setSelectedTestId(testId);
     setAttemptLoading(true);
 
-    const res = await studentAttemptService.getStudentAttempts(testId);
-
-    if (res.success && res.payload) {
-      setStudentAttempts(res.payload.students);
+    try{
+      const res = await studentAttemptService.getStudentAttemptsDetails(testId);
+      setStudentAttempts(res.payload!.students);
+    }catch(err: any){
+      setIsError(true);
+      setErrorMsg(err.response.data.message);
     }
-
+    
     setAttemptLoading(false);
   };
 

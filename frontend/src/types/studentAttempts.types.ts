@@ -6,7 +6,6 @@ export interface Student {
 }
 
 export interface Problem {
-  _id: string;
   id: string;
   title: string;
   difficulty: string;
@@ -15,19 +14,31 @@ export interface Problem {
 export interface StudentAttempt {
   id: string;
   student_id: string;
+  test_id: string;
   problem_id: string;
   started_at: string;
   expires_at: string;
   is_submitted: boolean;
   is_active: boolean;
+  isDeleted: boolean;
+}
+
+export interface StudentAttemptResponse {
+  studentAttempts: StudentAttempt;
+}
+
+
+export interface Students {
+  id: string;
+  student_id: string;
+  problem_id: string;
+  started_at: string;
+  expires_at: string;
+  is_active: boolean;
   student: Student;
   problem: Problem;
 }
 
-export interface GetStudentAttemptsResponse {
-  success: boolean;
-  message: string;
-  payload: {
-    students: StudentAttempt[];
-  };
+export interface StudentAttemptsDetailsResponse {
+  students: Student[];
 }
