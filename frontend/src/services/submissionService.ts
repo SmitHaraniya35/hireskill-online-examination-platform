@@ -1,19 +1,9 @@
-import axios from '../services/axiosInstance';
+import axios from 'axios';
+import { type GetSubmissionResponse, type SubmitResponse, type RunData, type RunResponse, type SubmitData } from '../types/submission.types';
+import type { axiosResponse } from '../types/index.types';
 
-const API_URL = 'https://marvella-uncontributed-stephania.ngrok-free.dev/api/submission';
+const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/submission`;
 
-// export interface SubmissionData {
-//   student_attempt_id: string;
-//   problem_id: string;
-//   language: string;
-//   source_code: string;
-//   total_test_cases: number;
-//   passed_test_cases: number;
-//   status: string;
-//   execution_time?: string;
-//   memory_used?: string;
-// } 
-import type{ RunCode,SubmitCode,RunCodeResponse, axiosResponse, RunCodeResult } from '../types/submission.types';
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('admin_token');
@@ -27,33 +17,22 @@ const getAuthHeaders = () => {
 };
 
 
-const apiService = {
-    runCodeService: async (inputData: RunCode) => {
-        try {
-            const res  = await axios.post<axiosResponse<RunCodeResult> >(`${API_URL}/run`, inputData, getAuthHeaders());
-            return res.data.payload;
-        } catch (error: any) {
-            return { success: false, message: error.response?.data?.message || "Failed to create link" };
-        }
+const submissionService = {
+
+    runCodeService: async (inputData: RunData) => {
+        const response  = await axios.post<axiosResponse<RunResponse> >(`${API_URL}/run`, inputData, getAuthHeaders());
+        return response.data;
     },
 
-    submitCodeService: async (inputData:SubmitCode ) => {
-        try{
-            const response = await axios.post(`${API_URL}/submit`, inputData, getAuthHeaders());
-            return { success: true, payload: response.data.payload };
-        } catch (error: any) {
-            return { success: false, message: error.response?.data?.message || "Failed to submit code" };
-        }
+    submitCodeService: async (inputData:SubmitData ) => {
+        const response = await axios.post<axiosResponse<SubmitResponse>>(`${API_URL}/submit`, inputData, getAuthHeaders());
+        return response.data;
     },
-    fetchTestCaseOutput: async (submissionId: string) => {
-        try{
-            const res = await axios.get(`${API_URL}/${submissionId}`, getAuthHeaders());
-            console.log(res.data);
-            return res.data;
-        }catch(error : any){
 
-        }
+    getSubmissionService: async (submissionId: string) => {
+        const response = await axios.get<axiosResponse<GetSubmissionResponse>>(`${API_URL}/${submissionId}`, getAuthHeaders());
+        return response.data;
     }
 };
 
-export default apiService;
+export default submissionService;
