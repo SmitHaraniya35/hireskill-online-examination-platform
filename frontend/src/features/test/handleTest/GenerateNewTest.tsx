@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import testLinkService from "../../../services/test.services";
 import useLockBodyScroll from "../../../hooks/useLockBodyScroll";
 import type { Test } from "../../../types/test.types";
-
+import { testSchema, type TestFormInput } from '../../../validators/GenerateNewTest.validators'
+import { toast } from "react-toastify";
 interface GenerateProps {
   closeModal: () => void;
   refreshLinks: () => void;
@@ -16,23 +19,37 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
   editData,
   mode,
 }) => {
-  const [title, setTitle] = useState("");
-  const [selectDate, setSelectDate] = useState<Date | null>(null);
-  const [expiryTime, setExpiryTime] = useState<string>("23:59");
-  const [duration, setDuration] = useState("");
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const [day, setDay] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
 
   const dayRef = useRef<HTMLInputElement | null>(null);
   const monthRef = useRef<HTMLInputElement | null>(null);
   const yearRef = useRef<HTMLInputElement | null>(null);
 
   const isEdit = mode === "edit";
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<TestFormInput>({
+    resolver: zodResolver(testSchema),
+    defaultValues: {
+      title: "",
+      duration: "",
+      expiry_time: "23:59",
+      day: "",
+      month: "",
+      year: "",
+    },
+  });
+
+  const day = watch("day");
+  const month = watch("month");
+  const year = watch("year");
 
   useLockBodyScroll(true);
 
@@ -41,104 +58,63 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
     if (isEdit && editData) {
       const testObj: Test = editData;
 
-      setTitle(testObj.title);
-      setDuration(String(testObj.duration_minutes));
+      setValue("title", testObj.title);
+      setValue("duration", String(testObj.duration_minutes));
 
       const exp = testObj.expiration_at;
       if (exp) {
         const parsed = new Date(exp);
         if (!isNaN(parsed.getTime())) {
-          setSelectDate(parsed);
+          setValue("day", String(parsed.getDate()).padStart(2, "0"));
+          setValue("month", String(parsed.getMonth() + 1).padStart(2, "0"));
+          setValue("year", String(parsed.getFullYear()));
+          
           const hh = String(parsed.getHours()).padStart(2, "0");
           const mm = String(parsed.getMinutes()).padStart(2, "0");
-          setExpiryTime(`${hh}:${mm}`);
+          setValue("expiry_time", `${hh}:${mm}`);
         }
       }
-    } else {
-      setTitle("");
-      setSelectDate(null);
-      setDuration("");
-      setExpiryTime("23:59");
     }
-  }, [editData, isEdit]);
+  }, [editData, isEdit, setValue]);
 
-  // Sync individual inputs with selectDate object
-  useEffect(() => {
-    if (selectDate) {
-      setDay(String(selectDate.getDate()).padStart(2, "0"));
-      setMonth(String(selectDate.getMonth() + 1).padStart(2, "0"));
-      setYear(String(selectDate.getFullYear()));
-    }
-  }, [selectDate]);
-
-  const updateSelectDateFromParts = (d: string, m: string, y: string) => {
-    if (!d || !m || y.length < 4) {
-      setSelectDate(null);
-      return;
-    }
-
-    const dd = Number(d);
-    const mm = Number(m);
-    const yyyy = Number(y);
-    const constructed = new Date(yyyy, mm - 1, dd);
-
-    if (
-      constructed.getFullYear() === yyyy &&
-      constructed.getMonth() === mm - 1 &&
-      constructed.getDate() === dd
-    ) {
-      setSelectDate(constructed);
-    } else {
-      setSelectDate(null);
-    }
+  const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
+    setValue("day", val, { shouldValidate: true });
+    if (val.length === 2) monthRef.current?.focus();
   };
 
-  const handleDayChange = (val: string) => {
-    const sanitized = val.replace(/[^0-9]/g, "").slice(0, 2);
-    setDay(sanitized);
-    if (sanitized.length === 2) monthRef.current?.focus();
-    updateSelectDateFromParts(sanitized, month, year);
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
+    setValue("month", val, { shouldValidate: true });
+    if (val.length === 2) yearRef.current?.focus();
   };
 
-  const handleMonthChange = (val: string) => {
-    const sanitized = val.replace(/[^0-9]/g, "").slice(0, 2);
-    setMonth(sanitized);
-    if (sanitized.length === 2) yearRef.current?.focus();
-    updateSelectDateFromParts(day, sanitized, year);
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
+    setValue("year", val, { shouldValidate: true });
   };
 
-  const handleYearChange = (val: string) => {
-    const sanitized = val.replace(/[^0-9]/g, "").slice(0, 4);
-    setYear(sanitized);
-    updateSelectDateFromParts(day, month, sanitized);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: TestFormInput) => {
     setLoading(true);
-
-    if (!title.trim() || !selectDate || !duration || !expiryTime) {
-      alert("Please fill all fields");
-      setLoading(false);
-      return;
-    }
+    setIsError(false);
+    setErrorMsg("");
 
     // --- TIMEZONE FIX LOGIC ---
-    // Instead of toISOString() which converts to UTC, we build the string manually
-    // to keep the "Wall Clock" time exactly as the user entered it.
-    const [hh, mm] = expiryTime.split(":").map(Number);
-    const yyyy = selectDate.getFullYear();
-    const monthStr = String(selectDate.getMonth() + 1).padStart(2, "0");
-    const dayStr = String(selectDate.getDate()).padStart(2, "0");
+    const [hh, mm] = data.expiry_time.split(":").map(Number);
+    const yyyy = Number(data.year);
+    const monthNum = Number(data.month);
+    const dayNum = Number(data.day);
+    
+    const monthStr = String(monthNum).padStart(2, "0");
+    const dayStr = String(dayNum).padStart(2, "0");
     const hourStr = String(hh).padStart(2, "0");
     const minStr = String(mm).padStart(2, "0");
 
-    // Constructing local ISO format: YYYY-MM-DDTHH:mm:ss
     const formattedExpiration = `${yyyy}-${monthStr}-${dayStr}T${hourStr}:${minStr}:59`;
 
     const testData = {
-      title: title.trim(),
-      duration_minutes: Number(duration),
+      title: data.title.trim(),
+      duration_minutes: Number(data.duration),
       expiration_at: formattedExpiration,
     };
 
@@ -147,22 +123,24 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
 
       if (isEdit && testId) {
         await testLinkService.updateTest(testId, testData);
+        toast.success("Test Updated Successfully!")
       } else {
         await testLinkService.createTest(testData);
+        toast.success("Test Created Successfully!")
       }
       refreshLinks();
       closeModal();
     } catch (err: any) {
       setIsError(true);
-      setErrorMsg(err.response.data.message);
+      setErrorMsg(err.response?.data?.message || "An error occurred");
     } finally {
       setLoading(false);
     }
   };
-
+  
   return (
     <div className="p-5">
-      <div className="mb-8">
+      <div className="mb-4"> {/* Reduced margin from 8 to 4 */}
         <h2 className="text-2xl font-semibold text-gray-900">
           {isEdit ? "Update test" : "Generate new test"}
         </h2>
@@ -171,88 +149,113 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-gray-700">Title</label>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col">
+        {/* Fixed height for top-level server errors */}
+        <div className="min-h-[32px] mb-2">
+          {isError && errorMsg && (
+            <div className="bg-red-50 text-red-500 p-2 rounded-lg text-xs border border-red-100 flex items-center gap-2">
+              ⚠️ {errorMsg}
+            </div>
+          )}
+        </div>
+
+        {/* Title Field */}
+        <div className="flex flex-col">
+          <label className="text-sm font-semibold text-gray-700 mb-1">Title</label>
           <input
             type="text"
             placeholder="Enter role / exam name"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none transition"
-            required
+            {...register("title")}
+            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 focus:bg-white focus:border-[#1DA077] outline-none transition ${
+              errors.title ? "border-red-400" : "border-gray-200"
+            }`}
           />
-        </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-gray-700">
-            Select Date
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              ref={dayRef}
-              placeholder="DD"
-              value={day}
-              onChange={(e) => handleDayChange(e.target.value)}
-              className="w-[72px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none"
-            />
-            <span className="text-gray-500 font-bold">/</span>
-            <input
-              ref={monthRef}
-              placeholder="MM"
-              value={month}
-              onChange={(e) => handleMonthChange(e.target.value)}
-              className="w-[72px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none"
-            />
-            <span className="text-gray-500 font-bold">/</span>
-            <input
-              ref={yearRef}
-              placeholder="YYYY"
-              value={year}
-              onChange={(e) => handleYearChange(e.target.value)}
-              className="w-[104px] text-center px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none"
-            />
+          {/* Reserved Space for Error */}
+          <div className="h-5 flex items-center">
+            {errors.title && (
+              <p className="text-red-500 text-[11px] ml-1">{errors.title.message}</p>
+            )}
           </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-gray-700">
-            Duration (minutes)
-          </label>
-          <input
-            placeholder="Enter duration"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none transition"
-            required
-          />
+        {/* Date Field */}
+        <div className="flex flex-col">
+          <label className="text-sm font-semibold text-gray-700 mb-1">Select Date</label>
+          <div className="flex items-center gap-2">
+            <input
+              {...register("day")}
+              placeholder="DD"
+              maxLength={2}
+              className={`w-18 text-center px-3 py-2 border rounded-lg bg-gray-50 outline-none ${
+                errors.day ? "border-red-400" : "border-gray-200"
+              }`}
+            />
+            <span className="text-gray-500 font-bold">/</span>
+            <input
+              {...register("month")}
+              placeholder="MM"
+              maxLength={2}
+              className={`w-18 text-center px-3 py-2 border rounded-lg bg-gray-50 outline-none ${
+                errors.month ? "border-red-400" : "border-gray-200"
+              }`}
+            />
+            <span className="text-gray-500 font-bold">/</span>
+            <input
+              {...register("year")}
+              placeholder="YYYY"
+              maxLength={4}
+              className={`w-26 text-center px-3 py-2 border rounded-lg bg-gray-50 outline-none ${
+                errors.year ? "border-red-400" : "border-gray-200"
+              }`}
+            />
+          </div>
+          <div className="h-5 flex items-center">
+            {(errors.day || errors.month || errors.year) && (
+              <p className="text-red-500 text-[11px] ml-1">Valid date is required</p>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-sm font-semibold text-gray-700">
-            Expiry Time
-          </label>
+        {/* Duration Field */}
+        <div className="flex flex-col">
+          <label className="text-sm font-semibold text-gray-700 mb-1">Duration (minutes)</label>
+          <input
+            placeholder="Enter duration"
+            {...register("duration")}
+            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 focus:bg-white focus:border-[#1DA077] outline-none transition ${
+              errors.duration ? "border-red-400" : "border-gray-200"
+            }`}
+          />
+          <div className="h-5 flex items-center">
+            {errors.duration && (
+              <p className="text-red-500 text-[11px] ml-1">{errors.duration.message}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Expiry Field */}
+        <div className="flex flex-col">
+          <label className="text-sm font-semibold text-gray-700 mb-1">Expiry Time</label>
           <input
             type="time"
-            value={expiryTime}
-            onChange={(e) => setExpiryTime(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-[#1DA077] focus:ring-4 focus:ring-[#1DA077]/10 outline-none"
-            required
+            {...register("expiry_time")}
+            className={`w-full px-4 py-3 border rounded-xl bg-gray-50 focus:bg-white focus:border-[#1DA077] outline-none ${
+              errors.expiry_time ? "border-red-400" : "border-gray-200"
+            }`}
           />
+          <div className="h-5 flex items-center">
+            {errors.expiry_time && (
+              <p className="text-red-500 text-[11px] ml-1">{errors.expiry_time.message}</p>
+            )}
+          </div>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[#1DA077] text-white py-4 rounded-2xl font-bold text-lg shadow-md hover:bg-[#148562] hover:-translate-y-0.5 transition disabled:opacity-50"
+          className="w-full bg-[#1DA077] text-white py-4 rounded-2xl font-bold text-lg shadow-md hover:bg-[#148562] hover:-translate-y-0.5 transition disabled:opacity-50 mt-2"
         >
-          {loading
-            ? isEdit
-              ? "Updating..."
-              : "Creating..."
-            : isEdit
-              ? "Update test"
-              : "Create test"}
+          {loading ? "Processing..." : isEdit ? "Update test" : "Create test"}
         </button>
       </form>
     </div>
