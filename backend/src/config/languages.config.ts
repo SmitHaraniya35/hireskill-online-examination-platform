@@ -1,20 +1,28 @@
 export interface LanguageConfig {
   extension: string;
   image: string;
-  buildCommand?: (filename: string) => string | null;
-  runCommand: (filename: string) => string;
+  compile?: string[] | null;
+  run: string[];
 }
+
 export const languages: Record<string, LanguageConfig> = {
-  javascript: {
-    extension: "js",
-    image: "node:20-alpine",
-    runCommand: (filename: string) => `timeout 3s node ${filename}`,
+  cpp: {
+    image: "gcc:latest",
+    extension: "cpp",
+    compile: ["g++", "/app/Main.cpp", "-o", "/app/Main"],
+    run: ["/app/Main"],
   },
+
   c: {
+    image: "gcc:latest",
     extension: "c",
-    image: "gcc:13-alpine",
-    buildCommand: (filename: string) =>
-      `gcc ${filename} -o ${filename.split(".")[0]}`,
-    runCommand: (filename: string) => `timeout 3s ./${filename.split(".")[0]}`,
+    compile: ["gcc", "/app/Main.c", "-o", "/app/Main"],
+    run: ["/app/Main"],
+  },
+
+  js: {
+    image: "node:20-alpine",
+    extension: "js",
+    run: ["node", "/app/Main.js"],
   },
 };
