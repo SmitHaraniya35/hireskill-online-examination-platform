@@ -4,6 +4,7 @@ import AddNewProblem from './AddNewProblem';
 import Edit from '../../assets/Edit.svg';
 import Delete from '../../assets/Delete.svg';
 import type { CodingProblemData } from '../../types/codingProblem.types';
+import { toast } from 'react-toastify';
 
 type ViewMode = 'list' | 'form';
 
@@ -59,6 +60,7 @@ const CodingProblem: React.FC = () => {
     {
       try{
         await codingProblemService.deleteCodingProblem(uuid);
+        toast.success("Problem Deleted Successfully!")
         setCodingProblemList((prev) => prev ? prev.filter((p) => p.id !== uuid): []);
       }catch(err: any){
         setIsError(true);
