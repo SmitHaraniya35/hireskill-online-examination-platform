@@ -32,7 +32,7 @@ export const submitCode = async (req: AuthRequest, res: Response, next: NextFunc
             submissions: []
         }; 
 
-        const { data: testCasesList } = (await getAllTestCasesByProblemIdService(problem_id));
+        const { testCases: testCasesList } = (await getAllTestCasesByProblemIdService(problem_id));
 
         const testCasesIdList: Array<string> = [] 
 
