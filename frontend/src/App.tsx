@@ -10,16 +10,16 @@ import TestLinkManager from './features/test/handleTest/TestsManager.tsx'
 import CodingProblem from './features/problems/CodingProblems.tsx'
 import AddNewProblem from './features/problems/AddNewProblem.tsx'
 import LandingPage from './components/LandingPage.tsx'
-import TestEntry from './features/test/evaluateTest/TestEntry.tsx'
-import TestInstruction from './features/test/evaluateTest/TestInstruction.tsx'
-import CodeEditor from './features/test/evaluateTest/codingSection/CodeEditor.tsx'
 import AdminRoutes from './routes/AdminRoutes.tsx'
-import Navbar from './components/shared/Navbar.tsx'
+// import Navbar from './components/shared/Navbar.tsx'
+import TestEntry from './features/test/CodingPlatform/TestEntry.tsx'
+import TestInstruction from './features/test/CodingPlatform/TestInstruction.tsx'
+import CodingSection from './features/test/CodingPlatform/CodingSection/CodingSection.tsx'
 
 const App: React.FC = () => {
   return (
     <>
-      <Navbar/>
+      {/* <Navbar/> */}
       <Routes>
         <Route path="/" element={<Navigate to="/landing-page" />} />
 
@@ -47,7 +47,7 @@ const App: React.FC = () => {
         {/* Candidate test flow */}
         <Route path="/test/:slug" element={<TestEntry />} />
         <Route path="/test/:slug/instruction" element={<TestInstruction />} />
-        <Route path="/test/:slug/editor/:studentAttemptId" element={<CodeEditor />} />
+        <Route path="/test/:slug/editor/:studentAttemptId" element={<CodingSection />} />
         
         <Route path="/*" element={<NotFound />} />
       </Routes>
