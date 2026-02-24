@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authService from "../../../services/auth.services";
-import { forgotPasswordSchema, type ForgotPasswordInput } from '../../../validators/auth.validator'
+import { forgotPasswordSchema, type ForgotPasswordInput } from '../../../validators/auth.validators'
 
 const ForgotPassword: React.FC = () => {
   const [serverError, setServerError] = useState("");

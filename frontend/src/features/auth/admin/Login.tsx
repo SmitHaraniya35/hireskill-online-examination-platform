@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '../../../context/authContext';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { loginSchema, type LoginInput } from '../../../validators/auth.validator' 
+import { loginSchema, type LoginInput } from '../../../validators/auth.validators' 
+import {toast} from 'react-toastify';
 
 const Login: React.FC = () => {
     const [serverError, setServerError] = useState('');
@@ -26,6 +27,7 @@ const Login: React.FC = () => {
         setServerError('');
         try {
             await login(data.email, data.password);
+            toast.success("Successfully Loggedin");
             navigate('/admin/dashboard');
         } catch (err: any) {
             setServerError(err.message || 'Invalid email or password.');

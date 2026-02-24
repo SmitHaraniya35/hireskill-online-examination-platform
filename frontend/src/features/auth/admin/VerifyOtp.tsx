@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authService from "../../../services/auth.services";
-import { verifyOtpSchema, type VerifyOtpInput } from  '../../../validators/auth.validator'
+import { verifyOtpSchema, type VerifyOtpInput } from  '../../../validators/auth.validators'
 
 const VerifyOtp: React.FC = () => {
   const [serverError, setServerError] = useState("");
