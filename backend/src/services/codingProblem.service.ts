@@ -45,8 +45,17 @@ export const createCodingProblemService = async (
 };
 
 export const getCodingProblemByIdService = async (id: string) => {
-  const codingProblem: CodingProblemDocument | null =
-    await CodingProblem.findByIdActive(id);
+  const codingProblem: CodingProblemData | null = await CodingProblem.findByIdActive(
+    id,
+    {
+      _id: 0, 
+      created_by: 0, 
+      createdAt: 0, 
+      updatedAt: 0, 
+      deletedAt: 0, 
+      isDeleted: 0
+    }
+  );
 
   if (!codingProblem) {
     throw new HttpError(
@@ -59,8 +68,16 @@ export const getCodingProblemByIdService = async (id: string) => {
 };
 
 export const getAllCodingProblemsService = async () => {
-  const codingProblemList: CodingProblemDocument[] =
-    await CodingProblem.findActive();
+  const codingProblemList: CodingProblemData[] = await CodingProblem.findActive({},
+    { 
+      _id: 0, 
+      created_by: 0, 
+      createdAt: 0, 
+      updatedAt: 0, 
+      deletedAt: 0, 
+      isDeleted: 0
+    }
+  );
   if (!codingProblemList.length) {
     throw new HttpError(
       ERROR_MESSAGES.CODING_PROBLEMS_NOT_FOUND,
@@ -160,7 +177,7 @@ export const createCodingProblemWithTestCasesService = async (
 
   const data = await createManyTestCasesService(inputTestCases);
 
-  return { codingProblem, data };
+  return { codingProblem, testCases: data.testCases };
 };
 
 export const selectRandomProblemService = async () => {
@@ -188,7 +205,7 @@ export const getCodingProblemWithTestCasesService = async (id: string) => {
   }).populate({
     path: "testcases",
     match: { isDeleted: false },
-    select: "id input expected_output is_hidden -_id",
+    select: "id input expected_output is_hidden -_id -problem_id",
   });
 
   if (!codingProblemWithTestCases) {

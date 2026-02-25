@@ -150,11 +150,6 @@ export const getCodingProblemWithTestCases = async (
   next: NextFunction,
 ) => {
   try {
-    const admin = req.user;
-    if (!admin) {
-      return res.badRequest(ERROR_MESSAGES.UNAUTHORIZED_USER);
-    }
-
     const { id } = req.allParams;
     if (!id) {
       return res.badRequest(ERROR_MESSAGES.CODING_PROBLEM_ID_REQUIRED);
