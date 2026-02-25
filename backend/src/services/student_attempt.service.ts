@@ -158,7 +158,15 @@ export const  validateStudentAttemptAndGetCodingProblemIdService = async (id: st
 };
 
 export const getStudentAttemptByIdService = async (id: string) => {
-  const studentAttempt = await StudentAttempt.findOneActive({ id });
+  const studentAttempt = await StudentAttempt.findOneActive({ id },
+    {
+      _id: 0,
+      createdAt: 0,
+      updatedAt: 0,
+      deletedAt: 0,
+      isDeleted: 0
+    }
+  );
 
   if (!studentAttempt) {
     throw new HttpError(
