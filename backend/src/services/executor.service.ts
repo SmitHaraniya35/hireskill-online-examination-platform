@@ -819,3 +819,276 @@
 // };
 
 // const normalize = (str: string) => str.trim().replace(/\r/g, "");
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////// 1 Container + Combined input and output with specific token //////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/* code-----
+const fs = require('fs');\nconst INPUT_TOKEN = \"__JUDGE_INPUT_END__\";\nconst RESULT_START = \"__RESULT_START__\";\nconst RESULT_END = \"__RESULT_END__\";\n\nconst raw = fs.readFileSync(0, 'utf-8').trim();\nconst testCases = raw.split(INPUT_TOKEN);\n\nfor (let index = 0; index < testCases.length; index++) {\n    const lines = testCases[index].trim().split('\\n');\n    if (lines.length < 3) continue;\n\n    let pointer = 0;\n    const n = Number(lines[pointer++]);\n    const arr = lines[pointer++].split(' ').map(Number);\n    const x = Number(lines[pointer++]);\n\n    let first = -1, last = -1;\n\n    for (let i = 0; i < n; i++) {\n        if (arr[i] === x) {\n            if (first === -1) first = i;\n            last = i;\n        }\n    }\n\n    console.log(`${RESULT_START}${index}__`);\n    console.log(first + \" \" + last);\n    console.log(`${RESULT_END}${index}__`);\n}
+*/
+
+// import { spawn } from "child_process";
+// import fs from "fs";
+// import path from "path";
+// import { languages } from "../config/languages.config.ts";
+// import { fileURLToPath } from "url";
+// import { Redis } from "ioredis";
+
+// const redis = new Redis({ host: "127.0.0.1", port: 6379 });
+
+// const TIME_LIMIT = 5000;
+
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+// const INPUT_TOKEN = "__JUDGE_INPUT_END__";
+
+// export const processSubmission = async function (
+//   jobId: string,
+//   language: string,
+//   code: string,
+//   testCases: { input: string; expected: string }[],
+// ) {
+//   const config = languages[language];
+//   if (!config) return;
+
+//   await redis.set(`job:${jobId}`, JSON.stringify({
+//     status: "running",
+//     results: [],
+//   }));
+
+//   const submissionId = Date.now().toString();
+//   const submissionsPath = path.join(__dirname, "../submissions", submissionId);
+//   fs.mkdirSync(submissionsPath, { recursive: true });
+
+//   // Write user code
+//   const filename = `Main.${config.extension}`;
+//   fs.writeFileSync(path.join(submissionsPath, filename), code);
+
+//   let results: any[] = [];
+
+//   try {
+//     // ✅ Compile once (if required)
+//     if (config.compile) {
+//         try {
+//             await runDocker(
+//                 submissionsPath,
+//                 config.image,
+//                 config.compile
+//             );
+//         } catch(err: any){
+//             await redis.set(`job:${jobId}`, JSON.stringify({
+//                 status: "Compilation Error",
+//                 error: err.message
+//             }));
+//             return;
+//         }
+//     }
+
+//     // ✅ Combine input with token
+//     const combinedInput =
+//       testCases
+//         .map(tc => tc.input.trim())
+//         .join(`\n${INPUT_TOKEN}\n`) +
+//       `\n${INPUT_TOKEN}\n`;
+
+//     const start = Date.now();
+
+//     // ✅ Run wrapper & stream output
+//     await runDockerStream(
+//       submissionsPath,
+//       config.image,
+//     //   ["sh", "judge-wrapper.sh"],
+//       config.run,
+//       combinedInput,
+//       async (index, output) => {
+//         const actual = normalize(output);
+//         const expected = normalize(testCases[index]!.expected);
+
+//         const result = {
+//           index,
+//           status: actual === expected ? "Accepted" : "Wrong Answer",
+//           output: actual,
+//           expected,
+//           time: Date.now()
+//         };
+
+//         results[index] = result;
+
+//         await redis.set(`job:${jobId}`, JSON.stringify({
+//           status: "running",
+//           results,
+//         }));
+//       }
+//     );
+
+//     await redis.set(`job:${jobId}`, JSON.stringify({
+//       status: "completed",
+//       time: Date.now() - start,
+//       results,
+//     }));
+
+//   } catch (err: any) {
+//     await redis.set(`job:${jobId}`, JSON.stringify({
+//       status: "failed",
+//       error: err.message
+//     }));
+//   } finally {
+//     fs.rmSync(submissionsPath, { recursive: true, force: true });
+//   }
+// };
+
+// const runDocker = (
+//   submissionsPath: string,
+//   image: string,
+//   command: string[],
+// ): Promise<void> => {
+
+//   return new Promise((resolve, reject) => {
+//     const docker = spawn("docker", [
+//       "run",
+//       "--rm",
+//       "-i",
+//       "--memory=256m",
+//       "--cpus=0.5",
+//       "--pids-limit=50",
+//       "--network=none",
+//       "-v",
+//       `${submissionsPath}:/app`,
+//       "-w",
+//       "/app",
+//       image,
+//       ...command,
+//     ]);
+
+//     let error = "";
+
+//     docker.stderr.on("data", d => error += d.toString());
+
+//     docker.on("close", (code) => {
+//       if (code !== 0) reject(new Error(error || "Compilation Error"));
+//       else resolve();
+//     });
+//   });
+// };
+
+// const runDockerStream = (
+//   submissionsPath: string,
+//   image: string,
+//   command: string[],
+//   input: string,
+//   onResult: (index: number, output: string) => Promise<void>,
+// ): Promise<void> => {
+
+//   return new Promise((resolve, reject) => {
+
+//     const docker = spawn("docker", [
+//       "run",
+//       "--rm",   
+//       "-i",
+//       "--memory=256m",
+//       "--cpus=0.5",
+//       "--pids-limit=50",
+//       "--network=none",
+//       "-v",
+//       `${submissionsPath}:/app`,
+//       "-w",
+//       "/app",
+//       image,
+//       ...command,
+//     ]);
+
+//     let buffer = "";
+//     let killed = false;
+
+//     const timer = setTimeout(() => {
+//       killed = true;
+//       docker.kill("SIGKILL");
+//     }, TIME_LIMIT);
+
+//     // docker.stdout.on("data", async (data) => {
+//     //   buffer += data.toString();
+
+//     //   while (true) {
+//     //     // const startMatch = buffer.match(/__JUDGE_START__(\d+)__/);
+//     //     // const endMatch = buffer.match(/__JUDGE_END__(\d+)__/);
+//     //     const startMatch = buffer.match(/__RESULT_START__(\d+)__/);
+//     //     const endMatch = buffer.match(/__RESULT_END__(\d+)__/);
+
+//     //     if (!startMatch || !endMatch) break;
+
+//     //     const index = Number(startMatch[1]);
+
+//     //     const startPos = buffer.indexOf(startMatch[0]);
+//     //     const endPos = buffer.indexOf(endMatch[0]);
+
+//     //     if (endPos < startPos) break;
+
+//     //     const output = buffer.substring(
+//     //       startPos + startMatch[0].length,
+//     //       endPos
+//     //     );
+
+//     //     buffer = buffer.slice(endPos + endMatch[0].length);
+
+//     //     await onResult(index, output);
+//     //   }
+//     // });
+
+//     docker.stdout.on("data", async (data) => {
+//         buffer += data.toString();
+
+//         while (true) {
+
+//             const startIndex = buffer.indexOf("__RESULT_START__");
+//             if (startIndex === -1) break;
+
+//             const startMatch = buffer
+//             .slice(startIndex)
+//             .match(/^__RESULT_START__(\d+)__/);
+
+//             if (!startMatch) break;
+
+//             const index = Number(startMatch[1]);
+//             const startToken = startMatch[0];
+
+//             const contentStart =
+//             startIndex + startToken.length;
+
+//             const endToken = `__RESULT_END__${index}__`;
+//             const endIndex = buffer.indexOf(endToken, contentStart);
+
+//             if (endIndex === -1) break; // wait for full block
+
+//             const output = buffer.slice(contentStart, endIndex);
+
+//             // remove processed part
+//             buffer = buffer.slice(endIndex + endToken.length);
+
+//             await onResult(index, output);
+//         }
+//     });
+
+//     docker.stderr.on("data", (data) => {
+//       console.error("stderr:", data.toString());
+//     });
+
+//     docker.stdin.write(input);
+//     docker.stdin.end();
+
+//     docker.on("close", (code) => {
+//       clearTimeout(timer);
+//       if (killed) return reject(new Error("Time Limit Exceeded"));
+//       if (code === 137) return reject(new Error("Memory Limit Exceeded"));
+//       if (code === 139) return reject(new Error("Runtime Error (Segmentation Fault) "));
+//       if (code !== 0) return reject(new Error("Runtime Error"));
+
+//       resolve();
+//     });
+//   });
+// };
+
+// const normalize = (str: string) =>
+//   str.trim().replace(/\r/g, "");

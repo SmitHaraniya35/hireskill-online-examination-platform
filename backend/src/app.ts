@@ -12,14 +12,14 @@ import submissionRoutes from "./routes/submission.routes.ts";
 import studentAttemptRoutes from "./routes/studentAttempt.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
 // import { validateApiKey } from "./middlewares/apikey.middleware.ts";
-import type { Request, Response } from "express";
-import { executeCode } from "./services/executor.service.ts";
+// import { submissionQueue } from "./queue/submission.queue.ts";
+// import { redis } from "./store/redis.store.ts";
 
 const app = express();
 
 // Security & core
 app.use(cors({
-    origin: "http://192.168.0.104:5173",
+    origin: "http://192.168.0.106:5173",
     credentials: true
 }));
 
@@ -44,23 +44,36 @@ app.use("/api/student", studentRoutes);
 app.use("/api/submission", submissionRoutes);
 app.use("/api/student-attempt", studentAttemptRoutes);
 
-// app.post("/api/execute", async (req: Request, res: Response) => {
-//   const { language, code, input, expected_output } = req.body;
-
-//   if (!language || !code) {
-//     return res.status(400).json({
-//       error: "Language and code are required",
-//     });
-//   }
-
+// app.post("/api/submit", async (req, res) => {
 //   try {
-//     const result = await executeCode(language, code, input, expected_output);
-//     return res.json(result);
-//   } catch (err) {
-//     return res.status(500).json({
-//       error: `Execution failed: ${err}`,
+//     const { language, code, testCases } = req.body;
+
+//     const job = await submissionQueue.add("submission", {
+//       language,
+//       code,
+//       testCases,
 //     });
+
+//     await redis.set(
+//       `job:${job.id}`,
+//       JSON.stringify({
+//         status: "pending",
+//         results: [],
+//       }),
+//     );
+
+//     res.json({ jobId: job.id });
+//   } catch (err: any) {
+//     console.log(err);
+//     res.status(500).json({ msg: "Internal server error" });
 //   }
+// });
+
+// app.get("/api/result/:jobId", async (req, res) => {
+//   const data = await redis.get(`job:${req.params.jobId}`);
+//   if (!data) return res.status(404).json({ message: "Not found" });
+
+//   res.json(JSON.parse(data));
 // });
 
 // Custom Error Middleware
