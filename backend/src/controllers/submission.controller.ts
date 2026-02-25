@@ -38,10 +38,10 @@ export const submitCode = async (req: AuthRequest, res: Response, next: NextFunc
 
         for (let i = 0; i < testCasesList.length; i++) {
             let obj = {
-                source_code,
+                source_code: Buffer.from(source_code, "utf8").toString("base64"),
                 language_id,
-                stdin: testCasesList[i]?.input,
-                expected_output: testCasesList[i]?.expected_output
+                stdin: Buffer.from(testCasesList[i]?.input!, "utf-8").toString("base64"),
+                expected_output: Buffer.from(testCasesList[i]?.expected_output!, "utf-8").toString("base64")
             } as Judge0Submission;
 
             inputs.submissions.push(obj);

@@ -8,7 +8,12 @@ import { HttpError } from "../utils/httpError.utils.ts";
 
 export const executeCode = async (input: Judge0Submission) => {
     try {
-        const response: Response = await fetch(`${process.env.JUDGE0_API}/?base64_encoded=false&wait=true`, {
+        input.source_code = Buffer.from(input.source_code, "utf-8").toString("base64")
+        if(input.stdin)
+            input.stdin = Buffer.from(input.stdin, "utf-8").toString("base64")
+        if(input.expected_output)
+            input.expected_output = Buffer.from(input.expected_output, "utf-8").toString("base64")
+        const response: Response = await fetch(`${process.env.JUDGE0_API}/?base64_encoded=true&wait=true`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -24,8 +29,17 @@ export const executeCode = async (input: Judge0Submission) => {
         }
 
         const data: Judge0Result = await response.json();
+
+        if(data.compile_output)
+            data.compile_output = Buffer.from(data.compile_output!, "base64").toString("utf-8")
+        if(data.stderr)
+            data.stderr = Buffer.from(data!.stderr!, "base64").toString("utf-8")
+        if(data.stdout)
+            data.stdout = Buffer.from(data!.stdout!, "base64").toString("utf-8")
+
         return data;
     } catch (err: any){
+        console.log(err)
         throw new HttpError(
             err.message,
             HttpStatusCode.BAD_GATEWAY
@@ -35,7 +49,7 @@ export const executeCode = async (input: Judge0Submission) => {
 
 export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission, testCasesIdList: Array<string>) => {
     try {
-        const response: Response = await fetch(`${process.env.JUDGE0_API}/batch/?base64_encoded=false&wait=true`,{
+        const response: Response = await fetch(`${process.env.JUDGE0_API}/batch/?base64_encoded=true&wait=true`,{
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -119,6 +133,12 @@ export const getJudge0SubmissionById = async (submissionId: string) => {
         }
 
         const data: Judge0Result = await response.json();
+        if(data.compile_output)
+            data.compile_output = Buffer.from(data.compile_output!, "base64").toString("utf-8")
+        if(data.stderr)
+            data.stderr = Buffer.from(data!.stderr!, "base64").toString("utf-8")
+        if(data.stdout)
+            data.stdout = Buffer.from(data!.stdout!, "base64").toString("utf-8")
         return { data };
     } catch (err: any){
         throw new HttpError(
