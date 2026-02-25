@@ -49,7 +49,6 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         stdin: problem.sample_input || "",
         expected_output: problem.sample_output || "",
       };
-
       const response = await submissionService.runCodeService(inputData);
 
       if (response.success && response.payload) {

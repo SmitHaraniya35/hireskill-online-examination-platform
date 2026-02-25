@@ -212,6 +212,7 @@ const CodingSection: React.FC = () => {
           {problem!==undefined &&
             <TestCaseOutputSection
             testCases={testCases}
+            setTestCases={setTestCases}
             sampleInput={problem.sample_input}
             sampleOutput={problem.sample_output}
           />

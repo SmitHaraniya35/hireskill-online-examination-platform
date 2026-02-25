@@ -1,36 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, type Dispatch, type SetStateAction } from "react";
 import submissionService from "../../../../services/submission.services";
 import type { TestCaseResult } from "../../../../types/editor.types";
 
 interface TestCaseOutputSectionProps {
   testCases: TestCaseResult[];
+  setTestCases: Dispatch<SetStateAction<TestCaseResult[]>>
   sampleInput?: string;
   sampleOutput?: string;
 }
 
 const TestCaseOutputSection: React.FC<TestCaseOutputSectionProps> = ({
   testCases,
+  setTestCases,
   sampleInput,
   sampleOutput,
 }) => {
   const [activeTab, setActiveTab] = useState(0);
-  const [localTestCases, setLocalTestCases] = useState<TestCaseResult[]>(testCases);
+  // const [localTestCases, setLocalTestCases] = useState<TestCaseResult[]>(testCases);
+  const totalTestCases = testCases.length;
+  const passedTestCases = 0;
 
   // Update local state when props change
   useEffect(() => {
-    setLocalTestCases(testCases);
+    setTestCases(testCases);
   }, [testCases]);
 
   // Poll for submission results
   useEffect(() => {
-    const pendingCases = localTestCases.filter((tc) =>
+    const pendingCases = testCases.filter((tc) =>
       ["In Queue", "Processing"].includes(tc.status)
     );
 
     if (pendingCases.length === 0) return;
 
     const interval = setInterval(async () => {
-      const updatedCases = [...localTestCases];
+      const updatedCases = [...testCases];
 
       for (let i = 0; i < updatedCases.length; i++) {
         const tc = updatedCases[i];
@@ -38,7 +42,7 @@ const TestCaseOutputSection: React.FC<TestCaseOutputSectionProps> = ({
 
         try {
           const response = await submissionService.getSubmissionService(tc.submissionId);
-          
+
           if (response.success && response.payload) {
             const newStatus = response.payload.data.status?.description || "Processing";
             
@@ -49,6 +53,7 @@ const TestCaseOutputSection: React.FC<TestCaseOutputSectionProps> = ({
                 output: response.payload.data.stdout || "",
                 apiRes: response.payload.data,
               };
+              setTestCases(updatedCases);
             }
           }
         } catch (error) {
@@ -56,15 +61,15 @@ const TestCaseOutputSection: React.FC<TestCaseOutputSectionProps> = ({
         }
       }
 
-      setLocalTestCases(updatedCases);
+      setTestCases(updatedCases);
     }, 2000); // Poll every 2 seconds
 
     return () => clearInterval(interval);
-  }, [localTestCases]);
+  }, [testCases]);
 
   // Determine what to display
-  const displayCases = localTestCases.length > 0 
-    ? localTestCases 
+  const displayCases = testCases.length > 0 
+    ? testCases 
     : [{
         testCaseId: "sample",
         submissionId: "sample",
@@ -75,7 +80,6 @@ const TestCaseOutputSection: React.FC<TestCaseOutputSectionProps> = ({
       } as TestCaseResult];
 
   const currentCase = displayCases[activeTab] || displayCases[0];
-
   // Status color utilities
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -155,7 +159,7 @@ const TestCaseOutputSection: React.FC<TestCaseOutputSectionProps> = ({
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-xs font-bold text-red-600 uppercase mb-2">Compilation Error</p>
             <pre className="text-sm text-red-700 font-mono whitespace-pre-wrap overflow-x-auto">
-              {currentCase.apiRes.compile_output}
+              {(currentCase.apiRes.compile_output)}
             </pre>
           </div>
         )}
