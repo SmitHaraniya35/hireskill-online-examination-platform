@@ -11,15 +11,14 @@ import CodingProblem from './features/problems/CodingProblems.tsx'
 import AddNewProblem from './features/problems/AddNewProblem.tsx'
 import LandingPage from './components/LandingPage.tsx'
 import AdminRoutes from './routes/AdminRoutes.tsx'
-// import Navbar from './components/shared/Navbar.tsx'
 import TestEntry from './features/test/CodingPlatform/TestEntry.tsx'
 import TestInstruction from './features/test/CodingPlatform/TestInstruction.tsx'
 import CodingSection from './features/test/CodingPlatform/CodingSection/CodingSection.tsx'
+import AdminLayout from './layouts/AdminLayout.tsx'
 
 const App: React.FC = () => {
   return (
     <>
-      {/* <Navbar/> */}
       <Routes>
         <Route path="/" element={<Navigate to="/landing-page" />} />
 
@@ -30,17 +29,19 @@ const App: React.FC = () => {
         <Route path="/admin/reset-password/" element={<ResetPassword />} />
         
         <Route element={<AdminRoutes/>}>
-          <Route path="/admin/dashboard" element={<Dashboard />}/>
-          <Route path="/admin/create-exam" element={<TestLinkManager/>} />
-          <Route path="/admin/coding-problem" element={<CodingProblem/>}/>
-          <Route path="/admin/coding-problem/add-new-problem"
-            element={
-              <AddNewProblem
-                closeModal={() => {}}
-                refreshLinks={() => {}}
-              />
-            }
-          />
+          <Route element={<AdminLayout/>}>
+            <Route path="/admin/dashboard" element={<Dashboard />}/>
+            <Route path="/admin/create-exam" element={<TestLinkManager/>} />
+            <Route path="/admin/coding-problem" element={<CodingProblem/>}/>
+            <Route path="/admin/coding-problem/add-new-problem"
+              element={
+                <AddNewProblem
+                  closeModal={() => {}}
+                  refreshLinks={() => {}}
+                />
+              }
+            />
+          </Route>
         </Route>
         
         
