@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import codingProblemService from "../../services/codingProblem.services";
-import AddNewProblem from './AddNewProblem';
-import Edit from '../../assets/Edit.svg';
-import Delete from '../../assets/Delete.svg';
-import type { CodingProblemData } from '../../types/codingProblem.types';
-import { toast } from 'react-toastify';
+import AddNewProblem from "./AddNewProblem";
+import Edit from "../../assets/Edit.svg";
+import Delete from "../../assets/Delete.svg";
+import type { CodingProblemData } from "../../types/codingProblem.types";
+import { toast } from "react-toastify";
+import ProblemCardSkeleton from "../../skeleton/ProblemCardSkeleton";
 
-type ViewMode = 'list' | 'form';
+type ViewMode = "list" | "form";
 
 const CodingProblem: React.FC = () => {
-  const [codingProblemList, setCodingProblemList] = useState<CodingProblemData[] | undefined>([]);
+  const [codingProblemList, setCodingProblemList] = useState<
+    CodingProblemData[] | undefined
+  >([]);
   const [loading, setLoading] = useState(true);
-  const [currentView, setCurrentView] = useState<ViewMode>('list');
-  const [selectedCodingProblemWithTestCases, setSelectedCodingProblemWithTestCases] = useState<CodingProblemData | null>(null);
+  const [currentView, setCurrentView] = useState<ViewMode>("list");
+  const [
+    selectedCodingProblemWithTestCases,
+    setSelectedCodingProblemWithTestCases,
+  ] = useState<CodingProblemData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -23,7 +29,7 @@ const CodingProblem: React.FC = () => {
     try {
       const res = await codingProblemService.getAllCodingProblems();
       setCodingProblemList(res.payload?.codingProblemList);
-    } catch(err: any) {
+    } catch (err: any) {
       setIsError(true);
       setErrorMsg(err.response.data.message);
     }
@@ -37,16 +43,19 @@ const CodingProblem: React.FC = () => {
   const handleCreate = () => {
     setSelectedCodingProblemWithTestCases(null);
     setIsEditMode(false);
-    setCurrentView('form');
+    setCurrentView("form");
   };
 
   const handleUpdate = async (uuid: string) => {
     setFormLoading(true);
     try {
-      const res = await codingProblemService.getCodingProblemWithTestCases(uuid);
-        setIsEditMode(true);
-        setSelectedCodingProblemWithTestCases(res.payload!.codingProblemWithTestCases!);
-        setCurrentView('form');
+      const res =
+        await codingProblemService.getCodingProblemWithTestCases(uuid);
+      setIsEditMode(true);
+      setSelectedCodingProblemWithTestCases(
+        res.payload!.codingProblemWithTestCases!,
+      );
+      setCurrentView("form");
     } catch (err: any) {
       setIsError(true);
       setErrorMsg(err.response.data.message);
@@ -56,13 +65,16 @@ const CodingProblem: React.FC = () => {
   };
 
   const handleDelete = async (uuid: string) => {
-    if (window.confirm('Are you sure you want to delete this coding problem?'))
-    {
-      try{
+    if (
+      window.confirm("Are you sure you want to delete this coding problem?")
+    ) {
+      try {
         await codingProblemService.deleteCodingProblem(uuid);
-        toast.success("Problem Deleted Successfully!")
-        setCodingProblemList((prev) => prev ? prev.filter((p) => p.id !== uuid): []);
-      }catch(err: any){
+        toast.success("Problem Deleted Successfully!");
+        setCodingProblemList((prev) =>
+          prev ? prev.filter((p) => p.id !== uuid) : [],
+        );
+      } catch (err: any) {
         setIsError(true);
         setErrorMsg(err.response.data.message);
       }
@@ -70,7 +82,7 @@ const CodingProblem: React.FC = () => {
   };
 
   const handleBackToList = () => {
-    setCurrentView('list');
+    setCurrentView("list");
     setSelectedCodingProblemWithTestCases(null);
     setIsEditMode(false);
   };
@@ -81,15 +93,15 @@ const CodingProblem: React.FC = () => {
   };
 
   const difficultyBadgeClass = (difficulty?: string) => {
-    switch ((difficulty || '').toLowerCase()) {
-      case 'easy':
-        return 'bg-green-100 text-green-700';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-700';
-      case 'hard':
-        return 'bg-red-100 text-red-700';
+    switch ((difficulty || "").toLowerCase()) {
+      case "easy":
+        return "bg-green-100 text-green-700";
+      case "medium":
+        return "bg-yellow-100 text-yellow-700";
+      case "hard":
+        return "bg-red-100 text-red-700";
       default:
-        return 'bg-gray-100 text-gray-700';
+        return "bg-gray-100 text-gray-700";
     }
   };
 
@@ -113,8 +125,10 @@ const CodingProblem: React.FC = () => {
       </header>
 
       {loading ? (
-        <div className="flex justify-center py-20 font-mono">
-          <div className="w-10 h-10 border-4 border-gray-300 border-t-[#1DA077] rounded-full animate-spin" />
+        <div className="flex flex-col gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <ProblemCardSkeleton key={index} />
+          ))}
         </div>
       ) : (
         <section className="flex flex-col gap-4 mt-8 font-mono">
@@ -130,10 +144,12 @@ const CodingProblem: React.FC = () => {
               >
                 <div>
                   <div className="flex items-center gap-3">
-                    <h3 className="font-bold text-lg text-gray-800">{problem.title}</h3>
+                    <h3 className="font-bold text-lg text-gray-800">
+                      {problem.title}
+                    </h3>
                     <span
                       className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${difficultyBadgeClass(
-                        problem.difficulty
+                        problem.difficulty,
                       )}`}
                     >
                       {problem.difficulty}
@@ -141,9 +157,9 @@ const CodingProblem: React.FC = () => {
                   </div>
 
                   <p className="text-sm text-gray-400 mt-1">
-                    <strong>Topic:</strong>{' '}
+                    <strong>Topic:</strong>{" "}
                     {Array.isArray(problem.topic)
-                      ? problem.topic.join(', ')
+                      ? problem.topic.join(", ")
                       : problem.topic}
                   </p>
                 </div>
@@ -198,7 +214,7 @@ const CodingProblem: React.FC = () => {
         >
           <path d="M19 12H5M12 19l-7-7 7-7" />
         </svg>
-        <span className='cursor-pointer'>Back to List</span>
+        <span className="cursor-pointer">Back to List</span>
       </button>
 
       {formLoading ? (
@@ -207,7 +223,7 @@ const CodingProblem: React.FC = () => {
         </div>
       ) : (
         <AddNewProblem
-          key={selectedCodingProblemWithTestCases?.id || 'new'}
+          key={selectedCodingProblemWithTestCases?.id || "new"}
           closeModal={handleBackToList}
           refreshLinks={handleFormSuccess}
           editData={selectedCodingProblemWithTestCases}
@@ -221,7 +237,7 @@ const CodingProblem: React.FC = () => {
     <>
       <div className="min-h-screen bg-[#f5f6f8]">
         <main className="max-w-[900px] mx-auto p-6">
-          {currentView === 'list' ? renderListView() : renderFormView()}
+          {currentView === "list" ? renderListView() : renderFormView()}
         </main>
       </div>
     </>

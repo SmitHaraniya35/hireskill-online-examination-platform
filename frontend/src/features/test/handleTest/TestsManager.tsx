@@ -82,7 +82,7 @@
 //       setIsError(true);
 //       setErrorMsg(err.response.data.message);
 //     }
-    
+
 //     setAttemptLoading(false);
 //   };
 
@@ -262,7 +262,6 @@
 
 // export default TestLinkManager;
 
-
 import React, { useEffect, useState } from "react";
 import testLinkService from "../../../services/test.services";
 import GenerateNewTest from "./GenerateNewTest";
@@ -275,6 +274,8 @@ import Delete from "../../../assets/Delete.svg";
 import type { Test, TestList } from "../../../types/test.types";
 import type { axiosResponse } from "../../../types/index.types";
 import { toast } from "react-toastify";
+import TestCardSkeleton from "../../../skeleton/TestCardSkeleton";
+
 
 const TestLinkManager: React.FC = () => {
   const [testList, setTestList] = useState<Test[] | undefined>([]);
@@ -327,8 +328,8 @@ const TestLinkManager: React.FC = () => {
     if (!window.confirm("Delete this test link?")) return;
     try {
       await testLinkService.deleteTest(id);
-      toast.success("Test Deleted Successfully!")
-      setTestList((prevLinks) => prevLinks!.filter(link => link.id !== id));
+      toast.success("Test Deleted Successfully!");
+      setTestList((prevLinks) => prevLinks!.filter((link) => link.id !== id));
     } catch (err: any) {
       setIsError(true);
       setErrorMsg(err.response?.data?.message || "Failed to delete test");
@@ -381,8 +382,10 @@ const TestLinkManager: React.FC = () => {
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20 font-mono">
-              <div className="w-10 h-10 border-4 border-gray-300 border-t-[#1DA077] rounded-full animate-spin" />
+            <div className="grid md:grid-cols-2 gap-4">
+              {Array.from({ length: 6 }).map((_, index) => (
+                <TestCardSkeleton key={index} />
+              ))}
             </div>
           ) : testList?.length === 0 ? (
             <div className="bg-white rounded-2xl shadow p-10 text-center text-gray-500">

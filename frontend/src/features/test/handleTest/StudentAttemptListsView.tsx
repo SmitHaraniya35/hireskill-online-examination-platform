@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import studentAttemptService from "../../../services/studentAttempt.services";
+import StudentAttemptListSkeleton from "../../../skeleton/StudentAttemptListSkeleton";
 
 interface StudentAttemptsProps {
   testId: string;
@@ -106,9 +107,11 @@ const StudentAttempts: React.FC<StudentAttemptsProps> = ({ testId, onBack }) => 
 
       <div className="bg-white rounded-2xl shadow overflow-hidden">
         {attemptLoading ? (
-          <div className="p-6 text-center text-gray-500">
-            Loading attempts...
-          </div>
+          <div className="flex flex-col gap-4">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <StudentAttemptListSkeleton key={index} />
+          ))}
+        </div>
         ) : studentAttempts.length === 0 ? (
           <div className="p-6 text-center text-gray-500">
             No student attempts found
