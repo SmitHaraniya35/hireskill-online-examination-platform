@@ -25,15 +25,7 @@ const TestEntry: React.FC = () => {
       try {
         setLoading(true);
         const response = await testFlowService.getTestBySlug(slug);
-        
-        if (response.success && response.payload?.test) {
-          setTest(response.payload.test);
-        } else {
-          setError({
-            isError: true,
-            message: response.message || "Failed to load test details",
-          });
-        }
+        setTest(response.payload!.test);
       } catch (err: any) {
         setError({
           isError: true,
@@ -43,7 +35,6 @@ const TestEntry: React.FC = () => {
         setLoading(false);
       }
     };
-
     fetchTest();
   }, [slug]);
 
@@ -57,25 +48,14 @@ const TestEntry: React.FC = () => {
     try {
       const response = await testFlowService.createStudent({ name, email, phone });
 
-      if (response.success && response.payload?.studentId) {
-        const studentId = response.payload.studentId;
+      const studentId = response.payload!.studentId;
         
         // Save test start timestamp
-        localStorage.setItem("test_start_time", new Date().toISOString());
+      localStorage.setItem("test_start_time", new Date().toISOString());
         
         // Navigate to instruction page with state
-        navigate(`/test/${slug}/instruction`, {
-          state: {
-            test,
-            studentId,
-          },
-        });
-      } else {
-        setError({
-          isError: true,
-          message: response.message || "Could not create student. Please try again.",
-        });
-      }
+      navigate(`/test/${slug}/instruction`, {state: {test,studentId}});
+      
     } catch (err: any) {
       setError({
         isError: true,

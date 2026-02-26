@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import Editor from "@monaco-editor/react";
 import submissionService from "../../../../services/submission.services";
-import type { CodingProblemData } from "../../../../types/codingProblem.types";
+import type { CodingProblemData, TestCaseData } from "../../../../types/codingProblem.types";
 import type { TestCaseResult } from "../../../../types/editor.types";
+import testFlowService from "../../../../services/testFlow.services";
 
 interface CodeEditorSectionProps {
   problem: CodingProblemData;
   code: string;
   setCode: (code: string) => void;
   language: string;
+  testCases: TestCaseResult[];
   setLanguage: (language: string) => void;
   setTestCases: (testCases: TestCaseResult[] | ((prev: TestCaseResult[]) => TestCaseResult[])) => void;
   setIsSubmitted: (submitted: boolean) => void;
@@ -40,22 +42,22 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
 
   const handleRunCode = async () => {
     if (!problem) return;
-
+    setTestCases([]);
     setIsRunning(true);
     try {
       const inputData = {
         language_id: language,
         source_code: code,
         stdin: problem.sample_input || "",
-        expected_output: problem.sample_output || "",
+        expected_output: problem.sample_output?.trimStart() || "",
       };
       const response = await submissionService.runCodeService(inputData);
-
+    
       if (response.success && response.payload) {
         // Create a single test case result for the sample
-        const sampleResult: TestCaseResult = {
-          testCaseId: "sample",
-          submissionId: "sample",
+        const sampleResult = {
+          testCaseId: "",
+          submissionId: response.payload.token,
           status: response.payload.status?.description || "Completed",
           input: problem.sample_input || "",
           output: response.payload.stdout || "",
@@ -63,6 +65,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
           apiRes: response.payload,
         };
         setTestCases([sampleResult]);
+        return sampleResult;
       } else {
         alert(response.message || "Failed to run code");
       }
@@ -85,6 +88,12 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
         problem_id: problem.id,
       };
 
+     const res =  await handleRunCode();
+      if(res && (res.apiRes?.compile_output || res.apiRes?.stderr )){
+        console.log("hello");
+        return;
+      }
+
       const response = await submissionService.submitCodeService(inputData);
 
       if (response.success && response.payload?.executionMappingList) {
@@ -103,7 +112,7 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
       } else {
         alert(response.message || "Failed to submit code");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submit code error:", error);
       alert("Failed to submit code. Please try again.");
     } finally {
@@ -176,4 +185,4 @@ const CodeEditorSection: React.FC<CodeEditorSectionProps> = ({
   );
 };
 
-export default CodeEditorSection;
+export default React.memo(CodeEditorSection);

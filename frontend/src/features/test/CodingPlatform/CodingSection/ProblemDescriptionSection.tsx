@@ -14,7 +14,7 @@ const ProblemDescriptionSection: React.FC<ProblemDescriptionSectionProps> = ({ p
 
       <div className="mb-4">
         <span className="inline-block px-3 py-1 text-sm font-semibold rounded-full 
-          {problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700' : 
+           {problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700' : 
            problem.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700' : 
            'bg-red-100 text-red-700'}">
           {problem.difficulty}
@@ -90,4 +90,4 @@ const ProblemDescriptionSection: React.FC<ProblemDescriptionSectionProps> = ({ p
   );
 };
 
-export default ProblemDescriptionSection;
+export default React.memo(ProblemDescriptionSection);
