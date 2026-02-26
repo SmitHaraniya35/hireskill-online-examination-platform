@@ -10,7 +10,6 @@ const testCaseSchema = z.object({
 export const problemSchema = z.object({
   title: z
     .string()
-    .min(1, 'Title is required')
     .min(3, 'Title must be at least 3 characters')
     .max(200, 'Title must not exceed 200 characters'),
   
@@ -31,7 +30,7 @@ export const problemSchema = z.object({
     .min(1, 'Problem description is required')
     .refine(
       (val) => val.replace(/<[^>]*>/g, '').trim().length >= 10,
-      'Problem description must be at least 10 characters (excluding HTML tags)'
+      'Problem description must be at least 10 characters'
     ),
   
   constraint: z
