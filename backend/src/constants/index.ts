@@ -116,6 +116,7 @@ export const ERROR_MESSAGES = {
   TEST_CREATION_FAILED: "Failed to creat test",
   TEST_DELETION_FAILED: "Failed to delete test",
   TEST_UPDATE_FAILED: "Failed to update test",
+  TEST_CLOSED_BY_ADMIN: "This test has been closed by the administrator",
 
   // Coding Problem
   CODING_PROBLEM_CREATION_FAILED: "Failed to create coding problem",

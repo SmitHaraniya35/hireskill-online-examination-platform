@@ -10,7 +10,7 @@ declare global {
             ok<T>(data?: T, message?: string): this;
             created<T>(data?: T, message?: string): this;
             
-            badRequest(message?: string): this;
+            badRequest(message?: string, errors?: string[] | null): this;
             unauthorized(message?: string): this;
             notFound(message?: string): this;
             internalServerError(message?: string): this;

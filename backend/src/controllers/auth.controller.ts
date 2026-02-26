@@ -13,6 +13,7 @@ import {
 } from "../services/auth.service.ts";
 import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
+import type { Admin, LoginResponse } from "../types/controller/authData.types.ts";
 import { generateApiKey } from "../utils/helper.utils.ts";
 
 export const login = async (
@@ -26,21 +27,31 @@ export const login = async (
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED);
     }
 
-    const data = await loginService(email, password);
+    const { user, accessToken, refreshToken } = await loginService(email, password);
 
-    res.cookie("accessToken", data.accessToken, {
+    const safeUser: Admin = {
+      email: user.email,
+      id: user.id
+    }
+
+    res.cookie("accessToken", accessToken, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "none",
       secure: true,
     });
 
-    res.cookie("refreshToken", data.refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "none",
       secure: true,
     });
+
+    const data: LoginResponse = {
+      admin: safeUser,
+      accessToken
+    }
 
     res.ok(data, SUCCESS_MESSAGES.LOGIN_SUCCESS);
   } catch (err: any) {
@@ -59,7 +70,17 @@ export const getMe = async (
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    const data = await getMeService(user.userId, user.email);
+    const { user: admin } = await getMeService(user.userId, user.email);
+
+    const safeUser: Admin = {
+      id: admin.id,
+      email: admin.email
+    }
+
+    const data = {
+      user: safeUser
+    }
+    
     res.ok(data, SUCCESS_MESSAGES.ADMIN_RETRIEVED);
   } catch (err: any) {
     next(err);
@@ -149,7 +170,7 @@ export const verifyOtp = async (
     }
 
     await verifyOtpService(email, otp);
-    res.ok(SUCCESS_MESSAGES.OTP_VERIFIED);
+    res.ok({}, SUCCESS_MESSAGES.OTP_VERIFIED);
   } catch (err: any) {
     next(err);
   }
@@ -167,7 +188,7 @@ export const resetPassword = async (
     }
 
     const data = await resetPasswordService(email, newPassword);
-    res.ok(SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS);
+    res.ok({}, SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS);
   } catch (err: any) {
     next(err);
   }
@@ -198,13 +219,17 @@ export const logout = async (
       secure: true,
     });
 
-    res.ok(SUCCESS_MESSAGES.LOGOUT_SUCCESS);
+    res.ok({}, SUCCESS_MESSAGES.LOGOUT_SUCCESS);
   } catch (err: any) {
     next(err);
   }
 };
 
-export const createClient = async (req: Request, res: Response, next: NextFunction) => {
+export const createClient = async (
+  req: Request, 
+  res: Response, 
+  next: NextFunction
+) => {
   try {
     const { client_id } = req.body;
     const data = await createClientService(client_id);

@@ -26,19 +26,19 @@ export const getAllTestCasesByProblemIdService = async (problemId: string) => {
     );
   }
 
-  const data: TestCaseDocument[]= await TestCase.findActive(
+  const testCases: TestCaseDocument[]= await TestCase.findActive(
     { problem_id: problemId },
-    { id: 1, input: 1, expected_output: 1, _id: 0 },
+    { id: 1, input: 1, expected_output: 1, is_hidden:1, _id: 0 },
   ).sort({ id: 1 });
 
-  if (!data.length) {
+  if (!testCases.length) {
     throw new HttpError(
       ERROR_MESSAGES.TEST_CASES_NOT_FOUND,
       HttpStatusCode.NOT_FOUND,
     );
   }
 
-  return { data };
+  return { testCases };
 };
 
 export const updateTestCaseService = async (

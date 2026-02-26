@@ -38,7 +38,7 @@ export const createTest = async (
       expiry,
       adminId,
     );
-    res.ok({ data }, SUCCESS_MESSAGES.TEST_CREATED);
+    res.ok(data, SUCCESS_MESSAGES.TEST_CREATED);
   } catch (err: any) {
     next(err);
   }

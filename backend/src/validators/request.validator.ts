@@ -18,10 +18,11 @@ export const validateRequest = function (schema?: ObjectSchema) {
             });
 
             if (error) {
-                return res.status(400).json({
-                    message: ERROR_MESSAGES.VALIDATION_FAILED,
-                    errors: error.details.map(err => err.message)
-                });
+                const errors = error.details.map(err => err.message);
+                return res.badRequest(
+                    ERROR_MESSAGES.VALIDATION_FAILED,
+                    errors
+                )
             }
 
             req.validateData = value;

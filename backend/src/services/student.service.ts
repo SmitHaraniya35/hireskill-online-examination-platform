@@ -40,11 +40,17 @@ export const createStudentService = async (input: StudentData) => {
     await student.save();
 
     const studentToken = generateAccessToken(student.id, student.email);
-    return { student, studentToken };
+    return { studentId: student.id, studentToken };
 };
 
 export const getStudentByIdService = async (id: string) => {
-    const student = await Student.findByIdActive(id);
+    const student = await Student.findByIdActive(id,{
+        _id: 0,
+        createdAt: 0,
+        updatedAt: 0,
+        deletedAt: 0,
+        isDeleted: 0, 
+    });
     if(!student){
         throw new HttpError(
             ERROR_MESSAGES.STUDENT_NOT_FOUND,
@@ -56,7 +62,13 @@ export const getStudentByIdService = async (id: string) => {
 };
 
 export const getAllStudentService = async () => {
-    const student = await Student.findActive();
+    const student = await Student.findActive({},{
+        _id: 0,
+        createdAt: 0,
+        updatedAt: 0,
+        deletedAt: 0,
+        isDeleted: 0, 
+    });
     if(!student){
         throw new HttpError(
             ERROR_MESSAGES.STUDENTS_NOT_FOUND,
