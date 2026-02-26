@@ -11,13 +11,13 @@ export interface RunData {
 }
  
 export interface RunResponse {
-    stdout: string;
+    stdout: string | null;
     time: string;
     memory: number;
-    stderr: any;
+    stderr: string | null;
     token: string;
-    compile_output: any;
-    message: any;
+    compile_output: string | null;
+    message: string | null;
     status: StatusData;
 }
 

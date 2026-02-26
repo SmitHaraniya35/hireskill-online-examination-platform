@@ -17,8 +17,8 @@ const getAuthHeaders = () => {
 };
 
 const StudentAttemptService = {
-    getStudentAttempt: async (problemId: string) => {
-        const response = await axios.get<axiosResponse<StudentAttemptResponse>>(`${API_URL}/get-student-attempts-details/${problemId}`,getAuthHeaders());
+    getStudentAttempt: async (studentAttemptId: string) => {
+        const response = await axios.get<axiosResponse<StudentAttemptResponse>>(`${API_URL}/get-student-attempt/${studentAttemptId}`,getAuthHeaders());
         return response.data;
     },
 

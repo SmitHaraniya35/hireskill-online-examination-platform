@@ -20,11 +20,10 @@ export interface StudentAttempt {
   expires_at: string;
   is_submitted: boolean;
   is_active: boolean;
-  isDeleted: boolean;
 }
 
 export interface StudentAttemptResponse {
-  studentAttempts: StudentAttempt;
+  studentAttempt: StudentAttempt;
 }
 
 
