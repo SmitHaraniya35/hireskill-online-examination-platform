@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useParams, useNavigate } from "react-router-dom";
-import { useStopwatch } from "react-timer-hook";
-import ProblemDescriptionSection from './ProblemDescriptionSection';
+import ProblemDescriptionSection from "./ProblemDescriptionSection";
 import CodeEditorSection from "./CodeEditorSection";
 import TestCaseOutputSection from "./TestCaseOutputSection";
 import testFlowService from "../../../../services/testFlow.services";
@@ -9,6 +8,7 @@ import type { TestData } from "../../../../types/testFlow.types";
 import type { CodingProblemData } from "../../../../types/codingProblem.types";
 import type { TestCaseResult } from "../../../../types/editor.types";
 import codingProblemService from "../../../../services/codingProblem.services";
+import ExamTimer from "../../../../components/ExamTimer";
 
 interface LocationState {
   test?: TestData;
@@ -28,48 +28,9 @@ const CodingSection: React.FC = () => {
   const [testCases, setTestCases] = useState<TestCaseResult[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Get initial timer offset from localStorage
-  const getInitialOffset = () => {
-    const savedStart = localStorage.getItem("test_start_time");
-    if (!savedStart) return 0;
-    const startTime = new Date(savedStart).getTime();
-    const now = Date.now();
-    return Math.floor((now - startTime) / 1000);
-  };
-
-  const { seconds, minutes, hours, pause } = useStopwatch({
-    autoStart: true,
-    offsetTimestamp: new Date(Date.now() - getInitialOffset() * 1000),
-  });
-
-
-  const handleFinishTest = async () => {
-    if (!studentAttemptId || !problemId || !code || !language) return;
-    
-    try {
-      const finishData = {
-        student_attempt_id: studentAttemptId,
-        problem_id: problemId,
-        language: language,
-        source_code: code,
-        total_test_cases: testCases.length,
-        passed_test_cases: testCases.filter((tc) => tc.status === "Accepted").length,
-        status: "Finished",
-      };
-
-      const response = await testFlowService.finishTest(slug!, finishData);
-      
-      if (response.success) {
-        localStorage.removeItem("test_start_time");
-        navigate(`/test/${slug}/complete`, {
-          state: { result: response.payload }
-        });
-      }
-    } catch (error) {
-      console.error("Error finishing test:", error);
-      alert("Failed to finish test. Please try again.");
-    }
-  };
+  // Shared state for code editor
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("63");
 
   // Validate student attempt on mount
   useEffect(() => {
@@ -81,15 +42,20 @@ const CodingSection: React.FC = () => {
       }
 
       try {
-        const response = await testFlowService.validateStudentAttempt(studentAttemptId);
-        
+        const response =
+          await testFlowService.validateStudentAttempt(studentAttemptId);
+
         if (response?.success && response.payload?.problem_id) {
           setProblemId(response.payload.problem_id);
         } else {
-          setValidationError(response?.message || "Invalid or expired attempt.");
+          setValidationError(
+            response?.message || "Invalid or expired attempt.",
+          );
         }
       } catch (err: any) {
-        setValidationError(err.response?.data?.message || "Unable to validate the attempt.");
+        setValidationError(
+          err.response?.data?.message || "Unable to validate the attempt.",
+        );
       } finally {
         setLoading(false);
       }
@@ -117,9 +83,36 @@ const CodingSection: React.FC = () => {
     fetchProblem();
   }, [problemId]);
 
-  // Shared state for code editor
-  const [code, setCode] = useState("");
-  const [language, setLanguage] = useState("63");
+  const handleFinishTest = useCallback(async () => {
+    if (!studentAttemptId || !problemId || !code || !language) return;
+
+    try {
+      const finishData = {
+        student_attempt_id: studentAttemptId,
+        problem_id: problemId,
+        language: language,
+        source_code: code,
+        total_test_cases: testCases.length,
+        passed_test_cases: testCases.filter((tc) => tc.status === "Accepted")
+          .length,
+        status: "Finished",
+      };
+
+      const response = await testFlowService.finishTest(slug!, finishData);
+
+      if (response.success) {
+        localStorage.removeItem("test_start_time");
+        navigate(`/test/${slug}/complete`, {
+          state: { result: response.payload },
+        });
+      }
+    } catch (error) {
+      console.error("Error finishing test:", error);
+      alert("Failed to finish test. Please try again.");
+    }
+  }, [studentAttemptId, problemId, code, language, testCases, slug, navigate]);
+
+
 
   if (loading) {
     return (
@@ -133,7 +126,9 @@ const CodingSection: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50">
         <div className="bg-white max-w-xl w-full p-8 rounded-2xl shadow">
-          <h2 className="text-xl font-semibold mb-2">Cannot load this attempt</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            Cannot load this attempt
+          </h2>
           <p className="text-sm text-gray-600 mb-6">{validationError}</p>
           <div className="flex gap-3 justify-center">
             <button
@@ -174,18 +169,19 @@ const CodingSection: React.FC = () => {
             Problem: <span className="font-mono">{problem.title}</span>
           </p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <div className="text-xs text-gray-500">
-            Student ID: <span className="font-mono">{state.studentId || "-"}</span>
+            Student ID:{" "}
+            <span className="font-mono">{state.studentId || "-"}</span>
           </div>
-          
-          <div className="p-3 rounded-md bg-gray-100">
-            <span className="font-semibold font-mono text-2xl">Timer: </span>
-            <span className="font-mono text-red-500 text-2xl">
-              {String(hours).padStart(2, '0')}:{String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-            </span>
-          </div>
+
+          {studentAttemptId && (
+            <ExamTimer
+              studentAttemptId={studentAttemptId!}
+              onTimeUp={handleFinishTest}
+            />
+          )}
         </div>
       </header>
 
@@ -203,20 +199,21 @@ const CodingSection: React.FC = () => {
             code={code}
             setCode={setCode}
             language={language}
+            testCases={testCases}
             setLanguage={setLanguage}
             setTestCases={setTestCases}
             setIsSubmitted={setIsSubmitted}
             studentAttemptId={studentAttemptId}
           />
-          
-          {problem!==undefined &&
+
+          {problem !== undefined && (
             <TestCaseOutputSection
-            testCases={testCases}
-            setTestCases={setTestCases}
-            sampleInput={problem.sample_input}
-            sampleOutput={problem.sample_output}
-          />
-          }
+              testCases={testCases}
+              setTestCases={setTestCases}
+              sampleInput={problem.sample_input}
+              sampleOutput={problem.sample_output}
+            />
+          )}
           {/* Finish Button */}
           {isSubmitted && (
             <div className="flex justify-end">
