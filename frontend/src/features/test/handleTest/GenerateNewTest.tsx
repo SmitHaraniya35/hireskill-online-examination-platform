@@ -77,23 +77,6 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
     }
   }, [editData, isEdit, setValue]);
 
-  const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
-    setValue("day", val, { shouldValidate: true });
-    if (val.length === 2) monthRef.current?.focus();
-  };
-
-  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
-    setValue("month", val, { shouldValidate: true });
-    if (val.length === 2) yearRef.current?.focus();
-  };
-
-  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 4);
-    setValue("year", val, { shouldValidate: true });
-  };
-
   const onSubmit = async (data: TestFormInput) => {
     setLoading(true);
     setIsError(false);

@@ -49,8 +49,7 @@ const CodingProblem: React.FC = () => {
   const handleUpdate = async (uuid: string) => {
     setFormLoading(true);
     try {
-      const res =
-        await codingProblemService.getCodingProblemWithTestCases(uuid);
+      const res = await codingProblemService.getCodingProblemWithTestCases(uuid);
       setIsEditMode(true);
       setSelectedCodingProblemWithTestCases(
         res.payload!.codingProblemWithTestCases!,

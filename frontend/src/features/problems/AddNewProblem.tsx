@@ -1104,7 +1104,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import TiptapEditor from "../../components/TipTapEditor";
 import codingProblemService from "../../services/codingProblem.services";
 import { problemSchema, type ProblemFormInput } from "../../validators/AddNewProblem.validators"
-import type { TestCaseData } from "../../types/codingProblem.types";
 import { toast } from "react-toastify";
 
 interface Props {
@@ -1167,9 +1166,8 @@ const AddNewProblem: React.FC<Props> = ({
   // Initialize data for Edit Mode
   useEffect(() => {
     if (isEditMode && editData) {
-      console.log("Loading edit data:", editData);
 
-      setValue("title", editData.title || "");
+      setValue("title", editData.title );
       setValue("difficulty", editData.difficulty?.toLowerCase() || "easy");
 
       if (Array.isArray(editData.topic)) {

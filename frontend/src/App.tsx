@@ -11,9 +11,9 @@ import CodingProblem from './features/problems/CodingProblems.tsx'
 import AddNewProblem from './features/problems/AddNewProblem.tsx'
 import LandingPage from './components/LandingPage.tsx'
 import AdminRoutes from './routes/AdminRoutes.tsx'
-import TestEntry from './features/test/CodingPlatform/TestEntry.tsx'
-import TestInstruction from './features/test/CodingPlatform/TestInstruction.tsx'
-import CodingSection from './features/test/CodingPlatform/CodingSection/CodingSection.tsx'
+import TestEntry from './features/test/CodingPlatform/TestStartPage.tsx'
+import TestInstruction from './features/test/CodingPlatform/TestInstructionPage.tsx'
+import CodingTestLayout from './features/test/CodingPlatform/CodingSection/CodingTestLayout.tsx'
 import AdminLayout from './layouts/AdminLayout.tsx'
 
 const App: React.FC = () => {
@@ -48,7 +48,7 @@ const App: React.FC = () => {
         {/* Candidate test flow */}
         <Route path="/test/:slug" element={<TestEntry />} />
         <Route path="/test/:slug/instruction" element={<TestInstruction />} />
-        <Route path="/test/:slug/editor/:studentAttemptId" element={<CodingSection />} />
+        <Route path="/test/:slug/editor/:studentAttemptId" element={<CodingTestLayout />} />
         
         <Route path="/*" element={<NotFound />} />
       </Routes>

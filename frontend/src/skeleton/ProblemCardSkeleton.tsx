@@ -10,8 +10,8 @@ const ProblemCardSkeleton = () => {
           
           {/* Title + Difficulty */}
           <div className="flex items-center gap-4 mb-4">
-            <div className="h-7 bg-gray-300 rounded w-64" />
-            <div className="h-6 w-16 bg-green-200 rounded-full" />
+            <div className="h-7 bg-gray-300 rounded w-94" />
+            <div className="h-6 w-16 bg-gray-300 rounded-full" />
           </div>
 
           {/* Topic */}
