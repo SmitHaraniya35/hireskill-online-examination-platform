@@ -1528,7 +1528,7 @@ const AddNewProblem: React.FC<Props> = ({
             placeholder="Enter starter code template"
             {...register("basicCodeLayout")}
           />
-          <div className="min-h-[20px]">
+          <div className="min-h-5">
             {errors.basicCodeLayout && (
               <p className="text-red-500 text-xs mt-1">{errors.basicCodeLayout.message}</p>
             )}

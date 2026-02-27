@@ -23,10 +23,6 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const dayRef = useRef<HTMLInputElement | null>(null);
-  const monthRef = useRef<HTMLInputElement | null>(null);
-  const yearRef = useRef<HTMLInputElement | null>(null);
-
   const isEdit = mode === "edit";
 
   const {
@@ -46,10 +42,6 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
       year: "",
     },
   });
-
-  const day = watch("day");
-  const month = watch("month");
-  const year = watch("year");
 
   useLockBodyScroll(true);
 

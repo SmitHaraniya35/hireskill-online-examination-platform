@@ -9,9 +9,7 @@ const TestEntry: React.FC = () => {
 
   const [loading, setLoading] = useState(true);
   const [test, setTest] = useState<TestData | null>(null);
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<{ isError: boolean; message: string }>({
     isError: false,
@@ -46,12 +44,9 @@ const TestEntry: React.FC = () => {
     setError({ isError: false, message: "" });
 
     try {
-      const response = await testFlowService.createStudent({ name, email, phone });
+      const response = await testFlowService.validateStudentAttemptByEmailAndTestId({email:email, test_id:test.id});
 
       const studentId = response.payload!.studentId;
-        
-        // Save test start timestamp
-      // localStorage.setItem("test_start_time", new Date().toISOString());
         
         // Navigate to instruction page with state
       navigate(`/test/${slug}/instruction`, {state: {test,studentId}});
@@ -115,38 +110,12 @@ const TestEntry: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#1DA077] focus:border-[#1DA077]"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#1DA077] focus:border-[#1DA077]"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Phone
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
               required
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-[#1DA077] focus:border-[#1DA077]"
             />
