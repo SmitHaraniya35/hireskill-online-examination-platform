@@ -39,3 +39,10 @@ export interface FinishData {
     status: string;
 }
 
+export interface ValidateStudentAttemptByEmailData {
+    email: string;
+}
+
+export interface ValidateStudentAttemptByEmailAndTestIdResponse {
+    studentId: string;
+}

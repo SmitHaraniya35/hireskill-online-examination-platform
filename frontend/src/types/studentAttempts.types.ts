@@ -27,7 +27,7 @@ export interface StudentAttemptResponse {
 }
 
 
-export interface Students {
+export interface GetStudentAttempts {
   id: string;
   student_id: string;
   problem_id: string;
@@ -36,8 +36,9 @@ export interface Students {
   is_active: boolean;
   student: Student;
   problem: Problem;
+  is_submitted?: string;
 }
 
 export interface StudentAttemptsDetailsResponse {
-  students: Student[];
+  students: GetStudentAttempts[];
 }
