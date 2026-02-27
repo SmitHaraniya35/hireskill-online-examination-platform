@@ -1,9 +1,8 @@
 import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { Student } from "../models/student.model.ts";
-import type { StudentData } from "../types/controller/studentData.types.ts";
+import type { ImportStudentsData, StudentData } from "../types/controller/studentData.types.ts";
 import type { StudentDocument } from "../types/model/student.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
-import { generateAccessToken } from "../utils/jwt.utils.ts";
 
 export const createStudentService = async (input: StudentData) => {
     const { email, phone } = input;
@@ -39,9 +38,31 @@ export const createStudentService = async (input: StudentData) => {
 
     await student.save();
 
-    const studentToken = generateAccessToken(student.id, student.email);
-    return { studentId: student.id, studentToken };
+    return { student };
 };
+
+export const importStudentsService = async (input: ImportStudentsData) => {
+    // Remove duplicate emails inside file
+    const students = input.studentList;
+    const uniqueStudents = [
+        ...new Map(
+        students.map(item => [item.email, item])
+        ).values()
+    ];
+
+    const formattedStudents: StudentData[] = uniqueStudents.map(student => ({
+        name: student.name,
+        email: student.email,
+        phone: student.phone,
+        college: student.college
+    }));
+
+    const result = await Student.insertMany(formattedStudents, {
+        ordered: false
+    });
+
+    return { insertedCount: result.length };
+}
 
 export const getStudentByIdService = async (id: string) => {
     const student = await Student.findByIdActive(id,{

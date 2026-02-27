@@ -3,7 +3,7 @@ export interface StudentData {
     email: string;
     name: string;
     phone: number;
-    // college: string;
+    college: string;
     // degree: string;
     // branch: string;
     // graduation_year: number;
@@ -11,4 +11,8 @@ export interface StudentData {
     // resume_url: string;
     // linkedin_url: string;
     // github_url: string;
+}
+
+export interface ImportStudentsData {
+    studentList: StudentData[]
 }
