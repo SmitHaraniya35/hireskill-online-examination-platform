@@ -121,7 +121,7 @@ export const executeAllHiddentTestCases = async (input: Judge0BatchSubmission, t
 export const getJudge0SubmissionById = async (submissionId: string) => {
     try {
         const response: Response = await fetch(
-            `${process.env.JUDGE0_API}/${submissionId}`, 
+            `${process.env.JUDGE0_API}/${submissionId}?base64_encoded=true`, 
             { method: "GET" }
         );
 
