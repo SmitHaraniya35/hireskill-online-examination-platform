@@ -15,6 +15,7 @@ import TestEntry from './features/test/CodingPlatform/TestStartPage.tsx'
 import TestInstruction from './features/test/CodingPlatform/TestInstructionPage.tsx'
 import CodingTestLayout from './features/test/CodingPlatform/CodingSection/CodingTestLayout.tsx'
 import AdminLayout from './layouts/AdminLayout.tsx'
+import StudentManagement from './features/student/StudentManagement.tsx'
 
 const App: React.FC = () => {
   return (
@@ -41,6 +42,7 @@ const App: React.FC = () => {
                 />
               }
             />
+            <Route path="/admin/student-management" element={<StudentManagement/>}/>
           </Route>
         </Route>
         

@@ -64,8 +64,8 @@ const Navbar: React.FC = () => {
                     </NavLink>
                 </div>
                 <div className="nav-links">
-                    <NavLink to="/about"  className={navLinkClasses}>
-                        About
+                    <NavLink to="/admin/student-management"  className={navLinkClasses}>
+                        Student management
                         <span className={underlineClasses}></span>
                     </NavLink>
                 </div>
