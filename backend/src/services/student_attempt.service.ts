@@ -18,11 +18,19 @@ export const createStudentAttemptService = async (
 ) => {
   const existAttempt: StudentAttemptDocument | null =
     await StudentAttempt.findOneActive({ student_id, test_id });
+
   if (existAttempt && existAttempt.is_active) {
-    throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ALREADY_ATTEMPTED_TEST,
-      HttpStatusCode.CONFLICT,
-    );
+    if(existAttempt.is_active && !existAttempt.is_submitted){ 
+      throw new HttpError(
+        ERROR_MESSAGES.STUDENT_ALREADY_ACTIVE,
+        HttpStatusCode.CONFLICT,
+      );
+    } else if(existAttempt.is_active && existAttempt.is_submitted){
+      throw new HttpError(
+        ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
+        HttpStatusCode.CONFLICT,
+      );
+    } 
   }
 
   const problem: CodingProblemDocument | null =
@@ -124,9 +132,9 @@ export const submitStudentAttemptService = async (id: string) => {
     );
   }
 
-  if (!studentAttempt.is_active || studentAttempt.is_submitted) {
+  if (!studentAttempt.is_active && studentAttempt.is_submitted) {
     throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED_OR_INACTIVE,
+      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
       HttpStatusCode.BAD_REQUEST,
     );
   }

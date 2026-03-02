@@ -153,7 +153,7 @@ export const ERROR_MESSAGES = {
   STUDENT_ATTEMPT_DELETION_FAILED: "Failed to delete student attempt",
   STUDENT_ATTEMPT_ID_REQUIRED: "Student attempt ID is required",
   STUDENT_ATTEMPTS_NOT_FOUND: "No student attempts found",
-  STUDENT_ATTEMPT_ALREADY_SUBMITTED_OR_INACTIVE: "Student attempt is already submitted or inactive",
+  STUDENT_ATTEMPT_ALREADY_SUBMITTED: "Student attempt is already submitted",
   STUDENT_ALREADY_ATTEMPTED_TEST: "Student has already attempted this test",
 
   // Judge0
