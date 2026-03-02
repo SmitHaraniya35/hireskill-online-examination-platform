@@ -3,10 +3,11 @@ import { authMiddleware } from "../middlewares/auth.middleware.ts";
 import { validateRequest } from "../validators/request.validator.ts";
 import * as StudentAttemptController from "../controllers/studentAttempt.controller.ts";
 import { IdSchema } from "../validators/index.validator.ts";
-import { ValidateStudentAttemptSchema } from "../validators/studentAttempt.schema.ts";
+import { ValidateStudentAttemptSchema, CreateStudentAttemptSchema } from "../validators/studentAttempt.schema.ts";
 
 const router = express();
 
+router.post("/create-student-attempt", validateRequest(CreateStudentAttemptSchema), StudentAttemptController.createStudentAttempt);
 router.delete("/delete-student-attempt/:id", authMiddleware, validateRequest(IdSchema), StudentAttemptController.deleteStudentAttempt);
 router.get("/get-student-attempts-details/:testId", authMiddleware, validateRequest(), StudentAttemptController.getStudentAttemptsDetailsByTestId);
 router.put("/submit-student-attempt/:id", validateRequest(IdSchema), StudentAttemptController.submitStudentAttempt);

@@ -134,6 +134,6 @@ export const startTestService = async (test_id: string, student_id: string) => {
     );
   }
 
-  const { attempt } = await createStudentAttemptService(test_id, problem!.id, student_id);
-  return { problemId: problem!.id, studentAttemptId: attempt.id };
+  const { studentAttempt } = await createStudentAttemptService(test_id, problem!.id, student_id);
+  return { problemId: problem!.id, studentAttemptId: studentAttempt.id };
 };

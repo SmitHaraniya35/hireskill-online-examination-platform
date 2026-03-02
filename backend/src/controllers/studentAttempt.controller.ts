@@ -1,16 +1,35 @@
 import type { Response, NextFunction } from "express";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
-import { ERROR_MESSAGES, HttpStatusCode, SUCCESS_MESSAGES } from "../constants/index.ts";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
   deleteStudentAttemptService,
   getStudentAttemptsDetailsByTestIdService,
   submitStudentAttemptService,
   validateStudentAttemptAndGetCodingProblemIdService,
   getStudentAttemptByIdService,
-  validateStudentAttemptByEmailService
+  validateStudentAttemptByEmailService,
+  createStudentAttemptService
 } from "../services/student_attempt.service.ts";
 import { verifyAccessToken } from "../utils/jwt.utils.ts";
-import type { ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
+import type { StudentAttemptData, ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
+
+export const createStudentAttempt = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { test_id, problem_id, student_id } = req.allParams as StudentAttemptData;
+    if (!test_id || !problem_id || !student_id) {
+      return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
+    }
+
+    const data = await createStudentAttemptService(test_id, problem_id, student_id);
+    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_CREATED);
+  } catch (err: any) {
+    next(err);
+  } 
+};
 
 export const deleteStudentAttempt = async (
   req: AuthRequest,

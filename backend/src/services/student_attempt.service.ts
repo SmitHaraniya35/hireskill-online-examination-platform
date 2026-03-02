@@ -47,7 +47,7 @@ export const createStudentAttemptService = async (
     started_at.getTime() + test.duration_minutes * 60 * 1000,
   );
 
-  const attempt: StudentAttemptDocument = await StudentAttempt.create({
+  const studentAttempt: StudentAttemptDocument = await StudentAttempt.create({
     test_id,
     problem_id,
     student_id,
@@ -57,14 +57,14 @@ export const createStudentAttemptService = async (
     is_active: true,
   });
 
-  if (!attempt) {
+  if (!studentAttempt) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ATTEMPT_CREATION_FAILED,
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
 
-  return { attempt };
+  return { studentAttempt };
 };
 
 export const deleteStudentAttemptService = async (id: string) => {
