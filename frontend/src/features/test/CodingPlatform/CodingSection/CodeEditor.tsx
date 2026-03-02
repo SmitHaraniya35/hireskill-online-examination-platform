@@ -43,6 +43,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const handleRunCode = async () => {
     if (!problem) return;
     // setTestCases([]);
+    setIsSubmitted(false);
     setIsRunning(true);
     try {
       const inputData: RunData = {

@@ -97,8 +97,10 @@ const CodingTestLayout: React.FC = () => {
       };
 
       const response = await testFlowService.finishTest(slug!, finishData);
+      const studentAttempt = response.payload?.studentAttempt;
+      const submission = response.payload?.submission;
 
-      navigate(`/test/${slug}/complete`, {});
+      navigate(`/test/${slug}/complete`, {state:{studentAttempt, submission} });
     } catch (error) {
       console.error("Error finishing test:", error);
       alert("Failed to finish test. Please try again.");
@@ -203,6 +205,7 @@ const CodingTestLayout: React.FC = () => {
               setTestCases={setTestCases}
               sampleInput={problem.sample_input}
               sampleOutput={problem.sample_output}
+              isSubmission={isSubmitted}
             />
           )}
           {/* Finish Button */}

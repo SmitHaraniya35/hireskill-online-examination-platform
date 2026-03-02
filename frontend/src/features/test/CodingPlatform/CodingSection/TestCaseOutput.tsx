@@ -13,6 +13,7 @@ interface TestCaseOutputProps {
   setTestCases: Dispatch<SetStateAction<TestCaseResult[]>>;
   sampleInput?: string;
   sampleOutput?: string;
+  isSubmission?: boolean;
 }
 
 const TestCaseOutput: React.FC<TestCaseOutputProps> = ({
@@ -20,6 +21,7 @@ const TestCaseOutput: React.FC<TestCaseOutputProps> = ({
   setTestCases,
   sampleInput,
   sampleOutput,
+  isSubmission,
 }) => {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -39,10 +41,13 @@ const TestCaseOutput: React.FC<TestCaseOutputProps> = ({
         if (!["In Queue", "Processing"].includes(tc.status)) continue;
 
         try {
-          const response = await submissionService.getSubmissionService(tc.submissionId);
+          const response = await submissionService.getSubmissionService(
+            tc.submissionId,
+          );
 
           if (response.success && response.payload) {
-            const newStatus = response.payload.data.status?.description || "Processing";
+            const newStatus =
+              response.payload.data.status?.description || "Processing";
 
             if (newStatus !== tc.status) {
               updatedCases[i] = {
@@ -124,128 +129,99 @@ const TestCaseOutput: React.FC<TestCaseOutputProps> = ({
     }
   };
 
-  return (
-    <div className="mt-4 w-full rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-      {/* Tab Navigation */}
-      {displayCases.length > 1 && (
-        <div className="grid grid-cols-5 items-center gap-1 px-4 py-2 bg-gray-50 border-b overflow-x-auto">
-          {displayCases.map((tc, index) => (
-            <button
-              key={tc.testCaseId || index}
-              onClick={() => setActiveTab(index)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-semibold border transition flex items-center gap-2 ${
-                activeTab === index
-                  ? "bg-white border-gray-300 shadow-sm"
-                  : "border-transparent text-gray-500 hover:bg-gray-100"
-              }`}
-            >
-              <span>Case {index + 1}</span>
-              <span className={`${getStatusColor(tc.status)} font-bold`}>
-                {getStatusIcon(tc.status)}
-              </span>
-            </button>
-          ))}
-        </div>
-      )}
+return (
+  <div className="mt-4 w-full rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+    {/* Tab Navigation (Always show if multiple cases) */}
+    {displayCases.length > 1 && (
+      <div className="grid grid-cols-5 items-center gap-1 px-4 py-4 bg-gray-50">
+        {displayCases.map((tc, index) => (
+          <div
+            key={tc.testCaseId || index}
+            className="flex items-center gap-2 text-sm font-medium"
+          >
+            <span>Case {index + 1}</span>
+            <span className={`${getStatusColor(tc.status)} font-bold`}>
+              {getStatusIcon(tc.status)}
+            </span>
+          </div>
+        ))}
+      </div>
+    )}
 
-      {/* Results Content */}
-      <div className="p-4 space-y-4">
-        {/* Status Badge */}
+    {/* 🟢 RUN MODE → Show Full Details */}
+    {!isSubmission && (
+      <div className="p-4 space-y-4 border-t">
+        {/* Status */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-600">Status:</span>
           <span
-            className={`text-sm font-bold px-3 py-1 rounded-full ${getStatusBadgeClass(currentCase.status)}`}
+            className={`text-sm font-bold px-3 py-1 rounded-full ${getStatusBadgeClass(
+              currentCase.status
+            )}`}
           >
             {currentCase.status}
           </span>
         </div>
 
-        {/* Error Display */}
-        {currentCase.apiRes?.stderr && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-xs font-bold text-red-600 uppercase mb-2">
-              Runtime Error
+        {/* Input */}
+        <div>
+          <p className="text-xs font-bold text-gray-400 uppercase mb-2">
+            Input
+          </p>
+          <pre className="bg-gray-50 p-4 rounded-lg border font-mono text-sm whitespace-pre-wrap">
+            {currentCase.input || "No input"}
+          </pre>
+        </div>
+
+        {/* Expected Output */}
+        <div>
+          <p className="text-xs font-bold text-gray-400 uppercase mb-2">
+            Expected Output
+          </p>
+          <pre className="bg-gray-50 p-4 rounded-lg border font-mono text-sm whitespace-pre-wrap">
+            {currentCase.expected_output || "No expected output"}
+          </pre>
+        </div>
+
+        {/* Your Output */}
+        {currentCase.output && (
+          <div>
+            <p className="text-xs font-bold text-gray-400 uppercase mb-2">
+              Your Output
             </p>
-            <pre className="text-sm text-red-700 font-mono whitespace-pre-wrap overflow-x-auto">
-              {currentCase.apiRes.stderr}
+            <pre
+              className={`p-4 rounded-lg border font-mono text-sm whitespace-pre-wrap ${
+                currentCase.status === "Accepted"
+                  ? "bg-green-50 border-green-200 text-green-700"
+                  : "bg-red-50 border-red-200 text-red-700"
+              }`}
+            >
+              {currentCase.output}
             </pre>
           </div>
         )}
 
-        {currentCase.apiRes?.compile_output && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-xs font-bold text-red-600 uppercase mb-2">
-              Compilation Error
-            </p>
-            <pre className="text-sm text-red-700 font-mono whitespace-pre-wrap overflow-x-auto">
-              {currentCase.apiRes.compile_output}
-            </pre>
-          </div>
-        )}
-
-        {/* Input/Output Display */}
-        {!currentCase.apiRes?.stderr && !currentCase.apiRes?.compile_output && (
-          <div className="space-y-4">
-            {/* Input */}
-            <div>
-              <p className="text-xs font-bold text-gray-400 uppercase mb-2">
-                Input
-              </p>
-              <pre className="bg-gray-50 p-4 rounded-lg border font-mono text-sm whitespace-pre-wrap overflow-x-auto">
-                {currentCase.input || "No input"}
-              </pre>
-            </div>
-
-            {/* Expected Output */}
-            <div>
-              <p className="text-xs font-bold text-gray-400 uppercase mb-2">
-                Expected Output
-              </p>
-              <pre className="bg-gray-50 p-4 rounded-lg border font-mono text-sm whitespace-pre-wrap overflow-x-auto">
-                {currentCase.expected_output || "No expected output"}
-              </pre>
-            </div>
-
-            {/* Your Output (if available) */}
-            {currentCase.output && (
+        {/* Execution Details */}
+        {currentCase.apiRes && (
+          <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
+            {currentCase.apiRes.time && (
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase mb-2">
-                  Your Output
-                </p>
-                <pre
-                  className={`p-4 rounded-lg border font-mono text-sm whitespace-pre-wrap overflow-x-auto ${
-                    currentCase.status === "Accepted"
-                      ? "bg-green-50 border-green-200 text-green-700"
-                      : "bg-red-50 border-red-200 text-red-700"
-                  }`}
-                >
-                  {currentCase.output}
-                </pre>
+                <span className="font-medium">Time:</span>{" "}
+                {currentCase.apiRes.time}s
               </div>
             )}
-
-            {/* Execution Details */}
-            {currentCase.apiRes && (
-              <div className="grid grid-cols-2 gap-4 text-xs text-gray-500">
-                {currentCase.apiRes.time && (
-                  <div>
-                    <span className="font-medium">Time:</span>{" "}
-                    {currentCase.apiRes.time}s
-                  </div>
-                )}
-                {currentCase.apiRes.memory && (
-                  <div>
-                    <span className="font-medium">Memory:</span>{" "}
-                    {currentCase.apiRes.memory} KB
-                  </div>
-                )}
+            {currentCase.apiRes.memory && (
+              <div>
+                <span className="font-medium">Memory:</span>{" "}
+                {currentCase.apiRes.memory} KB
               </div>
             )}
           </div>
         )}
       </div>
-    </div>
-  );
-};
+    )}
+  </div>
+);
+}
 
-export default React.memo(TestCaseOutput);
+export default TestCaseOutput;
