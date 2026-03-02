@@ -124,7 +124,11 @@ export const getStudentAttemptsDetailsByTestIdService = async (
 
 export const submitStudentAttemptService = async (id: string) => {
   const studentAttempt: StudentAttemptDocument | null =
-    await StudentAttempt.findOneActive({ id });
+    await StudentAttempt.findOneAndUpdate({id}, {
+      is_active: false,
+      is_submitted: true
+    }).select("-_id -isDeleted -deletedAt -updatedAt -createdAt");
+
   if (!studentAttempt) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
@@ -139,10 +143,6 @@ export const submitStudentAttemptService = async (id: string) => {
     );
   }
 
-  studentAttempt!.is_active = false;
-  studentAttempt!.is_submitted = true;
-
-  await studentAttempt!.save();
   return { studentAttempt };
 };
 
