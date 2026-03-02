@@ -12,6 +12,7 @@ import {
 import type { SubmissionData } from "../types/controller/submissionData.types.ts";
 import { submitStudentAttemptService } from "../services/student_attempt.service.ts";
 import { createSubmissionService } from "../services/submission.service.ts";
+import type { TestData } from "../types/controller/testData.types.ts";
 
 export const createTest = async (
   req: AuthRequest,
@@ -19,7 +20,7 @@ export const createTest = async (
   next: NextFunction,
 ) => {
   try {
-    const { title, duration_minutes, expiration_at } = req.allParams;
+    const { title, duration_minutes, expiration_at } = req.allParams as TestData;
 
     const adminId = req.user!.userId;
     if (!adminId) {
@@ -32,12 +33,7 @@ export const createTest = async (
 
     const expiry = new Date(expiration_at);
 
-    const data = await createTestService(
-      title,
-      duration_minutes,
-      expiry,
-      adminId,
-    );
+    const data = await createTestService(title, duration_minutes, expiry, adminId);
     res.ok(data, SUCCESS_MESSAGES.TEST_CREATED);
   } catch (err: any) {
     next(err);
@@ -91,7 +87,7 @@ export const updateTest = async (
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    const { id, title, duration_minutes, expiration_at } = req.allParams;
+    const { id, title, duration_minutes, expiration_at } = req.allParams as TestData;
     if (!id || !title || !duration_minutes || !expiration_at) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
