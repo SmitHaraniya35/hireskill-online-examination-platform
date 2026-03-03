@@ -360,7 +360,7 @@ const TestLinkManager: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 font-mono">
+    <div className="min-h-screen bg-[#f5f6f8] p-6 font-mono">
       {selectedTestId ? (
         <StudentAttempts testId={selectedTestId} onBack={handleBack} />
       ) : (
