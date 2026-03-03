@@ -22,8 +22,23 @@ export interface StudentAttempt {
   is_active: boolean;
 }
 
+export interface Submission {
+  id: string;
+  student_attempt_id: string;
+  problem_id: string;
+  language: string;
+  source_code: string;
+  total_test_cases: string;
+  passed_test_cases: string;
+  status: string;
+  execution_time: string;
+  memory_used: string;
+  submitted_at: string;
+}
+
 export interface StudentAttemptResponse {
   studentAttempt: StudentAttempt;
+  submission?: Submission;
 }
 
 
