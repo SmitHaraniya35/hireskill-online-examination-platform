@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Student, StudentListData } from "../types/student.types";
+import type { GetAllStudentsListData, Student, StudentListData } from "../types/student.types";
 import type { axiosResponse } from "../types/index.types";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/student`;
@@ -24,6 +24,11 @@ const StudentService = {
 
   excelImport: async(data: StudentListData) => {
     const response = await axios.post<axiosResponse>(`${API_URL}/import`,data, getAuthHeaders());
+    return response.data;
+  },
+
+  getAllStudentsList: async() => {
+    const response = await axios.get<axiosResponse<GetAllStudentsListData>>(`${API_URL}/get-all-student`, getAuthHeaders());
     return response.data;
   }
 };
