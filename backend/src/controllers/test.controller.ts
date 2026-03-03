@@ -8,10 +8,12 @@ import {
   deleteTestService,
   updateTestService,
   startTestService,
+  finishTestService,
 } from "../services/test.service.ts";
 import type { SubmissionData } from "../types/controller/submissionData.types.ts";
 import { submitStudentAttemptService } from "../services/student_attempt.service.ts";
 import { createSubmissionService } from "../services/submission.service.ts";
+import type { TestData } from "../types/controller/testData.types.ts";
 
 export const createTest = async (
   req: AuthRequest,
@@ -19,7 +21,7 @@ export const createTest = async (
   next: NextFunction,
 ) => {
   try {
-    const { title, duration_minutes, expiration_at } = req.allParams;
+    const { title, duration_minutes, expiration_at } = req.allParams as TestData;
 
     const adminId = req.user!.userId;
     if (!adminId) {
@@ -32,12 +34,7 @@ export const createTest = async (
 
     const expiry = new Date(expiration_at);
 
-    const data = await createTestService(
-      title,
-      duration_minutes,
-      expiry,
-      adminId,
-    );
+    const data = await createTestService(title, duration_minutes, expiry, adminId);
     res.ok(data, SUCCESS_MESSAGES.TEST_CREATED);
   } catch (err: any) {
     next(err);
@@ -91,7 +88,7 @@ export const updateTest = async (
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    const { id, title, duration_minutes, expiration_at } = req.allParams;
+    const { id, title, duration_minutes, expiration_at } = req.allParams as TestData;
     if (!id || !title || !duration_minutes || !expiration_at) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
@@ -152,19 +149,12 @@ export const finishTest = async (
 ) => {
   try {
     const input = req.allParams as SubmissionData;
-    const { student_attempt_id } = req.allParams;
 
     if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const student_attempt =
-      await submitStudentAttemptService(student_attempt_id);
-    if (!student_attempt) {
-      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND);
-    }
-
-    const submission = await createSubmissionService(input);
+    const data = await finishTestService(input);
 
     res.clearCookie("studentToken", {
       httpOnly: true,
@@ -172,7 +162,7 @@ export const finishTest = async (
       secure: true,
     });
 
-    res.ok({ student_attempt, submission }, SUCCESS_MESSAGES.TEST_COMPLETED);
+    res.ok(data, SUCCESS_MESSAGES.TEST_COMPLETED);
   } catch (err: any) {
     next(err);
   }

@@ -6,7 +6,7 @@ export const SubmissionSchema = Joi.object({
     student_attempt_id: uuidv4Rule.required(),
     problem_id: uuidv4Rule.required(),
     language: Joi.string().required(),
-    source_code: Joi.string().required(),
+    source_code: Joi.string(),
     total_test_cases: Joi.number().integer().required(),
     passed_test_cases: Joi.number()
         .integer()

@@ -5,10 +5,11 @@ import {
   getAllStudentService,
   getStudentByIdService,
   updateStudentService,
+  importStudentsService
 } from "../services/student.service.ts";
 import type { AuthRequest } from "../types/controller/index.ts";
 import type { NextFunction, Response } from "express";
-import type { StudentData } from "../types/controller/studentData.types.ts";
+import type { StudentData, ImportStudentsData } from "../types/controller/studentData.types.ts";
 
 export const createStudent = async (
   req: AuthRequest,
@@ -23,15 +24,26 @@ export const createStudent = async (
 
     const data = await createStudentService(input);
 
-    res.cookie("studentToken", data.studentToken, {
-      maxAge: 2 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
-
     return res.created(data, SUCCESS_MESSAGES.STUDENT_CREATED);
   } catch (err: any) {
+    next(err);
+  }
+};
+
+export const importStudents = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const input = req.allParams as ImportStudentsData;
+    if (!input) {
+      return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
+    }
+
+    const data = await importStudentsService(input);
+    res.created(data, SUCCESS_MESSAGES.STUDENT_IMPORTED);
+  } catch (err: any){
     next(err);
   }
 };

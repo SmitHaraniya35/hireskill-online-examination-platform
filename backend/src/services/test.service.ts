@@ -1,12 +1,14 @@
 import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { Test } from "../models/test.model.ts";
 import { User } from "../models/user.model.ts";
+import type { SubmissionData } from "../types/controller/submissionData.types.ts";
 import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 import { selectRandomProblemService } from "./codingProblem.service.ts";
-import { createStudentAttemptService } from "./student_attempt.service.ts";
+import { createStudentAttemptService, submitStudentAttemptService } from "./student_attempt.service.ts";
+import { createSubmissionService } from "./submission.service.ts";
 
 export const createTestService = async (
   title: string,
@@ -134,6 +136,26 @@ export const startTestService = async (test_id: string, student_id: string) => {
     );
   }
 
-  const { attempt } = await createStudentAttemptService(test_id, problem!.id, student_id);
-  return { problemId: problem!.id, studentAttemptId: attempt.id };
+  const { studentAttempt } = await createStudentAttemptService(test_id, problem!.id, student_id);
+  return { problemId: problem!.id, studentAttemptId: studentAttempt.id };
+};
+
+export const finishTestService = async (input: SubmissionData) => {
+  const { studentAttempt } = await submitStudentAttemptService(input.student_attempt_id);
+  if (!studentAttempt) {
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
+      HttpStatusCode.BAD_REQUEST,
+    );
+  }
+
+  const { submission } = await createSubmissionService(input);
+  if (!submission) {
+    throw new HttpError(
+      ERROR_MESSAGES.SUBMISSION_CREATION_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR,
+    );
+  }
+
+  return { studentAttempt, submission };
 };

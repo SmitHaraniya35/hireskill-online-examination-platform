@@ -51,6 +51,7 @@ export const SUCCESS_MESSAGES = {
   STUDENTS_RETRIEVED: "Students retrieved successfully",
   STUDENT_DELETED: "Student deleted successfully",
   STUDENT_UPDATED: "Student updated successfully",
+  STUDENT_IMPORTED: "Student imported successfully",
 
   // Code Execution
   CODE_EXECUTED: "Code executed successfully",
@@ -62,6 +63,7 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ATTEMPTS_RETRIEVED: "Student attempts retrieved successfully",
   STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
   STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED : "Student attempt validated successfully. Editor access granted.",
+  STUDENT_ATTEMPT_VALIDATED: "Student attempt validated successfully",
 
   // Judge0
   JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully"
@@ -151,7 +153,8 @@ export const ERROR_MESSAGES = {
   STUDENT_ATTEMPT_DELETION_FAILED: "Failed to delete student attempt",
   STUDENT_ATTEMPT_ID_REQUIRED: "Student attempt ID is required",
   STUDENT_ATTEMPTS_NOT_FOUND: "No student attempts found",
-  STUDENT_ATTEMPT_ALREADY_SUBMITTED_OR_INACTIVE: "Student attempt is already submitted or inactive",
+  STUDENT_ATTEMPT_ALREADY_SUBMITTED: "Student attempt is already submitted",
+  STUDENT_ALREADY_ATTEMPTED_TEST: "Student has already attempted this test",
 
   // Judge0
   JUDGE0_SUBMISSION_ID_REQUIRED: "Judge0 submission ID is required",

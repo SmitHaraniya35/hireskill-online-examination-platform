@@ -1,5 +1,6 @@
 import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { CodingProblem } from "../models/coding_problem.model.ts";
+import { Student } from "../models/student.model.ts";
 import { StudentAttempt } from "../models/student_attempt.model.ts";
 import { Test } from "../models/test.model.ts";
 import type { AuthJwtPayload } from "../types/controller/index.ts";
@@ -7,7 +8,7 @@ import type { CodingProblemDocument } from "../types/model/coding_problem.docume
 import type { StudentAttemptDocument } from "../types/model/student_attempt.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
-import { verifyAccessToken } from "../utils/jwt.utils.ts";
+import { generateAccessToken } from "../utils/jwt.utils.ts";
 import { getTestByIdService } from "./test.service.ts";
 
 export const createStudentAttemptService = async (
@@ -16,10 +17,18 @@ export const createStudentAttemptService = async (
   student_id: string,
 ) => {
   const existAttempt: StudentAttemptDocument | null =
-    await StudentAttempt.findOneActive({ student_id });
-  if (existAttempt && existAttempt.is_active) {
+    await StudentAttempt.findOneActive({ student_id, test_id });
+
+  if (existAttempt && existAttempt.is_active && !existAttempt.is_submitted) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ALREADY_ACTIVE,
+      HttpStatusCode.CONFLICT,
+    );
+  }
+
+  if(existAttempt && !existAttempt.is_active && existAttempt.is_submitted){
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
       HttpStatusCode.CONFLICT,
     );
   }
@@ -46,7 +55,7 @@ export const createStudentAttemptService = async (
     started_at.getTime() + test.duration_minutes * 60 * 1000,
   );
 
-  const attempt: StudentAttemptDocument = await StudentAttempt.create({
+  const studentAttempt: StudentAttemptDocument = await StudentAttempt.create({
     test_id,
     problem_id,
     student_id,
@@ -56,14 +65,14 @@ export const createStudentAttemptService = async (
     is_active: true,
   });
 
-  if (!attempt) {
+  if (!studentAttempt) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ATTEMPT_CREATION_FAILED,
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
 
-  return { attempt };
+  return { studentAttempt };
 };
 
 export const deleteStudentAttemptService = async (id: string) => {
@@ -115,7 +124,11 @@ export const getStudentAttemptsDetailsByTestIdService = async (
 
 export const submitStudentAttemptService = async (id: string) => {
   const studentAttempt: StudentAttemptDocument | null =
-    await StudentAttempt.findOneActive({ id });
+    await StudentAttempt.findOneAndUpdate({id}, {
+      is_active: false,
+      is_submitted: true
+    }).select("-_id -isDeleted -deletedAt -updatedAt -createdAt");
+
   if (!studentAttempt) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
@@ -123,17 +136,13 @@ export const submitStudentAttemptService = async (id: string) => {
     );
   }
 
-  if (!studentAttempt.is_active || studentAttempt.is_submitted) {
+  if (!studentAttempt.is_active && studentAttempt.is_submitted) {
     throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED_OR_INACTIVE,
+      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
       HttpStatusCode.BAD_REQUEST,
     );
   }
 
-  studentAttempt!.is_active = false;
-  studentAttempt!.is_submitted = true;
-
-  await studentAttempt!.save();
   return { studentAttempt };
 };
 
@@ -177,4 +186,21 @@ export const getStudentAttemptByIdService = async (id: string) => {
 
   return { studentAttempt };
 };
+
+export const validateStudentAttemptByEmailService = async (email: string) => {
+  const studentExist = await Student.findOneActive({ email });
+  if(!studentExist){
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND
+    );
+  }
+
+  const studentToken = generateAccessToken(studentExist.id, studentExist.email);
+
+  return {
+    studentId: studentExist.id,
+    studentToken
+  }
+}; 
 
