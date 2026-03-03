@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import studentAttemptService from "../../../services/studentAttempt.services";
 import StudentAttemptListSkeleton from "../../../skeleton/StudentAttemptListSkeleton";
-import CustomTable from "../../../components/CustomTable";
+import CustomTable from "../../../components/shared/CustomTable";
 import type { GetStudentAttempts } from "../../../types/studentAttempts.types";
 
 

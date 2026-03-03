@@ -10,15 +10,10 @@ import ProblemCardSkeleton from "../../skeleton/ProblemCardSkeleton";
 type ViewMode = "list" | "form";
 
 const CodingProblem: React.FC = () => {
-  const [codingProblemList, setCodingProblemList] = useState<
-    CodingProblemData[] | undefined
-  >([]);
+  const [codingProblemList, setCodingProblemList] = useState<CodingProblemData[] | undefined>([]);
   const [loading, setLoading] = useState(true);
   const [currentView, setCurrentView] = useState<ViewMode>("list");
-  const [
-    selectedCodingProblemWithTestCases,
-    setSelectedCodingProblemWithTestCases,
-  ] = useState<CodingProblemData | null>(null);
+  const [selectedCodingProblemWithTestCases,setSelectedCodingProblemWithTestCases] = useState<CodingProblemData | null>(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [formLoading, setFormLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -234,8 +229,15 @@ const CodingProblem: React.FC = () => {
 
   return (
     <>
+      <div className="min-h-0.5">
+          {isError && errorMsg && (
+            <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm border border-red-100">
+              ⚠️ {errorMsg}
+            </div>
+          )}
+      </div>  
       <div className="min-h-screen bg-[#f5f6f8]">
-        <main className="max-w-[900px] mx-auto p-6">
+        <main className="max-w-225 mx-auto p-6">
           {currentView === "list" ? renderListView() : renderFormView()}
         </main>
       </div>

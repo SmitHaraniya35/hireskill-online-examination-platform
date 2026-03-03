@@ -44,7 +44,7 @@ const TestEntry: React.FC = () => {
     setError({ isError: false, message: "" });
 
     try {
-      const response = await testFlowService.validateStudentAttemptByEmailAndTestId({email:email, test_id:test.id});
+      const response = await testFlowService.validateStudentAttemptByEmail({email:email});
 
       const studentId = response.payload!.studentId;
         

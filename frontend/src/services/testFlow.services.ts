@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { type StartResponse, type CreateStudentData, type CreateStudentResponse, type FinishData,type TestDataResponse, type ValidateStudentAttemptResponse, type ValidateStudentAttemptByEmailData, type ValidateStudentAttemptByEmailAndTestIdResponse } from '../types/testFlow.types';
 import type { axiosResponse } from '../types/index.types';
+import type { StudentAttemptResponse } from '../types/studentAttempts.types';
 
 const API_BASE_URL = `${import.meta.env.VITE_BACKEND_API_URL}`;
 
@@ -32,7 +33,7 @@ const testFlowService = {
     return response.data;
   },
 
-  validateStudentAttemptByEmailAndTestId: async (data: ValidateStudentAttemptByEmailData) => {
+  validateStudentAttemptByEmail: async (data: ValidateStudentAttemptByEmailData) => {
     const response = await axios.post<axiosResponse<ValidateStudentAttemptByEmailAndTestIdResponse>>(`${API_BASE_URL}/student-attempt/validate-student-attempt`, data, getCommonHeaders());
     return response.data;
   },
@@ -49,7 +50,8 @@ const testFlowService = {
   },
   
   finishTest: async(slug: string, data: FinishData) => {
-    const response = await axios.post<axiosResponse>(`${API_BASE_URL}/test/${slug}/finish`, data, getCommonHeaders());
+    const response = await axios.post<axiosResponse<StudentAttemptResponse>>(`${API_BASE_URL}/test/${slug}/finish`, data, getCommonHeaders());
+    console.log(response);
     return response.data;
   }
 };

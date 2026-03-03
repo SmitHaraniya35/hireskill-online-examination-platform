@@ -28,16 +28,7 @@ const TestInstruction: React.FC = () => {
       const response = await testFlowService.startTest(slug, test.id, studentId);
       
       if (response?.success && response.payload?.problemId && response.payload?.studentAttemptId) {
-        // Request fullscreen
-        try {
-          const elem = document.documentElement;
-          if (elem.requestFullscreen) {
-            await elem.requestFullscreen();
-          }
-        } catch (fullscreenError) {
-          console.warn("Fullscreen request failed:", fullscreenError);
-          // Continue even if fullscreen fails
-        }
+        
 
         navigate(`/test/${slug}/editor/${response.payload.studentAttemptId}`, {
           state: { test, studentId },

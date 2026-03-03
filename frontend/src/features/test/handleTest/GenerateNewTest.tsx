@@ -29,7 +29,6 @@ export const GenerateNewTest: React.FC<GenerateProps> = ({
     register,
     handleSubmit,
     setValue,
-    watch,
     formState: { errors },
   } = useForm<TestFormInput>({
     resolver: zodResolver(testSchema),

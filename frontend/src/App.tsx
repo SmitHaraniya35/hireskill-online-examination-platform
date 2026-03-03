@@ -15,7 +15,8 @@ import TestEntry from './features/test/CodingPlatform/TestStartPage.tsx'
 import TestInstruction from './features/test/CodingPlatform/TestInstructionPage.tsx'
 import CodingTestLayout from './features/test/CodingPlatform/CodingSection/CodingTestLayout.tsx'
 import AdminLayout from './layouts/AdminLayout.tsx'
-import StudentManagement from './features/student/StudentManagement.tsx'
+import StudentManagementLayout from './features/student/StudentManagementLayout.tsx'
+import TestCompletePage from './features/test/CodingPlatform/TestCompletePage.tsx'
 
 const App: React.FC = () => {
   return (
@@ -42,7 +43,7 @@ const App: React.FC = () => {
                 />
               }
             />
-            <Route path="/admin/student-management" element={<StudentManagement/>}/>
+            <Route path="/admin/student-management" element={<StudentManagementLayout/>}/>
           </Route>
         </Route>
         
@@ -51,6 +52,7 @@ const App: React.FC = () => {
         <Route path="/test/:slug" element={<TestEntry />} />
         <Route path="/test/:slug/instruction" element={<TestInstruction />} />
         <Route path="/test/:slug/editor/:studentAttemptId" element={<CodingTestLayout />} />
+        <Route path="/test/:slug/complete" element={<TestCompletePage/>} />
         
         <Route path="/*" element={<NotFound />} />
       </Routes>
