@@ -66,7 +66,10 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ATTEMPT_VALIDATED: "Student attempt validated successfully",
 
   // Judge0
-  JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully"
+  JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully",
+
+  // Submission
+  SUBMISSION_RETRIEVED: "Submission retrieved successfully"
 };
 
 export const ERROR_MESSAGES = {
@@ -162,7 +165,8 @@ export const ERROR_MESSAGES = {
   JUDGE0_FETCH_FAILED: "Failed to fetch submission result from Judge0",
 
   // Submission
-  SUBMISSION_CREATION_FAILED: "Failed to create submission"
+  SUBMISSION_CREATION_FAILED: "Failed to create submission",
+  SUBMISSION_NOT_FOUND: "Submission not found"
 };
 
 export const HttpStatusCode = {
