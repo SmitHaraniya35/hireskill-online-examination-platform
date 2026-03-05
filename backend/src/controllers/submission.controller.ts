@@ -4,7 +4,7 @@ import type { SubmitCodeRequest, Judge0Submission, Judge0BatchSubmission } from 
 import { executeAllHiddentTestCases, executeCode, getJudge0SubmissionById } from "../services/judge0.service.ts";
 import { getAllTestCasesByProblemIdService } from "../services/testCase.service.ts";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
-import type { TestCaseDocument } from "../types/model/test_case.document.ts";
+import { getSubmissionsByStudentAttemptIdService } from "../services/submission.service.ts";
 
 export const runCode = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -64,6 +64,20 @@ export const fetchOutput = async (req: AuthRequest, res: Response, next: NextFun
 
         const data = await getJudge0SubmissionById(submissionId);
         res.ok(data, SUCCESS_MESSAGES.JUDGE0_SUBMISSION_RETRIEVED); 
+    } catch (err: any) {
+        next(err);
+    }
+};
+
+export const getSubmissionsByStudentAttemptId = async (req: AuthRequest, res: Response, next: NextFunction) => {
+    try {
+        const { studentAttemptId } = req.allParams;
+        if(!studentAttemptId){
+            return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+        }
+
+        const data = await getSubmissionsByStudentAttemptIdService(studentAttemptId);
+        res.ok(data, SUCCESS_MESSAGES.SUBMISSION_RETRIEVED)
     } catch (err: any) {
         next(err);
     }

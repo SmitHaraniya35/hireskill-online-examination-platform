@@ -31,4 +31,23 @@ export const createSubmissionService = async (input: SubmissionData) => {
     }
 
     return { submission: formatedData };
-}
+};
+
+export const getSubmissionsByStudentAttemptIdService = async (student_attempt_id: string) => {
+    const submission = await Submission.findOneActive({ student_attempt_id }, {
+        createdAt: 0,
+        updatedAt: 0,
+        deletedAt: 0,
+        isDeleted: 0,
+        _id: 0
+    });
+
+    if(!submission){
+        throw new HttpError(
+            ERROR_MESSAGES.SUBMISSION_NOT_FOUND,
+            HttpStatusCode.NOT_FOUND
+        );
+    }
+
+    return { submission };
+};
