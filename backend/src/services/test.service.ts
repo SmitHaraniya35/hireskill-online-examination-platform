@@ -75,6 +75,7 @@ export const getAllTestService = async () => {
       expiration_at: 1,
       duration_minutes: 1,
       unique_token: 1,
+      is_active: 1,
       _id: 0,
     },
   );
