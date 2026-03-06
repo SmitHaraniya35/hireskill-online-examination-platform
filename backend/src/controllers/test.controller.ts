@@ -9,6 +9,7 @@ import {
   updateTestService,
   startTestService,
   finishTestService,
+  toggleTestActivationService,
 } from "../services/test.service.ts";
 import type { SubmissionData } from "../types/controller/submissionData.types.ts";
 import { submitStudentAttemptService } from "../services/student_attempt.service.ts";
@@ -163,6 +164,24 @@ export const finishTest = async (
     });
 
     res.ok(data, SUCCESS_MESSAGES.TEST_COMPLETED);
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const toggleTestActivation = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const { id } = req.allParams;
+    if (!id) {
+      return res.badRequest(ERROR_MESSAGES.TEST_ID_REQUIRED);
+    }
+
+    const data = await toggleTestActivationService(id);
+    res.ok(data, SUCCESS_MESSAGES.TEST_ACTIVATION_TOGGLED);
   } catch (err: any) {
     next(err);
   }

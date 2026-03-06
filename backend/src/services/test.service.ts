@@ -159,3 +159,19 @@ export const finishTestService = async (input: SubmissionData) => {
 
   return { studentAttempt, submission };
 };
+
+export const toggleTestActivationService = async (id: string) => {
+  const test = await Test.findByIdActive(id);
+
+  if (!test) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
+
+  test.is_active = !test.is_active;
+  await test.save();
+
+  return { test };
+};

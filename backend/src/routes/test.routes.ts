@@ -14,6 +14,7 @@ router.get("/get-test-details/:id", authMiddleware, validateRequest(IdSchema), T
 router.get("/get-all-tests", authMiddleware, TestController.getAllTests);
 router.put("/update-test/:id", authMiddleware, validateRequest(TestSchema), TestController.updateTest);
 router.delete("/delete-test/:id", authMiddleware, validateRequest(IdSchema),TestController.deleteTest);
+router.put("/toggle-activation/:id", authMiddleware, validateRequest(IdSchema), TestController.toggleTestActivation);
 
 router.get("/:slug/start", validateRequest(StartTestScehma), validateTestLink, TestController.startTest);
 router.post("/:slug/finish", validateRequest(SubmissionSchema), TestController.finishTest);

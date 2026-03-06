@@ -41,6 +41,7 @@ export const SUCCESS_MESSAGES = {
   TEST_CASES_RETRIEVED: "Test cases retrieved successfully",
   TEST_CASE_DELETED: "Test case deleted successfully",
   TEST_CASE_UPDATED: "Test case updated successfully",
+  TEST_ACTIVATION_TOGGLED: "Test activation toggled successfully",
 
   // Test Link
   TEST_LINK_VALID: "Test link is valid",
