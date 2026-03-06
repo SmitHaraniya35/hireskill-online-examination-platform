@@ -44,6 +44,10 @@ const testLinkService = {
         const response = await axios.delete<axiosResponse>(`${API_URL}/delete-test/${id}`, testLinkService.getHeaders());
         return response.data;
     },
+    toggleActivation: async (id: string) => {
+        const response = await axios.put<axiosResponse<TestDetails>>(`${API_URL}/toggle-activation/${id}`,{}, testLinkService.getHeaders());
+        return response.data;
+    },
 };
 
 export default testLinkService;

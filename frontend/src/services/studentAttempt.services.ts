@@ -25,7 +25,13 @@ const StudentAttemptService = {
     getStudentAttemptsDetails: async (testId: string) => {
         const response = await axios.get<axiosResponse<StudentAttemptsDetailsResponse>>(`${API_URL}/get-student-attempts-details/${testId}`,getAuthHeaders());
         return response.data;
+    },
+
+    deleteStudentAttempt: async (id: string) => {
+        const response = await axios.delete<axiosResponse>(`${API_URL}/delete-student-attempt/${id}`,getAuthHeaders());
+        return response.data;
     }
+
 };
     
 export default StudentAttemptService;
