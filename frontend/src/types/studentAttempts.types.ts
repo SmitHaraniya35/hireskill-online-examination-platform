@@ -36,6 +36,10 @@ export interface Submission {
   submitted_at: string;
 }
 
+export interface SubmissionByStudentAttemptId{
+  submission: Submission
+}
+
 export interface StudentAttemptResponse {
   studentAttempt: StudentAttempt;
   submission?: Submission;
@@ -57,3 +61,4 @@ export interface GetStudentAttempts {
 export interface StudentAttemptsDetailsResponse {
   students: GetStudentAttempts[];
 }
+
