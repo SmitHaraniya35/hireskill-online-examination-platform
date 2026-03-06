@@ -24,6 +24,8 @@
     "@tiptap/starter-kit": "^3.19.0",
     "axios": "^1.13.4",
     "dotenv": "^17.3.1",
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.6",
     "react": "^19.2.0",
     "react-datepicker": "^9.1.0",
     "react-dom": "^19.2.0",
@@ -32,6 +34,8 @@
     "react-router-dom": "^7.13.0",
     "react-timer-hook": "^4.0.5",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.7.0",
+    "remove": "^0.1.5",
     "tailwindcss": "^4.1.18",
     "xlsx": "^0.18.5",
     "zod": "^4.3.6"
