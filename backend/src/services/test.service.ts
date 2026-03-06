@@ -75,6 +75,7 @@ export const getAllTestService = async () => {
       expiration_at: 1,
       duration_minutes: 1,
       unique_token: 1,
+      is_active: 1,
       _id: 0,
     },
   );
@@ -158,4 +159,20 @@ export const finishTestService = async (input: SubmissionData) => {
   }
 
   return { studentAttempt, submission };
+};
+
+export const toggleTestActivationService = async (id: string) => {
+  const test = await Test.findByIdActive(id);
+
+  if (!test) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
+
+  test.is_active = !test.is_active;
+  await test.save();
+
+  return { test };
 };
