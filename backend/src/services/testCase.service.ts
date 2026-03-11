@@ -28,7 +28,7 @@ export const getAllTestCasesByProblemIdService = async (problemId: string) => {
 
   const testCases: TestCaseDocument[]= await TestCase.findActive(
     { problem_id: problemId },
-    { id: 1, input: 1, expected_output: 1, is_hidden:1, _id: 0 },
+    { id: 1, input: 1, expected_output: 1, is_hidden:1, image_url: 1, _id: 0 },
   ).sort({ id: 1 });
 
   if (!testCases.length) {
