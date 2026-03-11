@@ -231,8 +231,6 @@
 // // //   });
 // // // }
 
-
-
 // // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // /////////////////////////////////////// 1 Container + combined all input testcases + stream onLine ///////////////////////////////////////////
 // // ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -550,7 +548,6 @@
 // // //   });
 // // // };
 
-
 // // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // // ///////////////////////////////// 1 Container + 100 testcase then 100 exec //////////////////////////////////////
 // // /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -820,7 +817,6 @@
 
 // const normalize = (str: string) => str.trim().replace(/\r/g, "");
 
-
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ///////////////////////// 1 Container + Combined input and output with specific token //////////////////////////////////
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -987,7 +983,7 @@
 
 //     const docker = spawn("docker", [
 //       "run",
-//       "--rm",   
+//       "--rm",
 //       "-i",
 //       "--memory=256m",
 //       "--cpus=0.5",
@@ -1094,8 +1090,6 @@
 
 // const normalize = (str: string) =>
 //   str.trim().replace(/\r/g, "");
-
-
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ///////////////////////// 1 Container + execute each testCase using exec optimize code of above exec //////////////////////////////////
@@ -1218,7 +1212,7 @@
 
 //     const exec = spawn("docker", [
 //       "exec",
-//       "-i", 
+//       "-i",
 //       containerName,
 //       "sh",
 //       "-c",
@@ -1258,3 +1252,194 @@
 
 // const normalize = (str: string) =>
 //   str.trim().replace(/\r/g, "");
+
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ///////////////////////// 1 Container + 1 exec hackerrank //////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// import { spawn } from "child_process";
+// import fs from "fs";
+// import path from "path";
+// import { languages } from "../config/languages.config.ts";
+// import { v4 as uuid } from "uuid";
+// import { redis } from "../store/redis.store.ts";
+
+// export const processSubmission = async (
+//   jobId: string,
+//   language: string,
+//   code: string,
+//   testCases: any[],
+//   timeLimit = 2000,
+//   memoryLimit = 256
+// ) => {
+
+//   const config = languages[language];
+//   if (!config) throw new Error("Unsupported language");
+
+//   const submissionId = uuid();
+//   const basePath = path.join("submissions", submissionId);
+
+//   fs.mkdirSync(basePath, { recursive: true });
+
+//   const filename = `Main.${config.extension}`;
+//   fs.writeFileSync(path.join(basePath, filename), code);
+
+//   const containerName = `judge_${submissionId}`;
+
+//   try {
+
+//     // 1️⃣ start container
+//     await runCommand("docker", [
+//       "run","-dit",
+//       "--name",containerName,
+//       "--memory",`${memoryLimit}m`,
+//       "--cpus","0.5",
+//       "--pids-limit","50",
+//       "--network","none",
+//       "-v",`${path.resolve(basePath)}:/app`,
+//       "-w","/app",
+//       config.image,
+//       "sh"
+//     ]);
+
+//     // 2️⃣ compile
+//     if (config.compile) {
+//       await runCommand("docker", [
+//         "exec",
+//         containerName,
+//         ...config.compile
+//       ]);
+//     }
+
+//     // 3️⃣ combine all inputs
+//     const combinedInput =
+//       testCases.length +
+//       "\n" +
+//       testCases.map(tc => tc.input.trim()).join("\n");
+
+//     // 4️⃣ run program with streaming
+//     await runProgram(
+//       containerName,
+//       config.run,
+//       combinedInput,
+//       testCases,
+//       jobId
+//     );
+
+//   } finally {
+
+//     await runCommand("docker", ["rm","-f",containerName]).catch(()=>{});
+//     fs.rmSync(basePath, { recursive:true, force:true });
+
+//   }
+// };
+
+// const runProgram = (
+//   containerName: string,
+//   runCommandArr: string[],
+//   input: string,
+//   testCases: any[],
+//   jobId: string
+// ): Promise<void> => {
+
+//   return new Promise((resolve, reject) => {
+
+//     const exec = spawn("docker", [
+//       "exec",
+//       "-i",
+//       containerName,
+//       "timeout",
+//       "2s",
+//       ...runCommandArr
+//     ]);
+
+//     exec.stdin.write(input);
+//     exec.stdin.end();
+
+//     let buffer = "";
+//     let index = 0;
+
+//     const results:any[] = [];
+
+//     exec.stdout.on("data", (data) => {
+
+//       buffer += data.toString();
+
+//       const lines = buffer.split("\n");
+
+//       buffer = lines.pop() || "";
+
+//       for (const line of lines) {
+
+//         if (index >= testCases.length) return;
+
+//         const actual = line.trim();
+//         const expected = normalize(testCases[index].expected);
+
+//         const result = {
+//           index,
+//           status: actual === expected ? "Accepted" : "Wrong Answer",
+//           output: actual,
+//           expected
+//         };
+
+//         results.push(result);
+
+//         // 🔥 update redis immediately
+//         redis.set(
+//           `job:${jobId}`,
+//           JSON.stringify({
+//             status: "running",
+//             results
+//           })
+//         );
+
+//         index++;
+//       }
+
+//     });
+
+//     exec.stderr.on("data", (data) => {
+//       reject(new Error(data.toString()));
+//     });
+
+//     exec.on("close", async () => {
+
+//       await redis.set(
+//         `job:${jobId}`,
+//         JSON.stringify({
+//           status: "completed",
+//           results
+//         })
+//       );
+
+//       resolve();
+
+//     });
+
+//   });
+// };
+
+// const runCommand = (cmd: string, args: string[]) => {
+
+//   return new Promise<void>((resolve, reject) => {
+
+//     const p = spawn(cmd, args);
+
+//     let err = "";
+
+//     p.stderr.on("data", d => err += d.toString());
+
+//     p.on("close", code => {
+
+//       if (code !== 0) reject(new Error(err));
+//       else resolve();
+
+//     });
+
+//   });
+
+// };
+
+// const normalize = (str: string) =>
+//   str.trim().replace(/\r/g,"");

@@ -27,24 +27,24 @@ export interface LanguageConfig {
 //   },
 // };
 
-// export const languages: Record<string, LanguageConfig> = {
-//   cpp: {
-//     image: "gcc:latest",
-//     extension: "cpp",
-//     compile: ["g++", "Main.cpp", "-O2", "-o", "Main"],
-//     run: ["./Main"],
-//   },
+export const languages: any = {
+  cpp: {
+    image: "gcc:latest",
+    extension: "cpp",
+    compile: ["g++", "Main.cpp", "-O2", "-o", "Main"],
+    run: ["./Main"],
+  },
 
-//   c: {
-//     image: "gcc:latest",
-//     extension: "c",
-//     compile: ["gcc", "Main.c", "-o", "Main"],
-//     run: ["./Main"]
-//   },
+  c: {
+    image: "gcc:latest",
+    extension: "c",
+    compile: ["gcc", "Main.c", "-o", "Main"],
+    run: ["./Main"]
+  },
 
-//   js: {
-//     image: "node:20-alpine",
-//     extension: "js",
-//     run: ["node", "Main.js"],
-//   },
-// };
+  js: {
+    image: "node:20-alpine",
+    extension: "js",
+    run: ["node", "Main.js"],
+  },
+};
