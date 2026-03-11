@@ -10,10 +10,9 @@ import {
   startTestService,
   finishTestService,
   toggleTestActivationService,
+  toggleTestPublicStatusService,
 } from "../services/test.service.ts";
 import type { SubmissionData } from "../types/controller/submissionData.types.ts";
-import { submitStudentAttemptService } from "../services/student_attempt.service.ts";
-import { createSubmissionService } from "../services/submission.service.ts";
 import type { TestData } from "../types/controller/testData.types.ts";
 
 export const createTest = async (
@@ -22,20 +21,21 @@ export const createTest = async (
   next: NextFunction,
 ) => {
   try {
-    const { title, duration_minutes, expiration_at } = req.allParams as TestData;
+    const input = req.allParams as TestData;
 
     const adminId = req.user!.userId;
     if (!adminId) {
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    if (!title || !duration_minutes || !expiration_at) {
+    if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const expiry = new Date(expiration_at);
+    input.start_at = new Date(input.start_at);
+    input.expiration_at = new Date(input.expiration_at);
 
-    const data = await createTestService(title, duration_minutes, expiry, adminId);
+    const data = await createTestService(input, adminId);
     res.ok(data, SUCCESS_MESSAGES.TEST_CREATED);
   } catch (err: any) {
     next(err);
@@ -89,13 +89,15 @@ export const updateTest = async (
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    const { id, title, duration_minutes, expiration_at } = req.allParams as TestData;
-    if (!id || !title || !duration_minutes || !expiration_at) {
+    const input = req.allParams as TestData;
+    if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const expiry = new Date(expiration_at);
-    const data = await updateTestService(id, title, duration_minutes, expiry);
+    input.expiration_at = new Date(input.expiration_at);
+    input.start_at = new Date(input.start_at);
+
+    const data = await updateTestService(input);
     res.ok(data, SUCCESS_MESSAGES.TEST_UPDATED);
   } catch (err: any) {
     next(err);
@@ -185,4 +187,22 @@ export const toggleTestActivation = async (
   } catch (err: any) {
     next(err);
   }
+};
+
+export const toggleTestPublicStatus = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {    
+    const { id } = req.allParams;
+    if (!id) {
+      return res.badRequest(ERROR_MESSAGES.TEST_ID_REQUIRED);
+    }
+
+    const data = await toggleTestPublicStatusService(id);
+    res.ok(data, SUCCESS_MESSAGES.TEST_PUBLIC_STATUS_TOGGLED);
+  } catch (err: any) {
+    next(err);
+  } 
 };

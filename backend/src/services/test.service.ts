@@ -2,6 +2,7 @@ import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { Test } from "../models/test.model.ts";
 import { User } from "../models/user.model.ts";
 import type { SubmissionData } from "../types/controller/submissionData.types.ts";
+import type { TestData } from "../types/controller/testData.types.ts";
 import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
@@ -9,13 +10,9 @@ import { HttpError } from "../utils/httpError.utils.ts";
 import { selectRandomProblemService } from "./codingProblem.service.ts";
 import { createStudentAttemptService, submitStudentAttemptService } from "./student_attempt.service.ts";
 import { createSubmissionService } from "./submission.service.ts";
+import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
 
-export const createTestService = async (
-  title: string,
-  duration_minutes: number,
-  expiration_at: Date,
-  adminId: string,
-) => {
+export const createTestService = async (input: TestData, adminId: string) => {
   const admin = await User.findByIdActive(adminId);
   if (!admin) {
     throw new HttpError(
@@ -27,11 +24,10 @@ export const createTestService = async (
   const unique_token = generateUniqueTestToken();
 
   const test: TestDocument = await Test.create({
-    title,
+    ...input,
     unique_token,
-    expiration_at,
-    duration_minutes,
     is_active: true,
+    is_public: true,
     created_by: admin.id,
   });
 
@@ -43,18 +39,25 @@ export const createTestService = async (
   }
 
   await test.save();
-  return { test };
+  
+  const { testAndProblems } = await createTestAndProblemsByTestIdService(input.coding_problem_ids, test.id);
+
+  const data = await getTestByIdService(test.id);
+  
+  return { test: data.test };
 };
 
 export const getTestByIdService = async (testId: string) => {
-  const test: TestDocument | null = await Test.findByIdActive(testId, {
-    id: 1,
-    title: 1,
-    expiration_at: 1,
-    duration_minutes: 1,
-    unique_token: 1,
-    _id: 0,
-  });
+  const test = await Test.findOne({ id: testId })
+  .populate({
+    path: "testAndProblems",
+    match: { isDeleted: false },
+    select: "coding_problem_id -_id -test_id",
+    populate: {
+      path: "codingProblem",
+      select: "id title difficulty -_id"
+    }
+  }).lean() as any;
 
   if (!test) {
     throw new HttpError(
@@ -63,20 +66,34 @@ export const getTestByIdService = async (testId: string) => {
     );
   }
 
-  return { test };
+  const formattedTest = {
+    id: test.id,
+    title: test.title,
+    duration_minutes: test.duration_minutes,
+    start_at: test.start_at,
+    expiration_at: test.expiration_at,
+    is_active: test.is_active,
+    is_public: test.is_public,
+    count_of_total_problem : test.count_of_total_problem,
+    count_of_easy_problem : test.count_of_easy_problem,
+    count_of_medium_problem : test.count_of_medium_problem,
+    count_of_hard_problem : test.count_of_hard_problem,
+    codingProblem: test.testAndProblems.map((tp: any) => tp.codingProblem)
+  };
+
+  return { test: formattedTest };
 };
 
 export const getAllTestService = async () => {
   const testList: TestDocument[] = await Test.findActive(
     {},
     {
-      id: 1,
-      title: 1,
-      expiration_at: 1,
-      duration_minutes: 1,
-      unique_token: 1,
-      is_active: 1,
-      _id: 0,
+      _id: 0, 
+      created_by: 0, 
+      createdAt: 0, 
+      updatedAt: 0, 
+      deletedAt: 0, 
+      isDeleted: 0
     },
   );
 
@@ -91,26 +108,47 @@ export const getAllTestService = async () => {
 };
 
 export const updateTestService = async (
-  id: string,
-  title: string,
-  duration_minutes: number,
-  expiration_at: Date,
+  input: TestData
 ) => {
-  const test = await Test.updateOneByFilter(
+  const { id } = input;
+  if(!id){
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_ID_REQUIRED,
+      HttpStatusCode.BAD_REQUEST
+    )
+  }
+
+  const { coding_problem_ids, ...updatedInput } = input;
+
+  const existTest = await Test.updateOneByFilter(
     { id },
     {
-      title,
-      duration_minutes,
-      expiration_at,
+      ...updatedInput,
     },
   );
 
-  if (!test) {
+  if (!existTest) {
     throw new HttpError(
       ERROR_MESSAGES.TEST_UPDATE_FAILED,
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
+
+  const { codingProblems } = await getCodingProblemsByTestIdService(id);
+  const existingCodingProblemIds = codingProblems.map((cp: any) => cp.coding_problem_id);
+
+  const codingProblemIdsToAdd = coding_problem_ids.filter((id) => !existingCodingProblemIds.includes(id));
+  const codingProblemIdsToRemove = existingCodingProblemIds.filter((id: string) => !coding_problem_ids.includes(id));
+
+  if(codingProblemIdsToAdd.length > 0) {
+    await createTestAndProblemsByTestIdService(codingProblemIdsToAdd, id);
+  }
+
+  if(codingProblemIdsToRemove.length > 0) {
+    await deleteTestAndProblemsByTestIdService(codingProblemIdsToRemove, id);
+  }
+
+  const { test } = await getTestByIdService(id);
 
   return { test };
 };
@@ -172,6 +210,22 @@ export const toggleTestActivationService = async (id: string) => {
   }
 
   test.is_active = !test.is_active;
+  await test.save();
+
+  return { test };
+};
+
+export const toggleTestPublicStatusService = async (id: string) => {
+  const test = await Test.findByIdActive(id);
+
+  if (!test) {
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND,
+    );
+  }
+
+  test.is_public = !test.is_public;
   await test.save();
 
   return { test };
