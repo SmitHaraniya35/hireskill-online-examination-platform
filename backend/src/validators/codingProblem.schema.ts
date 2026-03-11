@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { uuidv4Rule } from "./index.validator.ts";
 
-export const CodingProblemSchema = Joi.object({
+export const    CodingProblemSchema = Joi.object({
     id: uuidv4Rule.optional(),
     title: Joi.string().required(),
     difficulty: Joi.string()
@@ -12,13 +12,9 @@ export const CodingProblemSchema = Joi.object({
         }),
     topic: Joi.array().items(Joi.string().required()).required(),
     problem_description: Joi.string().required(),
-    problem_description_image: Joi.string().required(),
     constraint: Joi.string().required(),
     input_format: Joi.string().required(),
     output_format: Joi.string().required(),
-    sample_input: Joi.string().required(),
-    sample_output: Joi.string().required(),
-    basic_code_layout: Joi.string().required(),
 })
 
 export const CodinProblemWithTestCasesSchema = Joi.object({
@@ -32,17 +28,22 @@ export const CodinProblemWithTestCasesSchema = Joi.object({
         }),
     topic: Joi.array().items(Joi.string().required()).required(),
     problem_description: Joi.string().required(),
-    problem_description_image: Joi.string().required(),
     constraint: Joi.string().required(),
     input_format: Joi.string().required(),
     output_format: Joi.string().required(),
-    basic_code_layout: Joi.string().required(),
     testCases: Joi.array().items(
         Joi.object().keys({
             id: uuidv4Rule.optional(),
             input: Joi.string().required(),
             expected_output: Joi.string().required(),
+            image_url: Joi.string().optional(),
             is_hidden: Joi.boolean().required()
+        })
+    ),
+    templateCodes: Joi.array().items(
+        Joi.object().keys({
+            language: Joi.string().valid("C++", "C", "Python", "JavaScript").required(),
+            basic_code_layout: Joi.string().required()
         })
     )
 })
