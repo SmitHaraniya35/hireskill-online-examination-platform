@@ -3,7 +3,7 @@ import { CodingProblem } from "../models/coding_problem.model.ts";
 import { User } from "../models/user.model.ts";
 import type {
   CodingProblemData,
-  CodingProblemWithTestCasesData,
+  CodingProblemWithTestCasesAndTemplateData,
 } from "../types/controller/codingProblemData.types.ts";
 import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
 import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
@@ -14,19 +14,13 @@ import {
   createTestCaseService,
   updateTestCaseService,
 } from "./testCase.service.ts";
+import { createManyCodingProblemTemplateService, updateCodingProblemTemplateService } from "./codingProblemTemplate.service.ts";
+import { Languages } from "../types/controller/codingProblemTemplateData.types.ts";
 
 export const createCodingProblemService = async (
   input: CodingProblemData,
   adminId: string,
 ) => {
-  const admin: UserDocument | null = await User.findOneActive({ id: adminId });
-  if (!admin) {
-    throw new HttpError(
-      ERROR_MESSAGES.ADMIN_NOT_FOUND,
-      HttpStatusCode.NOT_FOUND,
-    );
-  }
-
   const codingProblem: CodingProblemDocument = await CodingProblem.create({
     ...input,
     created_by: adminId,
@@ -38,8 +32,6 @@ export const createCodingProblemService = async (
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }
-
-  console.log(codingProblem.id);
 
   return { codingProblem };
 };
@@ -131,8 +123,8 @@ export const deleteCodingProblemService = async (id: string) => {
   return { codingProblem };
 };
 
-export const createCodingProblemWithTestCasesService = async (
-  input: CodingProblemWithTestCasesData,
+export const createCodingProblemWithTestCasesAndTemplateCodesService = async (
+  input: CodingProblemWithTestCasesAndTemplateData,
   adminId: string,
 ) => {
   const admin: UserDocument | null = await User.findOneActive({ id: adminId });
@@ -143,22 +135,15 @@ export const createCodingProblemWithTestCasesService = async (
     );
   }
 
-  const { testCases, ...codeWithoutTestCase } = input;
-  const sampleTestCase = testCases.find((item) => {
-    if (!item.is_hidden) {
-      return item;
-    }
-  });
+  const { testCases, templateCodes, ...codingProblemDetails } = input;
 
-  const codeInput = {
-    ...codeWithoutTestCase,
-    sample_input: sampleTestCase!.input,
-    sample_output: sampleTestCase!.expected_output,
+  const codingProblemInput = {
+    ...codingProblemDetails,
     created_by: adminId,
   };
 
   const codingProblem: CodingProblemDocument = await CodingProblem.create({
-    ...codeInput,
+    ...codingProblemInput,
   });
   
   if (!codingProblem) {
@@ -174,10 +159,14 @@ export const createCodingProblemWithTestCasesService = async (
   const inputTestCases: TestCaseData[] = testCases.map((item) => {
     return { problem_id, ...item };
   });
+  const testCasesData = await createManyTestCasesService(inputTestCases);
 
-  const data = await createManyTestCasesService(inputTestCases);
+  const inputTemplateCodes = templateCodes.map((item) => {
+    return { problem_id, ...item };
+  });
+  const templateCodesData = await createManyCodingProblemTemplateService(inputTemplateCodes);
 
-  return { codingProblem, testCases: data.testCases };
+  return { codingProblem, testCases: testCasesData.testCases, templateCodes: templateCodesData.codingProblemTemplates };
 };
 
 export const selectRandomProblemService = async () => {
@@ -195,7 +184,7 @@ export const selectRandomProblemService = async () => {
   return problems[index];
 };
 
-export const getCodingProblemWithTestCasesService = async (id: string) => {
+export const getCodingProblemWithTestCasesAndTemplateCodesService = async (id: string) => {
   const codingProblemWithTestCases = await CodingProblem.findByIdActive(id, {
     _id: 0,
     createdAt: 0,
@@ -203,9 +192,13 @@ export const getCodingProblemWithTestCasesService = async (id: string) => {
     updatedAt: 0,
     isDeleted: 0,
   }).populate({
-    path: "testcases",
+    path: "testCases",
     match: { isDeleted: false },
-    select: "id input expected_output is_hidden -_id -problem_id",
+    select: "id input expected_output is_hidden image_url -_id -problem_id",
+  }).populate({
+    path: "templateCodes",
+    match: { isDeleted: false },
+    select: "id language basic_code_layout -_id -problem_id",
   });
 
   if (!codingProblemWithTestCases) {
@@ -218,8 +211,8 @@ export const getCodingProblemWithTestCasesService = async (id: string) => {
   return { codingProblemWithTestCases };
 };
 
-export const updateCodingProblemWithTestCasesService = async (
-  input: CodingProblemWithTestCasesData,
+export const updateCodingProblemWithTestCasesAndTemplateCodesService = async (
+  input: CodingProblemWithTestCasesAndTemplateData,
   adminId: string,
 ) => {
   const admin: UserDocument | null = await User.findOneActive({ id: adminId });
@@ -238,22 +231,16 @@ export const updateCodingProblemWithTestCasesService = async (
     );
   }
 
-  const { testCases, ...codeWithoutTestCase } = input;
-  const sampleTestCase = testCases.find((item) => {
-    if (!item.is_hidden) {
-      return item;
-    }
-  });
+  const { testCases, templateCodes, ...codeWithoutTestCase } = input;
 
-  const codeInput = {
+  const codingProblemInput = {
     ...codeWithoutTestCase,
-    sample_input: sampleTestCase!.input,
-    sample_output: sampleTestCase!.expected_output,
+    created_by: adminId,
   };
 
   const codingProblem = await CodingProblem.findOneAndUpdate(
     { id: problem_id },
-    { ...codeInput },
+    { ...codingProblemInput },
   );
   if (!codingProblem) {
     throw new HttpError(
@@ -271,8 +258,20 @@ export const updateCodingProblemWithTestCasesService = async (
     }
   });
 
+  templateCodes.map(async (templateCode) => {
+    if(templateCode.id) {
+      await updateCodingProblemTemplateService({ problem_id, ...templateCode });
+    } else {
+      await createManyCodingProblemTemplateService([{ problem_id, ...templateCode}]);
+    }
+  });
+
   const updatedCodingProblem =
-    await getCodingProblemWithTestCasesService(problem_id);
+    await getCodingProblemWithTestCasesAndTemplateCodesService(problem_id);
 
   return { updatedCodingProblem };
+};
+
+export const getAllSupportedLanguagesService = async () => {
+  return { Languages };
 };
