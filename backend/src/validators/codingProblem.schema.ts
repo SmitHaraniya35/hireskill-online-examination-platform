@@ -1,7 +1,7 @@
 import Joi from "joi";
 import { uuidv4Rule } from "./index.validator.ts";
 
-export const    CodingProblemSchema = Joi.object({
+export const CodingProblemSchema = Joi.object({
     id: uuidv4Rule.optional(),
     title: Joi.string().required(),
     difficulty: Joi.string()
@@ -17,7 +17,7 @@ export const    CodingProblemSchema = Joi.object({
     output_format: Joi.string().required(),
 })
 
-export const CodinProblemWithTestCasesSchema = Joi.object({
+export const CodingProblemWithTestCasesAndTemplateCodesSchema = Joi.object({
     id: uuidv4Rule.optional(),
     title: Joi.string().required(),
     difficulty: Joi.string()
@@ -42,6 +42,7 @@ export const CodinProblemWithTestCasesSchema = Joi.object({
     ),
     templateCodes: Joi.array().items(
         Joi.object().keys({
+            id: uuidv4Rule.optional(),
             language: Joi.string().valid("C++", "C", "Python", "JavaScript").required(),
             basic_code_layout: Joi.string().required()
         })
