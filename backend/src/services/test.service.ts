@@ -8,8 +8,8 @@ import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 // import { selectRandomProblemService } from "./codingProblem.service.ts";
-import { createStudentAttemptService, submitStudentAttemptService } from "./student_attempt.service.ts";
-import { createStudentAssignedProblemService } from "./StudentAssignedProblem.service.ts";
+import { createStudentAttemptService, submitStudentAttemptService } from "./studentAttempt.service.ts";
+import { createStudentAssignedProblemService } from "./studentAssignedProblem.service.ts";
 import { createSubmissionService } from "./submission.service.ts";
 import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
 

@@ -9,7 +9,7 @@ import {
   getStudentAttemptByIdService,
   validateStudentAttemptByEmailAndTestIdService,
   createStudentAttemptService
-} from "../services/student_attempt.service.ts";
+} from "../services/studentAttempt.service.ts";
 import { verifyAccessToken } from "../utils/jwt.utils.ts";
 import type { StudentAttemptData, ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
 
