@@ -50,9 +50,9 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
     return null;
   }
 
-  const setFontFamily = (font: string) => {
-    editor.chain().focus().setFontFamily(font).run();
-  };
+  // const setFontFamily = (font: string) => {
+  //   editor.chain().focus().setFontFamily(font).run();
+  // };
 
   return (
     <div className="border-[1.5px] border-gray-200 rounded-xl overflow-hidden bg-white">
@@ -97,7 +97,7 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
         <div className="w-px h-6 bg-gray-300 mx-1"></div>
 
         {/* Font Family */}
-        <select
+        {/* <select
           onChange={(e) => setFontFamily(e.target.value)}
           className="px-2 py-1 border border-gray-300 rounded-lg text-sm cursor-pointer bg-white min-w-[140px] outline-none"
           defaultValue="system-ui"
@@ -108,12 +108,12 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
           <option value="Arial, sans-serif">Arial</option>
           <option value="Verdana, sans-serif">Verdana</option>
           <option value="'Courier New', monospace">Courier New</option>
-        </select>
+        </select> */}
 
-        <div className="w-px h-6 bg-gray-300 mx-1"></div>
+        {/* <div className="w-px h-6 bg-gray-300 mx-1"></div> */}
 
         {/* Align Left */}
-        <button
+        {/* <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign("left").run()}
           className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
@@ -133,10 +133,10 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
             <line x1="3" y1="12" x2="15" y2="12" />
             <line x1="3" y1="18" x2="18" y2="18" />
           </svg>
-        </button>
+        </button> */}
 
         {/* Align Center */}
-        <button
+        {/* <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign("center").run()}
           className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
@@ -156,10 +156,10 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
             <line x1="6" y1="12" x2="18" y2="12" />
             <line x1="4" y1="18" x2="20" y2="18" />
           </svg>
-        </button>
+        </button> */}
 
         {/* Align Right */}
-        <button
+        {/* <button
           type="button"
           onClick={() => editor.chain().focus().setTextAlign("right").run()}
           className={`px-2 py-1 border border-gray-300 rounded-lg bg-white hover:bg-gray-100 transition min-w-[32px] h-[32px] flex items-center justify-center ${
@@ -179,9 +179,9 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
             <line x1="9" y1="12" x2="21" y2="12" />
             <line x1="6" y1="18" x2="21" y2="18" />
           </svg>
-        </button>
+        </button> */}
 
-        <div className="w-px h-6 bg-gray-300 mx-1"></div>
+        {/* <div className="w-px h-6 bg-gray-300 mx-1"></div> */}
 
         {/* Bullet List */}
         <button
@@ -224,11 +224,48 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2"
+            stroke-width="1.2"
           >
-            <line x1="10" y1="6" x2="21" y2="6" />
-            <line x1="10" y1="12" x2="21" y2="12" />
-            <line x1="10" y1="18" x2="21" y2="18" />
+            <path
+              d="M4 6.5L5 5.5V9.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M3.5 13.5C3.5 12.5 4 12 4.7 12C5.4 12 5.9 12.5 5.9 13.5C5.9 14.5 3.5 15.8 3.5 15.8H6"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M3.7 18.5C3.7 18 4.2 17.5 4.8 17.5C5.4 17.5 5.9 18 5.9 18.5C5.9 19 5.4 19.5 4.8 19.5C5.4 19.5 5.9 20 5.9 20.5C5.9 21 5.4 21.5 4.8 21.5C4.2 21.5 3.7 21 3.7 20.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+
+            <line
+              x1="10"
+              y1="7.5"
+              x2="21"
+              y2="7.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <line
+              x1="10"
+              y1="13.5"
+              x2="21"
+              y2="13.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <line
+              x1="10"
+              y1="19.5"
+              x2="21"
+              y2="19.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </button>
       </div>
@@ -238,7 +275,7 @@ const TiptapEditor = ({ value, onChange }: TiptapEditorProps) => {
 
       <style>{`
         .ProseMirror {
-          min-height: 300px;
+          min-height: 200px;
           padding: 1rem;
           outline: none;
         }
