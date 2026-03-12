@@ -1,7 +1,17 @@
-import axios from 'axios';
-import { type StartResponse, type CreateStudentData, type CreateStudentResponse, type FinishData,type TestDataResponse, type ValidateStudentAttemptResponse, type ValidateStudentAttemptByEmailData, type ValidateStudentAttemptByEmailAndTestIdResponse } from '../types/testFlow.types';
-import type { axiosResponse } from '../types/index.types';
-import type { StudentAttemptResponse } from '../types/studentAttempts.types';
+import axios from "axios";
+import {
+  type StartResponse,
+  type CreateStudentData,
+  type CreateStudentResponse,
+  type FinishData,
+  type TestDataResponse,
+  type ValidateStudentAttemptResponse,
+  type ValidateStudentAttemptByEmailData,
+  type ValidateStudentAttemptByEmailAndTestIdResponse,
+  type StudentData,
+} from "../types/testFlow.types";
+import type { axiosResponse } from "../types/index.types";
+import type { StudentAttemptResponse } from "../types/studentAttempts.types";
 
 const API_BASE_URL = `${import.meta.env.VITE_BACKEND_API_URL}`;
 
@@ -17,44 +27,76 @@ const getCommonHeaders = () => {
 };
 
 const testFlowService = {
-
-   getTestBySlug: async (slug: string) => {
-    const response = await axios.get<axiosResponse<TestDataResponse>>(`${API_BASE_URL}/test/${slug}`,getCommonHeaders());
+  getTestBySlug: async (slug: string) => {
+    const response = await axios.get<axiosResponse<TestDataResponse>>(
+      `${API_BASE_URL}/test/${slug}`,
+      getCommonHeaders(),
+    );
+    console.log(response);
     return response.data;
   },
-  
-  createStudent: async (data: CreateStudentData) => {
-    const response = await axios.post<axiosResponse<CreateStudentResponse>>(`${API_BASE_URL}/student/create-student`,data,getCommonHeaders());
+  validateStudentAttemptByEmail: async (
+    data: ValidateStudentAttemptByEmailData,
+  ) => {
+    const response = await axios.post<
+      axiosResponse<ValidateStudentAttemptByEmailAndTestIdResponse>
+    >(
+      `${API_BASE_URL}/student-attempt/validate-student-attempt`,
+      data,
+      getCommonHeaders(),
+    );
     return response.data;
   },
-
+  completeStudentDetails: async (data: StudentData, id: string) => {
+    const response = await axios.put<axiosResponse>(
+      `${API_BASE_URL}/student/complete-student-profile/${id}`,
+      data,
+      getCommonHeaders(),
+    );
+    return response.data;
+  },
   validateStudentAttempt: async (id: string) => {
-    const response = await axios.get<axiosResponse<ValidateStudentAttemptResponse>>(`${API_BASE_URL}/student-attempt/${id}/get-problem-id`,getCommonHeaders());
+    const response = await axios.get<
+      axiosResponse<ValidateStudentAttemptResponse>
+    >(
+      `${API_BASE_URL}/student-attempt/${id}/get-problem-id`,
+      getCommonHeaders(),
+    );
     return response.data;
   },
 
-  validateStudentAttemptByEmail: async (data: ValidateStudentAttemptByEmailData) => {
-    const response = await axios.post<axiosResponse<ValidateStudentAttemptByEmailAndTestIdResponse>>(`${API_BASE_URL}/student-attempt/validate-student-attempt`, data, getCommonHeaders());
+  createStudent: async (data: CreateStudentData) => {
+    const response = await axios.post<axiosResponse<CreateStudentResponse>>(
+      `${API_BASE_URL}/student/create-student`,
+      data,
+      getCommonHeaders(),
+    );
     return response.data;
   },
 
   startTest: async (slug: string, testId: string, studentId: string) => {
-    const response = await axios.get<axiosResponse<StartResponse>>(`${API_BASE_URL}/test/${slug}/start`, {
-      params: {
-        test_id: testId,
-        student_id: studentId,
+    const response = await axios.get<axiosResponse<StartResponse>>(
+      `${API_BASE_URL}/test/${slug}/start`,
+      {
+        params: {
+          test_id: testId,
+          student_id: studentId,
+        },
+        ...getCommonHeaders(),
       },
-      ...getCommonHeaders(),
-    });
+    );
     return response.data;
   },
-  
-  finishTest: async(slug: string, data: FinishData) => {
-    const response = await axios.post<axiosResponse<StudentAttemptResponse>>(`${API_BASE_URL}/test/${slug}/finish`, data, getCommonHeaders());
+
+  finishTest: async (slug: string, data: FinishData) => {
+    const response = await axios.post<axiosResponse<StudentAttemptResponse>>(
+      `${API_BASE_URL}/test/${slug}/finish`,
+      data,
+      getCommonHeaders(),
+    );
     console.log(response);
     return response.data;
-  }
+  },
 };
 
 export default testFlowService;
-

@@ -1,6 +1,7 @@
 import axios from "axios";
-import type { GetAllStudentsListData, Student, StudentListData } from "../types/student.types";
+import type { GetAllStudentsListData, Student, StudentInfoData, StudentListData } from "../types/student.types";
 import type { axiosResponse } from "../types/index.types";
+import type { StudentData } from "../types/testFlow.types";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/student`;
 
@@ -19,6 +20,10 @@ const StudentService = {
 
   createStudent: async(data: Student) => {
     const response = await axios.post<axiosResponse>(`${API_URL}/create-student`,data, getAuthHeaders());
+    return response.data;
+  },
+  getStudentById: async (id: string) => {
+    const response = await axios.get<axiosResponse<StudentInfoData>>(`${API_URL}/get-student/${id}`, getAuthHeaders());
     return response.data;
   },
 
