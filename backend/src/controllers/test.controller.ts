@@ -11,6 +11,7 @@ import {
   finishTestService,
   toggleTestActivationService,
   toggleTestPublicStatusService,
+  getTestDataByStudentAttemptIdService,
 } from "../services/test.service.ts";
 import type { SubmissionData } from "../types/controller/submissionData.types.ts";
 import type { TestData } from "../types/controller/testData.types.ts";
@@ -145,22 +146,23 @@ export const startTest = async (
   }
 };
 
-// export const getTestDataByStudentAttemptId = async (
-//   req: AuthRequest,
-//   res: Response,
-//   next: NextFunction
-// ) => {
-//   try {
-//     const { studentAttemptId } = req.allParams;
-//     if (!studentAttemptId) {
-//       return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
-//     }
+export const getTestDataByStudentAttemptId = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { studentAttemptId } = req.allParams;
+    if (!studentAttemptId) {
+      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    }
 
-//     const data = await 
-//   } catch (err: any) {
-//     next(err);
-//   }
-// }
+    const data = await getTestDataByStudentAttemptIdService(studentAttemptId);
+    res.ok(data, SUCCESS_MESSAGES.TEST_DATA_RETRIEVED);
+  } catch (err: any) {
+    next(err);
+  }
+};
 
 export const finishTest = async (
   req: AuthRequest,

@@ -41,4 +41,9 @@ export const StartTestScehma = Joi.object({
     slug: Joi.string().required(),
     test_id: uuidv4Rule.required(),
     student_id: uuidv4Rule.required()
-})
+});
+
+export const GetTestDataByStudentAttemptIdSchema = Joi.object({
+    slug: Joi.string().required(),
+    studentAttemptId: uuidv4Rule.required()
+});

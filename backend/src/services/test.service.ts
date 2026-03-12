@@ -8,8 +8,8 @@ import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 // import { selectRandomProblemService } from "./codingProblem.service.ts";
-import { createStudentAttemptService, submitStudentAttemptService } from "./studentAttempt.service.ts";
-import { createStudentAssignedProblemService } from "./studentAssignedProblem.service.ts";
+import { createStudentAttemptService, getStudentAttemptByIdService, submitStudentAttemptService } from "./studentAttempt.service.ts";
+import { createStudentAssignedProblemService, getStudentAssignedProblemsByStudentAttemptIdService } from "./studentAssignedProblem.service.ts";
 import { createSubmissionService } from "./submission.service.ts";
 import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
 
@@ -223,9 +223,38 @@ export const startTestService = async (test_id: string, student_id: string) => {
   return { studentAttemptId: studentAttempt.id };
 };
 
-// export const getTestDataByStudentAttemptIdService = async (studentAttemptId: string) => {
-//   const studentAttempt = await 
-// }
+export const getTestDataByStudentAttemptIdService = async (studentAttemptId: string) => {
+  const { studentAttempt } = await getStudentAttemptByIdService(studentAttemptId);
+  if(!studentAttempt){
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPTS_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND
+    );
+  }
+
+  const test = await Test.findOneActive({ id: studentAttempt.test_id }, {
+    _id: 0,
+    title: 1,
+    duration_minutes: 1,
+    count_of_total_problem: 1,
+    count_of_easy_problem: 1,
+    count_of_medium_problem: 1,
+    count_of_hard_problem: 1,
+  });
+  if(!test) {
+    throw new HttpError(
+      ERROR_MESSAGES.TESTS_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND
+    );
+  }
+
+  const { studentAssignedProblems } = await getStudentAssignedProblemsByStudentAttemptIdService(studentAttemptId);
+  return {
+    test,
+    studentAttemptId: studentAttempt.id,
+    assignedProblems: studentAssignedProblems
+  }
+};
 
 export const finishTestService = async (input: SubmissionData) => {
   const { studentAttempt } = await submitStudentAttemptService(input.student_attempt_id);
