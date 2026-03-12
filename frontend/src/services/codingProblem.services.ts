@@ -5,6 +5,7 @@ import type {
   CodingProblemResponse,
   GelAllCodingProblemWithTestCases,
   GetAllCodingProblemsResponse,
+  LANGUAGES,
 } from "../types/codingProblem.types";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/coding-problem`;
@@ -22,13 +23,14 @@ const getAuthHeaders = () => {
 
 const codingProblemService = {
   createCodingProblemWithTestCases: async (data: CodingProblemData) => {
-    const response = await axios.post<axiosResponse<CodingProblemResponse>>(`${API_URL}/create-coding-problem-with-testcases`,data, getAuthHeaders());
+    const response = await axios.post<axiosResponse<CodingProblemResponse>>(`${API_URL}/create-coding-problem-with-testcases-and-templateCodes`,data, getAuthHeaders());
     console.log(response.data);
     return response.data;
   },
 
   updateCodingProblemWithTestCases: async (id: string, data: CodingProblemData) => {
-      const response = await axios.patch<axiosResponse<CodingProblemResponse>>(`${API_URL}/update-coding-problem-with-testcases/${id}`,data,getAuthHeaders());
+      const response = await axios.patch<axiosResponse<CodingProblemResponse>>(`${API_URL}/update-coding-problem-with-testcases-and-templateCodes/${id}`,data,getAuthHeaders());
+      console.log(response.data);
       return response.data;
   },
 
@@ -38,7 +40,7 @@ const codingProblemService = {
   },
 
   getCodingProblemWithTestCases: async (id: string) => {
-    const response = await axios.get<axiosResponse<GelAllCodingProblemWithTestCases>>(`${API_URL}/get-coding-problem-with-testcases/${id}`, getAuthHeaders());
+    const response = await axios.get<axiosResponse<GelAllCodingProblemWithTestCases>>(`${API_URL}/get-coding-problem-with-testcases-and-templateCodes/${id}`, getAuthHeaders());
     return response.data;
   },
 
@@ -51,6 +53,11 @@ const codingProblemService = {
     const response = await axios.delete<axiosResponse>(`${API_URL}/delete-coding-problem/${id}`,getAuthHeaders(),);
     return response.data;
   },
+
+  getAllSupportedLanguage: async () => {
+    const response = await axios.get<axiosResponse<LANGUAGES>>(`${API_URL}/get-all-supported-languages`,getAuthHeaders());
+    return response.data;
+  }
 };
 
 export default codingProblemService;
