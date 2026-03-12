@@ -9,39 +9,13 @@ import type { StudentAttemptDocument } from "../types/model/student_attempt.docu
 import type { TestDocument } from "../types/model/test.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 import { generateAccessToken } from "../utils/jwt.utils.ts";
+import { createStudentService } from "./student.service.ts";
 import { getTestByIdService } from "./test.service.ts";
 
 export const createStudentAttemptService = async (
   test_id: string,
-  problem_id: string,
   student_id: string,
 ) => {
-  const existAttempt: StudentAttemptDocument | null =
-    await StudentAttempt.findOneActive({ student_id, test_id });
-
-  if (existAttempt && existAttempt.is_active && !existAttempt.is_submitted) {
-    throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ALREADY_ACTIVE,
-      HttpStatusCode.CONFLICT,
-    );
-  }
-
-  if(existAttempt && !existAttempt.is_active && existAttempt.is_submitted){
-    throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
-      HttpStatusCode.CONFLICT,
-    );
-  }
-
-  const problem: CodingProblemDocument | null =
-    await CodingProblem.findByIdActive(problem_id);
-  if (!problem) {
-    throw new HttpError(
-      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
-      HttpStatusCode.NOT_FOUND,
-    );
-  }
-
   const test: TestDocument | null = await Test.findByIdActive(test_id);
   if (!test || !test.is_active) {
     throw new HttpError(
@@ -57,12 +31,9 @@ export const createStudentAttemptService = async (
 
   const studentAttempt: StudentAttemptDocument = await StudentAttempt.create({
     test_id,
-    problem_id,
     student_id,
     started_at,
     expires_at,
-    is_submitted: false,
-    is_active: true,
   });
 
   if (!studentAttempt) {
@@ -104,12 +75,8 @@ export const getStudentAttemptsDetailsByTestIdService = async (
       path: "student",
       select: "id name email phone -_id",
     })
-    .populate({
-      path: "problem",
-      select: "id title difficulty",
-    })
     .select(
-      "id started_at expires_at is_submitted is_active student_id problem_id -_id",
+      "id started_at expires_at finished_at is_submitted is_active student_id -_id",
     );
 
   if (!students) {
@@ -146,7 +113,7 @@ export const submitStudentAttemptService = async (id: string) => {
   return { studentAttempt };
 };
 
-export const  validateStudentAttemptAndGetCodingProblemIdService = async (id: string, studenTokenData: AuthJwtPayload) => {
+export const validateStudentAttemptAndGetCodingProblemIdService = async (id: string, studenTokenData: AuthJwtPayload) => {
   const studentAttempt: any = await StudentAttempt.findOneActive({ id }).populate('student');
   if(!studentAttempt){
     throw new HttpError(
@@ -187,20 +154,50 @@ export const getStudentAttemptByIdService = async (id: string) => {
   return { studentAttempt };
 };
 
-export const validateStudentAttemptByEmailService = async (email: string) => {
-  const studentExist = await Student.findOneActive({ email });
-  if(!studentExist){
+export const validateStudentAttemptByEmailAndTestIdService = async (email: string, test_id: string) => {
+  const test = await Test.findByIdActive(test_id);
+
+  if(!test) {
     throw new HttpError(
-      ERROR_MESSAGES.STUDENT_NOT_FOUND,
+      ERROR_MESSAGES.TESTS_NOT_FOUND,
       HttpStatusCode.NOT_FOUND
     );
   }
 
-  const studentToken = generateAccessToken(studentExist.id, studentExist.email);
+  if(!test.is_active){
+    throw new HttpError(
+      ERROR_MESSAGES.TEST_CLOSED_BY_ADMIN,
+      HttpStatusCode.FORBIDDEN
+    );
+  }
 
-  return {
-    studentId: studentExist.id,
-    studentToken
+  if(test.is_public){
+    const studentAttemptExist = await StudentAttempt.findOneActive({ test_id })
+      .populate({
+        path: 'student',
+        match: { email },
+        select: 'id email -_id'
+      });
+
+    if(studentAttemptExist) {
+      throw new HttpError(
+        ERROR_MESSAGES.STUDENT_ALREADY_ATTEMPTED_TEST,
+        HttpStatusCode.CONFLICT
+      );
+    }
+
+    const { student } = await createStudentService(email);
+    return { studentId: student.id };
+  } else {
+    const student = await Student.findOneActive({ email });
+    if(!student) {
+      throw new HttpError(
+        ERROR_MESSAGES.STUDENT_NOT_FOUND,
+        HttpStatusCode.NOT_FOUND
+      );
+    }
+
+    return { studentId: student.id }
   }
 }; 
 

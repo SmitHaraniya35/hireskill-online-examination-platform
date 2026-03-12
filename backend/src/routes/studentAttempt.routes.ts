@@ -14,6 +14,6 @@ router.put("/submit-student-attempt/:id", validateRequest(IdSchema), StudentAtte
 router.delete("/delete-student-attempt/:id", authMiddleware, validateRequest(IdSchema), StudentAttemptController.deleteStudentAttempt);
 
 router.get("/:id/get-problem-id", validateRequest(IdSchema), StudentAttemptController.validateStudentAttemptAndGetCodingProblemId);
-router.post("/validate-student-attempt", validateRequest(ValidateStudentAttemptSchema), StudentAttemptController.validateStudentAttemptByEmail);
+router.post("/validate-student-attempt", validateRequest(ValidateStudentAttemptSchema), StudentAttemptController.validateStudentAttemptByEmailAndTestId);
 
 export default router;

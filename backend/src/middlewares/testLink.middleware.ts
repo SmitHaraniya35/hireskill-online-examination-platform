@@ -24,6 +24,11 @@ export const validateTestLink = async (
     }
 
     const currentDateTime = new Date();
+
+    if(currentDateTime < test.start_at){
+      return res.forbidden(ERROR_MESSAGES.TEST_NOT_STARTED);
+    }
+
     if (currentDateTime > test.expiration_at) {
       return res.forbidden(ERROR_MESSAGES.TEST_LINK_EXPIRED);
     }

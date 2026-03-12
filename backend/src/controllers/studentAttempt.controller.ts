@@ -7,7 +7,7 @@ import {
   submitStudentAttemptService,
   validateStudentAttemptAndGetCodingProblemIdService,
   getStudentAttemptByIdService,
-  validateStudentAttemptByEmailService,
+  validateStudentAttemptByEmailAndTestIdService,
   createStudentAttemptService
 } from "../services/student_attempt.service.ts";
 import { verifyAccessToken } from "../utils/jwt.utils.ts";
@@ -19,12 +19,12 @@ export const createStudentAttempt = async (
   next: NextFunction,
 ) => {
   try {
-    const { test_id, problem_id, student_id } = req.allParams as StudentAttemptData;
-    if (!test_id || !problem_id || !student_id) {
+    const { test_id, student_id } = req.allParams as StudentAttemptData;
+    if (!test_id || !student_id) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const data = await createStudentAttemptService(test_id, problem_id, student_id);
+    const data = await createStudentAttemptService(test_id, student_id);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_CREATED);
   } catch (err: any) {
     next(err);
@@ -142,28 +142,20 @@ export const getStudentAttemptById = async (
   }
 };
 
-export const validateStudentAttemptByEmail = async (
+export const validateStudentAttemptByEmailAndTestId = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { email } = req.allParams as ValidateStudentAttemptData;
+    const { test_id, email } = req.allParams as ValidateStudentAttemptData;
     
-    if(!email){
-      res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
+    if(!email || !test_id){
+      res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
       return;
     }
 
-    const data = await validateStudentAttemptByEmailService(email);
-
-    res.cookie("studentToken", data.studentToken, {
-      maxAge: 2 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
-
+    const data = await validateStudentAttemptByEmailAndTestIdService(email, test_id);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED);
   } catch(err: any){
     next(err);
