@@ -1,34 +1,20 @@
 import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { Student } from "../models/student.model.ts";
-import type { ImportStudentsData, StudentData } from "../types/controller/studentData.types.ts";
+import type { ImportStudentsData, StudentData, StudentProfileData } from "../types/controller/studentData.types.ts";
 import type { StudentDocument } from "../types/model/student.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 
-export const createStudentService = async (input: StudentData) => {
-    const { email, phone } = input;
-    const studentExists: StudentDocument | null = await Student.findOneActive({
-        $or: [
-            { email },
-            { phone }
-        ]
-    });
+export const createStudentService = async (email: string) => {
+    const studentExists: StudentDocument | null = await Student.findOneActive({ email });
 
-    if (studentExists && studentExists.email === email){
+    if (studentExists){
         throw new HttpError(
             ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_EMAIL,
             HttpStatusCode.CONFLICT
         );
-    } else if(studentExists && studentExists.phone.toString() === phone.toString()){
-        throw new HttpError(
-            ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_PHONE,
-            HttpStatusCode.CONFLICT
-        );
     }
 
-    const student: StudentDocument = await Student.create({
-        ...input
-    });
-
+    const student: StudentDocument = await Student.create({ email });
     if(!student){
         throw new HttpError(
             ERROR_MESSAGES.STUDENT_CREATION_FAILED,
@@ -37,7 +23,6 @@ export const createStudentService = async (input: StudentData) => {
     }
 
     await student.save();
-
     return { student };
 };
 
@@ -143,4 +128,27 @@ export const deleteStudentService = async (id: string) => {
     }
 
     return { student };
+};
+
+export const completeStudentProfileService = async (id: string, input: StudentProfileData) => {
+    const student =  await Student.findOneActive({ id });
+    if(!student) { 
+        throw new HttpError(
+            ERROR_MESSAGES.STUDENT_NOT_FOUND,
+            HttpStatusCode.NOT_FOUND
+        );
+    }
+
+    student.name = input.name;
+    student.phone = input.phone;
+    student.college = input.college;
+    student.degree = input.degree;
+    student.skills = input.skills;
+    student.branch = input.branch;
+    student.graduation_year = input.graduation_year;
+    student.complete_profile = true;
+
+    await student.save();
+
+    return { student }
 };
