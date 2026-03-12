@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import testLinkService from "../../../services/test.services";
-import GenerateNewTest from "./GenerateNewTest";
 import StudentAttempts from "./StudentAttemptListsView";
 
 import View from "../../../assets/viewIcon.svg";
@@ -13,14 +13,11 @@ import { toast } from "react-toastify";
 import TestCardSkeleton from "../../../skeleton/TestCardSkeleton";
 
 const TestLinkManager: React.FC = () => {
+  const navigate = useNavigate();
   const [testList, setTestList] = useState<Test[] | undefined>([]);
   const [loading, setLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
-  const [mode, setMode] = useState<"create" | "edit">("create");
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedTest, setSelectedTest] = useState<Test | null>(null);
   const [selectedTestId, setSelectedTestId] = useState<string | null>(null);
 
   const loadLinks = async () => {
@@ -35,6 +32,7 @@ const TestLinkManager: React.FC = () => {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     loadLinks();
   }, []);
@@ -42,15 +40,12 @@ const TestLinkManager: React.FC = () => {
   const handleToggleActivation = async (id: string) => {
     try {
       const res = await testLinkService.toggleActivation(id);
-
       const updatedTest = res.payload?.test;
-
       setTestList((prev) =>
         prev?.map((test) =>
           test.id === id ? { ...test, ...updatedTest } : test,
         ),
       );
-
       toast.success(
         updatedTest?.is_active ? "Test Activated" : "Test Deactivated",
       );
@@ -58,24 +53,27 @@ const TestLinkManager: React.FC = () => {
       toast.error(err.response?.data?.message || "Toggle failed");
     }
   };
-
-  const handleCreate = () => {
-    setMode("create");
-    setSelectedTest(null);
-    setOpenModal(true);
+  const handleTogglePublicStatus = async (id: string) => {
+    try {
+      const res = await testLinkService.togglePublicStatus(id);
+      const updatedTest = res.payload?.test;
+      setTestList((prev) =>
+        prev?.map((test) =>
+          test.id === id ? { ...test, ...updatedTest } : test,
+        ),
+      );
+      toast.success(updatedTest?.is_public ? "Test Publiced" : "Test Privated");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Toggle failed");
+    }
   };
 
-  const handleEdit = async (id: string) => {
-    try {
-      const res = await testLinkService.getTestDetails(id);
-      const testData = res.payload!.test;
-      setSelectedTest(testData);
-      setMode("edit");
-      setOpenModal(true);
-    } catch (err: any) {
-      setIsError(true);
-      setErrorMsg(err.response?.data?.message || "Failed to load test details");
-    }
+  const handleCreate = () => {
+    navigate("/admin/create-exam/generate-new-test");
+  };
+
+  const handleEdit = (id: string) => {
+    navigate(`/admin/create-exam/generate-new-test?editId=${id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -96,11 +94,6 @@ const TestLinkManager: React.FC = () => {
 
   const handleBack = () => {
     setSelectedTestId(null);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedTest(null);
   };
 
   if (isError) {
@@ -126,7 +119,6 @@ const TestLinkManager: React.FC = () => {
                 Manage access links for assessments
               </p>
             </div>
-
             <button
               onClick={handleCreate}
               className="bg-[#1DA077] text-white px-6 py-3 rounded-xl font-bold text-base transition-all duration-300 mt-4 shadow-[0_4px_12px_rgba(29,160,119,0.2)] hover:bg-[#148562] hover:-translate-y-0.5 hover:shadow-[0_6px_15px_rgba(29,160,119,0.3)] disabled:opacity-50"
@@ -162,9 +154,8 @@ const TestLinkManager: React.FC = () => {
                       Duration: {link.duration_minutes} mins
                     </div>
                   </div>
-                  
 
-                  <div className="flex item-center gap-4">
+                  {/* <div className="flex items-center gap-4">
                     <button
                       type="button"
                       onClick={() => handleToggleActivation(link.id!)}
@@ -175,6 +166,19 @@ const TestLinkManager: React.FC = () => {
                       <div
                         className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
                           link.is_active ? "translate-x-5" : "translate-x-0"
+                        }`}
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleTogglePublicStatus(link.id!)}
+                      className={`w-11 h-6 flex items-center rounded-full p-1 transition ${
+                        link.is_public ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                    >
+                      <div
+                        className={`bg-white w-4 h-4 rounded-full shadow-md transform transition ${
+                          link.is_public ? "translate-x-5" : "translate-x-0"
                         }`}
                       />
                     </button>
@@ -199,33 +203,79 @@ const TestLinkManager: React.FC = () => {
                       onClick={() => handleDelete(link.id!)}
                       title="Delete test"
                     />
+                  </div> */}
+                  <div className="flex items-center gap-4">
+                    {/* Toggle 1: Active/Inactive Test */}
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        type="button"
+                        title={
+                          link.is_active ? "Deactivate Test" : "Activate Test"
+                        }
+                        onClick={() => handleToggleActivation(link.id!)}
+                        className={`w-11 h-6 flex items-center rounded-full p-1 transition duration-200 ease-in-out ${
+                          link.is_active ? "bg-green-500" : "bg-gray-300"
+                        }`}
+                      >
+                        <div
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-200 ${
+                            link.is_active ? "translate-x-5" : "translate-x-0"
+                          }`}
+                        />
+                      </button>
+                      <span className="text-[10px] font-medium text-gray-500 uppercase">
+                        Active
+                      </span>
+                    </div>
+
+                    {/* Toggle 2: Public/Private Status */}
+                    <div className="flex flex-col items-center gap-1">
+                      <button
+                        type="button"
+                        title={link.is_public ? "Make Private" : "Make Public"}
+                        onClick={() => handleTogglePublicStatus(link.id!)}
+                        className={`w-11 h-6 flex items-center rounded-full p-1 transition duration-200 ease-in-out ${
+                          link.is_public ? "bg-blue-500" : "bg-gray-300"
+                        }`}
+                      >
+                        <div
+                          className={`bg-white w-4 h-4 rounded-full shadow-md transform transition duration-200 ${
+                            link.is_public ? "translate-x-5" : "translate-x-0"
+                          }`}
+                        />
+                      </button>
+                      <span className="text-[10px] font-medium text-gray-500 uppercase">
+                        Public
+                      </span>
+                    </div>
+
+                    {/* Action Icons */}
+                    <div className="flex items-center gap-3 ml-2 border-l pl-4 border-gray-200">
+                      <img
+                        src={View}
+                        alt="View"
+                        className="w-5 h-5 cursor-pointer hover:scale-110 transition-transform"
+                        onClick={() => handleView(link.id!)}
+                        title="View student attempts"
+                      />
+                      <img
+                        src={Edit}
+                        alt="Edit"
+                        className="w-5 h-5 cursor-pointer hover:scale-110 transition-transform"
+                        onClick={() => handleEdit(link.id!)}
+                        title="Edit test"
+                      />
+                      <img
+                        src={Delete}
+                        alt="Delete"
+                        className="w-5 h-5 cursor-pointer hover:scale-110 transition-transform"
+                        onClick={() => handleDelete(link.id!)}
+                        title="Delete test"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
-            </div>
-          )}
-
-          {/* Modal for Create/Edit */}
-          {openModal && (
-            <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-              <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg relative m-4">
-                <button
-                  onClick={handleCloseModal}
-                  className="hover:text-red-500 absolute top-3 right-3 text-xl text-gray-400"
-                >
-                  ×
-                </button>
-
-                <div className="p-6 max-h-150">
-                  <GenerateNewTest
-                    key={selectedTest?.id || "new"}
-                    closeModal={handleCloseModal}
-                    refreshLinks={loadLinks}
-                    editData={selectedTest}
-                    mode={mode}
-                  />
-                </div>
-              </div>
             </div>
           )}
         </div>

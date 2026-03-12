@@ -36,7 +36,7 @@ const testLinkService = {
     },
 
     updateTest: async (id: string, updateData: Test) => {
-        const response = await axios.put<axiosResponse>(`${API_URL}/update-test/${id}`, updateData, testLinkService.getHeaders());
+        const response = await axios.put<axiosResponse<TestDetails>>(`${API_URL}/update-test/${id}`, updateData, testLinkService.getHeaders());
         return response.data;    
     },
 
@@ -48,6 +48,11 @@ const testLinkService = {
         const response = await axios.put<axiosResponse<TestDetails>>(`${API_URL}/toggle-activation/${id}`,{}, testLinkService.getHeaders());
         return response.data;
     },
+    togglePublicStatus: async (id: string) => {
+        const response = await axios.put<axiosResponse<TestDetails>>(`${API_URL}/toggle-public-status/${id}`,{}, testLinkService.getHeaders());
+        return response.data;
+    },
+
 };
 
 export default testLinkService;
