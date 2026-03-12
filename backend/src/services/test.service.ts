@@ -7,8 +7,9 @@ import type { CodingProblemDocument } from "../types/model/coding_problem.docume
 import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
-import { selectRandomProblemService } from "./codingProblem.service.ts";
+// import { selectRandomProblemService } from "./codingProblem.service.ts";
 import { createStudentAttemptService, submitStudentAttemptService } from "./student_attempt.service.ts";
+import { createStudentAssignedProblemService } from "./StudentAssignedProblem.service.ts";
 import { createSubmissionService } from "./submission.service.ts";
 import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
 
@@ -166,18 +167,65 @@ export const deleteTestService = async (id: string) => {
   return { test };
 };
 
-export const startTestService = async (test_id: string, student_id: string) => {
-  const problem: CodingProblemDocument | undefined = await selectRandomProblemService();
-  if (!problem) {
+export const selectRandomProblemByTestDetailsService = async (test_id: string) => {
+  const { test } = await getTestByIdService(test_id);
+
+  const easyProblems = test.codingProblem.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "easy");
+  const mediumProblems = test.codingProblem.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "medium");
+  const hardProblems = test.codingProblem.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "hard");
+
+  const codingProblemIdList: string[] = [];
+
+  if(test.count_of_easy_problem != 0) {
+    const randomProblems = getRandomSubset(easyProblems, test.count_of_easy_problem);
+    codingProblemIdList.push(...randomProblems);
+  }
+
+  if(test.count_of_medium_problem != 0) {
+    const randomProblems = getRandomSubset(mediumProblems, test.count_of_medium_problem);
+    codingProblemIdList.push(...randomProblems);
+  }
+
+  if(test.count_of_hard_problem != 0) {
+    const randomProblems = getRandomSubset(hardProblems, test.count_of_hard_problem);
+    codingProblemIdList.push(...randomProblems);
+  }
+
+  return codingProblemIdList;
+};
+
+export const getRandomSubset = (problemList: any, count: number) => {
+  const len = problemList.length;
+  if (len === 0) {
     throw new HttpError(
-      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
+      ERROR_MESSAGES.CODING_PROBLEMS_NOT_FOUND,
       HttpStatusCode.NOT_FOUND,
     );
   }
 
-  const { studentAttempt } = await createStudentAttemptService(test_id, problem!.id, student_id);
-  return { problemId: problem!.id, studentAttemptId: studentAttempt.id };
+  const selectedProblems = new Set<string>();
+
+  while (selectedProblems.size < count && selectedProblems.size < len) {
+    const randomIndex = Math.floor(Math.random() * len);
+    selectedProblems.add(problemList[randomIndex].id);
+  }
+
+  return Array.from(selectedProblems);
 };
+
+export const startTestService = async (test_id: string, student_id: string) => {
+  const { studentAttempt } = await createStudentAttemptService(test_id, student_id);
+
+  const codingProblems: string[] = await selectRandomProblemByTestDetailsService(test_id);
+
+  await createStudentAssignedProblemService(codingProblems, studentAttempt.id);
+
+  return { studentAttemptId: studentAttempt.id };
+};
+
+// export const getTestDataByStudentAttemptIdService = async (studentAttemptId: string) => {
+//   const studentAttempt = await 
+// }
 
 export const finishTestService = async (input: SubmissionData) => {
   const { studentAttempt } = await submitStudentAttemptService(input.student_attempt_id);

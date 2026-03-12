@@ -15,8 +15,10 @@ router.get("/get-all-tests", authMiddleware, TestController.getAllTests);
 router.put("/update-test/:id", authMiddleware, validateRequest(TestSchema), TestController.updateTest);
 router.delete("/delete-test/:id", authMiddleware, validateRequest(IdSchema),TestController.deleteTest);
 router.put("/toggle-activation/:id", authMiddleware, validateRequest(IdSchema), TestController.toggleTestActivation);
+router.put("/toggle-public-status/:id",  validateRequest(IdSchema), TestController.toggleTestPublicStatus);
 
 router.get("/:slug/start", validateRequest(StartTestScehma), validateTestLink, TestController.startTest);
+// router.get("/:slug/student-attempt-id/:studentAttemptId", validateRequest(IdSchema), TestController.getTestDataByStudentAttemptId);
 router.post("/:slug/finish", validateRequest(SubmissionSchema), TestController.finishTest);
 router.get("/:slug", validateTestLink, TestController.getTestById);
 

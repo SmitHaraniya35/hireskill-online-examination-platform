@@ -145,6 +145,23 @@ export const startTest = async (
   }
 };
 
+// export const getTestDataByStudentAttemptId = async (
+//   req: AuthRequest,
+//   res: Response,
+//   next: NextFunction
+// ) => {
+//   try {
+//     const { studentAttemptId } = req.allParams;
+//     if (!studentAttemptId) {
+//       return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+//     }
+
+//     const data = await 
+//   } catch (err: any) {
+//     next(err);
+//   }
+// }
+
 export const finishTest = async (
   req: AuthRequest,
   res: Response,
