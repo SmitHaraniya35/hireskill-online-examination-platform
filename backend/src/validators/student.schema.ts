@@ -3,7 +3,7 @@ import { emailRule, indianPhoneRule, uuidv4Rule } from "./index.validator.ts";
 
 export const StudentSchema = Joi.object({
     id: uuidv4Rule.optional(),
-    email: Joi.string().required(),
+    email: Joi.string().email().optional(),
     name: Joi.string().required(),
     phone: indianPhoneRule.required(),
     college: Joi.string().required()
@@ -18,4 +18,18 @@ export const StudentSchema = Joi.object({
 
 export const ImportStudentsSchema = Joi.object({
     studentList: Joi.array().items(StudentSchema).required()
+});
+
+export const StudentProfileSchema = Joi.object({
+    id: uuidv4Rule.optional(),
+    name: Joi.string().required(),
+    phone: indianPhoneRule.required(),
+    college: Joi.string().required(),
+    degree:  Joi.string().required(),
+    branch:  Joi.string().required(),
+    graduation_year: Joi.number().required(),
+    skills: Joi.string().required(),
+    // resume_url: Joi.string().uri().optional(),
+    // linkedin_url: Joi.string().uri().optional(),
+    // github_url: Joi.string().uri().optional();
 });

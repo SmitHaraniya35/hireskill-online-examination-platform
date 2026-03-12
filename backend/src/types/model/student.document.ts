@@ -12,6 +12,7 @@ export interface StudentDocument extends BaseDocument{
     resume_url: string | null;
     linkedin_url: string | null;
     github_url: string | null;
+    complete_profile: boolean;
 }
 
 export interface StudentModel extends BaseModel<StudentDocument> {}

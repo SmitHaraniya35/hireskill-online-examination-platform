@@ -6,11 +6,11 @@ import { generateSchema } from "./baseModel/Index.ts";
 const StudentAttemptSchema = generateSchema<StudentAttemptDocument>({
     student_id: { type: String },
     test_id: { type: String },
-    problem_id: { type: String },
     started_at: { type: Date },
     expires_at: { type: Date },
-    is_submitted: { type: Boolean },
-    is_active: { type: Boolean }
+    finished_at: { type: Date, default: null },
+    is_submitted: { type: Boolean, default: false },
+    is_active: { type: Boolean, default: true },
 });
 
 StudentAttemptSchema.virtual('student', {
@@ -23,13 +23,6 @@ StudentAttemptSchema.virtual('student', {
 StudentAttemptSchema.virtual('test', {
     ref: 'Test',
     localField: 'test_id',
-    foreignField: 'id',
-    justOne: true
-});
-
-StudentAttemptSchema.virtual('problem', {
-    ref: 'CodingProblem',
-    localField: 'problem_id',
     foreignField: 'id',
     justOne: true
 });
