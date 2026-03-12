@@ -19,6 +19,9 @@ import TestCompletePage from './features/test/CodingPlatform/TestCompletePage.ts
 import AdminDashboardLayout from './features/Dashboard/AdminDashboardLayout.tsx'
 import SubmissionDetails from './features/test/handleTest/SubmissionDetails.tsx'
 import CreateNewTest from './features/test/handleTest/CreateNewTest.tsx'
+import TestEntryPage from './features/test/CodingPlatform/demo/TestEntryPage.tsx'
+import TestInformationPage from './features/test/CodingPlatform/demo/TestInformationPage.tsx'
+import StudentDetailsPage from './features/test/CodingPlatform/demo/StudentDetailsPage.tsx'
 
 const App: React.FC = () => {
   return (
@@ -54,11 +57,19 @@ const App: React.FC = () => {
         
         
         {/* Candidate test flow */}
-        <Route path="/test/:slug" element={<TestEntry />} />
+        {/* <Route path="/test/:slug" element={<TestEntry />} />
         <Route path="/test/:slug/instruction" element={<TestInstruction />} />
         <Route path="/test/:slug/editor/:studentAttemptId" element={<CodingTestLayout />} />
-        <Route path="/test/:slug/complete" element={<TestCompletePage/>} />
+        <Route path="/test/:slug/complete" element={<TestCompletePage/>} /> */}
         
+        {/* <Route path="/test" element={<TestEntryPage />} />
+        <Route path="/test/student-details" element={<StudentDetailsPage />} />
+        <Route path="/test/student-details/instruction" element={<TestInformationPage />} /> */}
+        
+        <Route path="/test/:slug" element={<TestEntryPage />} />
+        <Route path="/test/:slug/student-details" element={<StudentDetailsPage />} />
+        <Route path="/test/:slug/instruction" element={<TestInformationPage />} />
+
         <Route path="/*" element={<NotFound />} />
       </Routes>
     </>
