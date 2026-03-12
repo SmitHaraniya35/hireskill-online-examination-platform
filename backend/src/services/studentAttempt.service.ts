@@ -172,22 +172,25 @@ export const validateStudentAttemptByEmailAndTestIdService = async (email: strin
   }
 
   if(test.is_public){
-    const studentAttemptExist = await StudentAttempt.findOneActive({ test_id })
-      .populate({
-        path: 'student',
-        match: { email },
-        select: 'id email -_id'
+    const studentExist = await Student.findOneActive({ email });
+
+    if(studentExist){
+      const studentAttemptExist = await StudentAttempt.findOneActive({
+        test_id,
+        student_id: studentExist.id
       });
 
-    if(studentAttemptExist) {
-      throw new HttpError(
-        ERROR_MESSAGES.STUDENT_ALREADY_ATTEMPTED_TEST,
-        HttpStatusCode.CONFLICT
-      );
+      if(studentAttemptExist){
+        throw new HttpError(
+          ERROR_MESSAGES.STUDENT_ALREADY_ATTEMPTED_TEST,
+          HttpStatusCode.CONFLICT
+        );
+      }
+    } else {
+      const { student } = await createStudentService(email);
+      return { studentId: student.id };
     }
-
-    const { student } = await createStudentService(email);
-    return { studentId: student.id };
+    return { studentId: studentExist.id };
   } else {
     const student = await Student.findOneActive({ email });
     if(!student) {
