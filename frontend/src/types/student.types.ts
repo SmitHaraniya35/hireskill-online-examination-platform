@@ -20,3 +20,7 @@ export interface StudentListData {
 export interface GetAllStudentsListData {
     student: Student[];
 }
+
+export interface StudentInfoData {
+    student: Student
+}

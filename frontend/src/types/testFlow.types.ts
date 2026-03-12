@@ -40,9 +40,20 @@ export interface FinishData {
 }
 
 export interface ValidateStudentAttemptByEmailData {
+    test_id: string;
     email: string;
 }
 
 export interface ValidateStudentAttemptByEmailAndTestIdResponse {
     studentId: string;
+}
+
+export interface StudentData {
+    name: string;
+    phone: string;
+    college: string;
+    degree: string;
+    graduation_year: string;
+    skills: string;
+    branch: string;
 }
