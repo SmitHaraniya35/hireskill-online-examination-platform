@@ -1,9 +1,7 @@
 import HeroSection from "./HeroSection";
 import TestPerformanceGraph from "./TestPerformanceGraph";
 import ErrorDistributionGraph from "./ErrorDistributionGraph";
-import TestPerformanceSection from "./TestPerformanceSection";
 import ProblemAnalyticsSection from "./ProblemAnalyticsSection";
-import LeaderboardSection from "./LeaderboardSection";
 
 const AdminDashboardLayout: React.FC = () => {
   return (
@@ -22,12 +20,9 @@ const AdminDashboardLayout: React.FC = () => {
         <ErrorDistributionGraph />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <TestPerformanceSection />
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         <ProblemAnalyticsSection />
       </div>
-
-      <LeaderboardSection />
     </div>
   );
 };
