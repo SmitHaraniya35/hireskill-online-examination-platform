@@ -251,7 +251,7 @@ export const getTestDataByStudentAttemptIdService = async (studentAttemptId: str
   const { studentAssignedProblems } = await getStudentAssignedProblemsByStudentAttemptIdService(studentAttemptId);
   return {
     test,
-    studentAttemptId: studentAttempt.id,
+    studentAttempt,
     assignedProblems: studentAssignedProblems
   }
 };
