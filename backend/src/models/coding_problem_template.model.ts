@@ -2,10 +2,11 @@ import { model } from "mongoose";
 import type { CodingProblemTemplateDocument, CodingProblemTemplateModel } from "../types/model/coding_problem_template.document.ts";
 import { BaseClass } from "./baseModel/BaseClass.ts";
 import { generateSchema } from "./baseModel/Index.ts";
+import { LanguagesEnum } from "../types/controller/codingProblemTemplateData.types.ts";
 
 const CodingProblemTemplateSchema = generateSchema<CodingProblemTemplateDocument>({
     problem_id: { type: String },
-    language: { type: String, enum: ['C++', 'C', 'Python', 'JavaScript'] },
+    language: { type: String, enum: LanguagesEnum },
     basic_code_layout: { type: String },
 });
 

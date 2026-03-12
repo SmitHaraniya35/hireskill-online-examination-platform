@@ -5,6 +5,8 @@ export const Languages = {
     JAVASCRIPT: 'JavaScript',
 };
 
+export const LanguagesEnum = Object.values(Languages) as string[];
+
 export type Language = typeof Languages[keyof typeof Languages];
 
 export interface CodingProblemTemplateData {
