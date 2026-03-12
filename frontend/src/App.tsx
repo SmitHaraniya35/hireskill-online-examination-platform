@@ -9,19 +9,14 @@ import TestLinkManager from './features/test/handleTest/TestsManager.tsx'
 import CodingProblem from './features/problems/CodingProblems.tsx'
 import CreateCodingProblem from './features/problems/CreateCodingProblem.tsx'
 import LandingPage from './components/LandingPage.tsx'
-import AdminRoutes from './routes/AdminRoutes.tsx'
-import TestEntry from './features/test/CodingPlatform/TestStartPage.tsx'
-import TestInstruction from './features/test/CodingPlatform/TestInstructionPage.tsx'
-import CodingTestLayout from './features/test/CodingPlatform/CodingSection/CodingTestLayout.tsx'
 import AdminLayout from './layouts/AdminLayout.tsx'
 import StudentManagementLayout from './features/student/StudentManagementLayout.tsx'
-import TestCompletePage from './features/test/CodingPlatform/TestCompletePage.tsx'
 import AdminDashboardLayout from './features/Dashboard/AdminDashboardLayout.tsx'
 import SubmissionDetails from './features/test/handleTest/SubmissionDetails.tsx'
 import CreateNewTest from './features/test/handleTest/CreateNewTest.tsx'
-import TestEntryPage from './features/test/CodingPlatform/demo/TestEntryPage.tsx'
-import TestInformationPage from './features/test/CodingPlatform/demo/TestInformationPage.tsx'
-import StudentDetailsPage from './features/test/CodingPlatform/demo/StudentDetailsPage.tsx'
+import TestEntryPage from './features/test/CodingPlatform/Onboarding/TestEntryPage.tsx'
+import TestInformationPage from './features/test/CodingPlatform/Onboarding/TestInformationPage.tsx'
+import StudentDetailsPage from './features/test/CodingPlatform/Onboarding/StudentDetailsPage.tsx'
 
 const App: React.FC = () => {
   return (
@@ -42,29 +37,10 @@ const App: React.FC = () => {
             <Route path="/admin/create-exam/generate-new-test" element={<CreateNewTest/>} />
             <Route path="/admin/coding-problem" element={<CodingProblem/>}/>
             <Route path="/admin/coding-problem/create-coding-problem" element={<CreateCodingProblem />} />
-            {/* <Route path="/admin/coding-problem/add-new-problem"
-              element={
-                <AddNewProblem
-                  closeModal={() => {}}
-                  refreshLinks={() => {}}
-                />
-              }
-            /> */}
             <Route path="/admin/student-management" element={<StudentManagementLayout/>}/>
             <Route path="/submission/:id" element={<SubmissionDetails />} />
           </Route>
         {/* </Route> */}
-        
-        
-        {/* Candidate test flow */}
-        {/* <Route path="/test/:slug" element={<TestEntry />} />
-        <Route path="/test/:slug/instruction" element={<TestInstruction />} />
-        <Route path="/test/:slug/editor/:studentAttemptId" element={<CodingTestLayout />} />
-        <Route path="/test/:slug/complete" element={<TestCompletePage/>} /> */}
-        
-        {/* <Route path="/test" element={<TestEntryPage />} />
-        <Route path="/test/student-details" element={<StudentDetailsPage />} />
-        <Route path="/test/student-details/instruction" element={<TestInformationPage />} /> */}
         
         <Route path="/test/:slug" element={<TestEntryPage />} />
         <Route path="/test/:slug/student-details" element={<StudentDetailsPage />} />
