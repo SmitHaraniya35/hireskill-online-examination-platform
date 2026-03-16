@@ -28,9 +28,10 @@ export const getStudentAssignedProblemsByStudentAttemptIdService = async (studen
     id: 1,
     problem_id: 1,
     is_submitted: 1,
-    last_saved_code: 1,
-    last_language: 1,
-    last_saved_at: 1
+    status: 1,
+  }).populate({
+    path: "codingProblem",
+    select: "id title difficulty -_id"
   });
 
   if(!studentAssignedProblems) {

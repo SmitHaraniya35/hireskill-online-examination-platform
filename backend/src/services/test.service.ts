@@ -232,14 +232,17 @@ export const getTestDataByStudentAttemptIdService = async (studentAttemptId: str
     );
   }
 
+  const formattedStudentAttempt = {
+    id: studentAttempt.id,
+    started_at: studentAttempt.started_at,
+    expires_at: studentAttempt.expires_at,
+  }
+
   const test = await Test.findOneActive({ id: studentAttempt.test_id }, {
     _id: 0,
+    id: 1,
     title: 1,
-    duration_minutes: 1,
-    count_of_total_problem: 1,
-    count_of_easy_problem: 1,
-    count_of_medium_problem: 1,
-    count_of_hard_problem: 1,
+    duration_minutes: 1
   });
   if(!test) {
     throw new HttpError(
@@ -249,10 +252,19 @@ export const getTestDataByStudentAttemptIdService = async (studentAttemptId: str
   }
 
   const { studentAssignedProblems } = await getStudentAssignedProblemsByStudentAttemptIdService(studentAttemptId);
+  const formattedStudentAssignedProblems = studentAssignedProblems.map((sap: any) => ({
+    id: sap.id,
+    problem_id: sap.problem_id,
+    title: sap.codingProblem.title,
+    difficulty: sap.codingProblem.difficulty,
+    is_submitted: sap.is_submitted,
+    status: sap.status,
+  }));
+
   return {
     test,
-    studentAttempt,
-    assignedProblems: studentAssignedProblems
+    studentAttempt: formattedStudentAttempt,
+    assignedProblems: formattedStudentAssignedProblems
   }
 };
 

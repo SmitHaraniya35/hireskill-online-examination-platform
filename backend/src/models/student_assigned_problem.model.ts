@@ -13,6 +13,16 @@ const StudentAssignedProblemSchema = generateSchema<StudentAssignedProblemDocume
     last_saved_at: { type: Date, default: Date.now }
 });
 
+StudentAssignedProblemSchema.virtual("codingProblem", {
+  ref: "CodingProblem",
+  localField: "problem_id",
+  foreignField: "id",
+  justOne: true
+});
+
+StudentAssignedProblemSchema.set("toJSON", { virtuals: true });
+StudentAssignedProblemSchema.set("toObject", { virtuals: true });
+
 export class StudentAssignedProblemClass extends BaseClass<StudentAssignedProblemDocument> {}
 
 StudentAssignedProblemSchema.loadClass(StudentAssignedProblemClass);
