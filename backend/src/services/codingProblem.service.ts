@@ -193,7 +193,7 @@ export const getCodingProblemWithTestCasesAndTemplateCodesService = async (id: s
     isDeleted: 0,
   }).populate({
     path: "testCases",
-    match: { isDeleted: false },
+    match: { isDeleted: false, is_hidden: false },
     select: "id input expected_output is_hidden image_url -_id -problem_id",
   }).populate({
     path: "templateCodes",
