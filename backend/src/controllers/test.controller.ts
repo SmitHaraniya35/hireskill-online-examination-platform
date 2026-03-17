@@ -13,7 +13,7 @@ import {
   toggleTestPublicStatusService,
   getTestDataByStudentAttemptIdService,
 } from "../services/test.service.ts";
-import type { SubmissionData } from "../types/controller/submissionData.types.ts";
+import type { FinishTestData } from "../types/controller/submissionData.types.ts";
 import type { TestData } from "../types/controller/testData.types.ts";
 
 export const createTest = async (
@@ -170,19 +170,13 @@ export const finishTest = async (
   next: NextFunction,
 ) => {
   try {
-    const input = req.allParams as SubmissionData;
+    const input = req.allParams as FinishTestData;
 
     if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
     const data = await finishTestService(input);
-
-    res.clearCookie("studentToken", {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
 
     res.ok(data, SUCCESS_MESSAGES.TEST_COMPLETED);
   } catch (err: any) {

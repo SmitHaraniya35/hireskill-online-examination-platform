@@ -2,9 +2,8 @@ import express from "express";
 import { authMiddleware } from "../middlewares/auth.middleware.ts";
 import * as TestController from "../controllers/test.controller.ts";
 import { validateRequest } from "../validators/request.validator.ts";
-import { GetTestDataByStudentAttemptIdSchema, StartTestScehma, TestSchema } from "../validators/test.schema.ts";
+import { GetTestDataByStudentAttemptIdSchema, StartTestScehma, TestSchema, FinishTestSchema } from "../validators/test.schema.ts";
 import { validateTestLink } from "../middlewares/testLink.middleware.ts";
-import { SubmissionSchema } from "../validators/submission.schema.ts";
 import { IdSchema } from "../validators/index.validator.ts";
 
 const router = express();
@@ -19,7 +18,7 @@ router.put("/toggle-public-status/:id",  validateRequest(IdSchema), TestControll
 
 router.get("/:slug/start", validateRequest(StartTestScehma), validateTestLink, TestController.startTest);
 router.get("/:slug/get-test-data/:studentAttemptId", validateRequest(GetTestDataByStudentAttemptIdSchema), TestController.getTestDataByStudentAttemptId);
-router.post("/:slug/finish", validateRequest(SubmissionSchema), TestController.finishTest);
+router.post("/:slug/finish", validateRequest(FinishTestSchema), TestController.finishTest);
 router.get("/:slug", validateTestLink, TestController.getTestById);
 
 export default router;

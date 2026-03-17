@@ -1,17 +1,18 @@
 import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { Test } from "../models/test.model.ts";
 import { User } from "../models/user.model.ts";
-import type { SubmissionData } from "../types/controller/submissionData.types.ts";
+import type { FinishTestData, SubmissionData } from "../types/controller/submissionData.types.ts";
 import type { TestData } from "../types/controller/testData.types.ts";
 import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 // import { selectRandomProblemService } from "./codingProblem.service.ts";
-import { createStudentAttemptService, getStudentAttemptByIdService, submitStudentAttemptService } from "./studentAttempt.service.ts";
+import { createStudentAttemptService, getStudentAttemptByIdService } from "./studentAttempt.service.ts";
 import { createStudentAssignedProblemService, getStudentAssignedProblemsByStudentAttemptIdService } from "./studentAssignedProblem.service.ts";
-import { createSubmissionService } from "./submission.service.ts";
+import { getSubmissionsByStudentAttemptIdService } from "./submission.service.ts";
 import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
+import { createResultService } from "./result.service.ts";
 
 export const createTestService = async (input: TestData, adminId: string) => {
   const admin = await User.findByIdActive(adminId);
@@ -268,24 +269,70 @@ export const getTestDataByStudentAttemptIdService = async (studentAttemptId: str
   }
 };
 
-export const finishTestService = async (input: SubmissionData) => {
-  const { studentAttempt } = await submitStudentAttemptService(input.student_attempt_id);
-  if (!studentAttempt) {
-    throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
-      HttpStatusCode.BAD_REQUEST,
+export const finishTestService = async (input: FinishTestData) => {
+
+  const { student_attempt_id } = input;
+
+  const { studentAssignedProblems } =
+    await getStudentAssignedProblemsByStudentAttemptIdService(student_attempt_id);
+
+  const studentAssignedProblemIdToScore = studentAssignedProblems.map((sap: any) => ({
+    id: sap.id,
+    weight:
+      sap.codingProblem.difficulty.toLowerCase() === "easy"
+        ? 100
+        : sap.codingProblem.difficulty.toLowerCase() === "medium"
+        ? 200
+        : 300,
+  }));
+
+  const total_score = studentAssignedProblemIdToScore.reduce(
+    (acc: number, sap: any) => acc + sap.weight,
+    0
+  );
+
+  const studentAssignedProblemIds = studentAssignedProblems.map(
+    (sap: any) => sap.id
+  );
+
+  const { submissions } =
+    await getSubmissionsByStudentAttemptIdService(studentAssignedProblemIds);
+
+  let achieved_score = 0;
+  const total_problems = studentAssignedProblemIdToScore.length;
+  let solved_problems = 0;
+
+  for (const sap of studentAssignedProblemIdToScore) {
+
+    const submission = submissions.find(
+      (sub: SubmissionData) => sub.assigned_problem_id === sap.id
     );
+
+    if (!submission) {
+      // no submission → score 0
+      continue;
+    }
+
+    solved_problems++;
+    if (submission.status === "Accepted") {
+      achieved_score += sap.weight;
+    } 
+    else if (submission.status === "Partially Accepted") {
+      achieved_score +=
+        submission.passed_test_cases *
+        (sap.weight / submission.total_test_cases);
+    }
   }
 
-  const { submission } = await createSubmissionService(input);
-  if (!submission) {
-    throw new HttpError(
-      ERROR_MESSAGES.SUBMISSION_CREATION_FAILED,
-      HttpStatusCode.INTERNAL_SERVER_ERROR,
-    );
-  }
+  const { result } = await createResultService({ 
+    total_score,
+    achieved_score,
+    total_problems,
+    solved_problems, 
+    student_attempt_id 
+  });
 
-  return { studentAttempt, submission };
+  return { result };
 };
 
 export const toggleTestActivationService = async (id: string) => {
