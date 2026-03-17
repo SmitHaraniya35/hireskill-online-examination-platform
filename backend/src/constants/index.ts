@@ -161,6 +161,7 @@ export const ERROR_MESSAGES = {
   CODING_PROBLEM_TEMPLATE_NOT_FOUND: "Coding problem template not found",
   CODING_PROBLEM_TEMPLATE_UPDATE_FAILED: "Failed to update coding problem template",
   CODING_PROBLEM_TEMPLATE_DELETION_FAILED: "Failed to delete coding problem template",
+  CODING_PROBLEM_TEMPLATE_ID_REQUIRED: "Coding problem template ID is required",
 
   // Student
   STUDENT_ALREADY_EXISTS_WITH_EMAIL: "A student already exists with this email",
