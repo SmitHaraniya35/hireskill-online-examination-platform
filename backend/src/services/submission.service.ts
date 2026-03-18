@@ -1,6 +1,6 @@
 import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { Submission } from "../models/submission.model.ts";
-import type { SubmissionData } from "../types/controller/submissionData.types.ts";
+import type { SubmissionData, SubmissionDetailsData } from "../types/controller/submissionData.types.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 
 export const createSubmissionService = async (input: SubmissionData) => {
@@ -48,6 +48,27 @@ export const createSubmissionService = async (input: SubmissionData) => {
         );
     }
 
+    return { submission };
+};
+
+export const getSubmissionByIdService = async (id: string) => {
+    const submission: SubmissionDetailsData | null = await Submission.findOneActive({ id })
+        .populate({
+            path: "studentAssignedProblem",
+            select: "-_id -createdAt -updatedAt -deletedAt -isDeleted",
+            populate: {
+                path: "codingProblem",
+                select: "-_id -createdAt -updatedAt -deletedAt -isDeleted"
+            }
+        })
+        .select('-_id -createdAt -updatedAt -deletedAt -isDeleted');
+
+    if(!submission){
+        throw new HttpError(
+            ERROR_MESSAGES.SUBMISSION_NOT_FOUND,
+            HttpStatusCode.NOT_FOUND
+        );
+    }
     return { submission };
 };
 
