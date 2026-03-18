@@ -3,13 +3,12 @@ import { CodingProblem } from "../models/coding_problem.model.ts";
 import { Student } from "../models/student.model.ts";
 import { StudentAttempt } from "../models/student_attempt.model.ts";
 import { Test } from "../models/test.model.ts";
-import type { AuthJwtPayload } from "../types/controller/index.ts";
-import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
 import type { StudentAttemptDocument } from "../types/model/student_attempt.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
-import { generateAccessToken } from "../utils/jwt.utils.ts";
-import { createStudentService } from "./student.service.ts";
+import { getResultByStudentAttemptIdService } from "./result.service.ts";
+import { createStudentService, getStudentByIdService } from "./student.service.ts";
+import { getStudentAssignedProblemsWithSubmissionDetailsByStudentAttemptIdService } from "./studentAssignedProblem.service.ts";
 import { getTestByIdService } from "./test.service.ts";
 
 export const createStudentAttemptService = async (
@@ -89,48 +88,56 @@ export const getStudentAttemptsDetailsByTestIdService = async (
   return { students };
 };
 
-export const submitStudentAttemptService = async (id: string) => {
-  const studentAttempt: StudentAttemptDocument | null =
-    await StudentAttempt.findOneAndUpdate({id}, {
-      is_active: false,
-      is_submitted: true
-    }).select("-_id -isDeleted -deletedAt -updatedAt -createdAt");
+export const getStudentAttemptSubmissionDetailsAndResultByIdService = async (id: string) => {
+  const { studentAttempt } = await getStudentAttemptByIdService(id);
 
-  if (!studentAttempt) {
-    throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
-      HttpStatusCode.NOT_FOUND,
-    );
+  const { student_id, test_id } = studentAttempt;
+
+  const { student } = await getStudentByIdService(student_id);
+  const formattedStudent = {
+    id: student.id,
+    name: student.name,
+    email: student.email,
+    phone: student.phone
   }
 
-  if (!studentAttempt.is_active && studentAttempt.is_submitted) {
+  const { test } = await getTestByIdService(test_id);
+  const formattedTest = {
+    id: test.id,
+    title: test.title,
+    duration_minutes: test.duration_minutes,
+  }
+
+  const { result } = await getResultByStudentAttemptIdService(id);
+  const { studentAssignedProblems } = await getStudentAssignedProblemsWithSubmissionDetailsByStudentAttemptIdService(id);
+
+  return {
+    student: formattedStudent, 
+    test: formattedTest,
+    studentAttempt,
+    result,
+    studentAssignedProblems
+  }
+};
+
+export const finishStudentAttemptService = async (id: string) => {
+  const studentAttempt: StudentAttemptDocument | null =
+    await StudentAttempt.updateOneByFilter({ id }, 
+      { 
+        is_active: false,
+        is_submitted: true,
+        finished_at: new Date()
+      }
+    );
+
+  if(!studentAttempt) {
     throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
-      HttpStatusCode.BAD_REQUEST,
+      ERROR_MESSAGES.STUDENT_ATTEMPT_FINISH_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
     );
   }
 
   return { studentAttempt };
-};
-
-export const validateStudentAttemptAndGetCodingProblemIdService = async (id: string, studenTokenData: AuthJwtPayload) => {
-  const studentAttempt: any = await StudentAttempt.findOneActive({ id }).populate('student');
-  if(!studentAttempt){
-    throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
-      HttpStatusCode.NOT_FOUND
-    );
-  }
-
-  if(studentAttempt.student.email !== studenTokenData.email || studentAttempt.student.id !== studenTokenData.userId){
-    throw new HttpError(
-      ERROR_MESSAGES.UNAUTHORIZED_USER,
-      HttpStatusCode.UNAUTHORIZED
-    );
-  }
-
-  const problem_id = studentAttempt.problem_id;
-  return { problem_id };
 };
 
 export const getStudentAttemptByIdService = async (id: string) => {
