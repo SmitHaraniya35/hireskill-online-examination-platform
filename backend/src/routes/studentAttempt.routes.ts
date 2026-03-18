@@ -10,7 +10,7 @@ const router = express();
 router.post("/create-student-attempt", validateRequest(CreateStudentAttemptSchema), StudentAttemptController.createStudentAttempt);
 router.get("/get-student-attempt/:id", validateRequest(IdSchema), StudentAttemptController.getStudentAttemptById);
 router.get("/get-student-attempts-details/:testId", authMiddleware, validateRequest(), StudentAttemptController.getStudentAttemptsDetailsByTestId);
-router.delete("/delete-stud ent-attempt/:id", authMiddleware, validateRequest(IdSchema), StudentAttemptController.deleteStudentAttempt);
+router.delete("/delete-student-attempt/:id", authMiddleware, validateRequest(IdSchema), StudentAttemptController.deleteStudentAttempt);
 router.get("/get-student-attempt-submission-details-and-result/:id", validateRequest(IdSchema), StudentAttemptController.getStudentAttemptSubmissionDetailsAndResultById);
 
 router.post("/validate-student-attempt", validateRequest(ValidateStudentAttemptSchema), StudentAttemptController.validateStudentAttemptByEmailAndTestId);
