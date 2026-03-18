@@ -324,6 +324,8 @@ export const finishTestService = async (input: FinishTestData) => {
     }
   }
 
+  achieved_score = Number(achieved_score.toFixed(2));
+
   // update student attempt as finished
   await finishStudentAttemptService(student_attempt_id);
 
