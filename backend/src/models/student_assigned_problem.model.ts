@@ -20,6 +20,13 @@ StudentAssignedProblemSchema.virtual("codingProblem", {
   justOne: true
 });
 
+StudentAssignedProblemSchema.virtual("submission", {
+    ref: "Submission",
+    localField: "id",
+    foreignField: "assigned_problem_id",
+    justOne: true
+})
+
 StudentAssignedProblemSchema.set("toJSON", { virtuals: true });
 StudentAssignedProblemSchema.set("toObject", { virtuals: true });
 

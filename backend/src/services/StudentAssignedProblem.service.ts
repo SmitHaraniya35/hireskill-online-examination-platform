@@ -43,6 +43,28 @@ export const getStudentAssignedProblemsByStudentAttemptIdService = async (studen
   return { studentAssignedProblems };
 };
 
+export const getStudentAssignedProblemsWithSubmissionDetailsByStudentAttemptIdService = async (student_attempt_id: string) => {
+  const studentAssignedProblems = await StudentAssignedProblem.findActive({ student_attempt_id })
+    .populate({
+      path: "submission",
+      select: "id total_test_cases passed_test_cases -_id"
+    })
+    .populate({
+      path: "codingProblem",
+      select: "id title difficulty -_id"
+    })
+    .select('id problem_id status is_submitted');
+
+  if(!studentAssignedProblems) {
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ASSIGNED_PROBLEMS_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND
+    );
+  }
+
+  return { studentAssignedProblems };
+};
+
 export const saveStudentAssignedProblemDraftService = async (input: StudentAssingProblemDraftData) => {
   const { id, last_saved_code, last_language } = input;
 

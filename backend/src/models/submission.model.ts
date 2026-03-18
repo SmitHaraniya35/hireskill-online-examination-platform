@@ -15,6 +15,16 @@ const SubmissionSchema = generateSchema<SubmissionDocument>({
     memory_used: { type: String },
 });
 
+SubmissionSchema.virtual("studentAssignedProblem", {
+    ref: "StudentAssignedProblem",
+    localField: "assigned_problem_id",
+    foreignField: "id",
+    justOne: true
+});
+
+SubmissionSchema.set("toJSON", { virtuals: true });
+SubmissionSchema.set("toObject", { virtuals: true });
+
 export class SubmissionClass extends BaseClass<SubmissionDocument> {}
 
 SubmissionSchema.loadClass(SubmissionClass);
