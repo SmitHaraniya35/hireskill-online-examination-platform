@@ -51,7 +51,7 @@ export const createSubmissionService = async (input: SubmissionData) => {
     return { submission };
 };
 
-export const getSubmissionsByStudentAttemptIdService = async (assigned_problem_id: string[]) => {
+export const getAllSubmissionByStudentAttemptIdService = async (assigned_problem_id: string[]) => {
     const submissions: SubmissionData[] = await Submission.findActive({ assigned_problem_id }, {
         createdAt: 0,
         updatedAt: 0,

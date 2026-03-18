@@ -8,9 +8,9 @@ import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 // import { selectRandomProblemService } from "./codingProblem.service.ts";
-import { createStudentAttemptService, getStudentAttemptByIdService } from "./studentAttempt.service.ts";
+import { createStudentAttemptService, finishStudentAttemptService, getStudentAttemptByIdService } from "./studentAttempt.service.ts";
 import { createStudentAssignedProblemService, getStudentAssignedProblemsByStudentAttemptIdService } from "./studentAssignedProblem.service.ts";
-import { getSubmissionsByStudentAttemptIdService } from "./submission.service.ts";
+import { getAllSubmissionByStudentAttemptIdService } from "./submission.service.ts";
 import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
 import { createResultService } from "./result.service.ts";
 
@@ -296,7 +296,7 @@ export const finishTestService = async (input: FinishTestData) => {
   );
 
   const { submissions } =
-    await getSubmissionsByStudentAttemptIdService(studentAssignedProblemIds);
+    await getAllSubmissionByStudentAttemptIdService(studentAssignedProblemIds);
 
   let achieved_score = 0;
   const total_problems = studentAssignedProblemIdToScore.length;
@@ -323,6 +323,9 @@ export const finishTestService = async (input: FinishTestData) => {
         (sap.weight / submission.total_test_cases);
     }
   }
+
+  // update student attempt as finished
+  await finishStudentAttemptService(student_attempt_id);
 
   const { result } = await createResultService({ 
     total_score,
