@@ -301,7 +301,10 @@ import fs from "fs";
 import path from "path";
 import { languages } from "../config/languages.config.js";
 import { v4 as uuid } from "uuid";
-import type { TestCaseResult, WorkerResponse } from "../types/controller/executorData.types.ts";
+import type { CodeExecutionData, TestCaseResult, WorkerResponse } from "../types/controller/executorData.types.ts";
+import { ERROR_MESSAGES } from "../constants/index.ts";
+import { getAllTestCasesByProblemIdService } from "./testCase.service.ts";
+import { createSubmissionService } from "./submission.service.ts";
 
 const TIME_LIMIT = 1000;
 const MEMORY_LIMIT = 256;
@@ -570,3 +573,72 @@ const stopContainer = (containerName: string): Promise<void> => {
 
 const normalize = (str: string) =>
   str.trim().replace(/\r/g, "");
+
+export const submitCodeService = async (input: CodeExecutionData) => {
+
+    const { assignedProblemId, problemId, language, code } = input;
+
+    if (!problemId) {
+        throw new Error(ERROR_MESSAGES.CODING_PROBLEM_ID_REQUIRED);
+    }
+
+    if (!assignedProblemId) {
+        throw new Error(ERROR_MESSAGES.ASSIGNED_PROBLEM_ID_REQUIRED);
+    }
+
+    // 1. Fetch test cases
+    const { testCases } = await getAllTestCasesByProblemIdService(problemId);
+
+    const formattedTestCases = testCases.map(tc => ({
+        testCaseId: tc.id,
+        input: tc.input,
+        expected: tc.expected_output
+    }));
+
+    // 2. Execute code
+    const data = await processSubmission({
+        language,
+        code,
+        testCases: formattedTestCases
+    });
+
+    // 3. Calculate output and status of code execution
+    const totalTestCases = testCases?.length || 0;
+
+    const passedTestCases = data.results
+        ? data.results.filter((r: any) => r.status === "Accepted").length
+        : 0;
+
+    let resultStatus = data.error as string;
+
+    if (!data.error) {
+        if (totalTestCases === passedTestCases && totalTestCases > 0) {
+            resultStatus = "Accepted";
+        } else if (passedTestCases > 0) {
+            resultStatus = "Partially Accepted";
+        } else {
+            resultStatus = "Failed";
+        }
+    }
+    
+    // 4. Save submission
+    await createSubmissionService({
+        assigned_problem_id: assignedProblemId,
+        language,
+        source_code: code,
+        submitted_at: new Date(),
+        total_test_cases: totalTestCases,
+        passed_test_cases: passedTestCases,
+        status: resultStatus || data.error!,
+        execution_time: data.time ? `${data.time} ms` : "",
+    });
+
+    // 5. Return response
+    return data.error
+        ? data
+        : {
+            totalTestCases,
+            passedTestCases,
+            ...data
+        };
+};
