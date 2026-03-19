@@ -315,6 +315,8 @@ export const processSubmission = async ({
   testCases
 }: any) => {
 
+  const start = Date.now();
+
   const config = languages[language];
   if (!config) throw new Error("Unsupported language");
 
@@ -347,7 +349,8 @@ export const processSubmission = async ({
         const response: WorkerResponse = {
             status: "Completed",
             error: "Compilation Error",
-            message: err.message
+            message: err.message,
+            time: Date.now() - start
         };
 
         return response;
@@ -361,14 +364,13 @@ export const processSubmission = async ({
         const response: WorkerResponse = {
             status: "Completed",
             error: "Runtime Error",
-            message: err.message
+            message: err.message,
+            time: Date.now() - start
         };
 
         return response;
       }
     }
-
-    const start = Date.now();
 
     for (let i = 0; i < testCases.length; i++) {
 
@@ -405,6 +407,7 @@ export const processSubmission = async ({
         const response: WorkerResponse = {
             status: "Completed",
             error: err.message,
+            time: Date.now() - start
         };
 
         return response;
@@ -420,7 +423,8 @@ export const processSubmission = async ({
   } catch (err: any) {
     const response: WorkerResponse = {
         status: "Failed",
-        error: err.message
+        error: err.message,
+        time: Date.now() - start
     };
 
     return response;
