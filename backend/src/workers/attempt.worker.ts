@@ -10,11 +10,11 @@ export const attemptWorker = new Worker(
   "attempt-queue",
   async (job) => {
     await connectDB();
-    const { student_attempt_id } = job.data;
+    const { student_attempt_id, status } = job.data;
 
     console.log("Processing attempt started:", job.id, student_attempt_id);
 
-    await processAttemptInBackground(student_attempt_id);
+    await processAttemptInBackground(student_attempt_id, status);
 
     console.log("Processing attempt completed:", job.id, student_attempt_id)
   },

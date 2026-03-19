@@ -1,5 +1,6 @@
 import Joi from "joi";
 import { uuidv4Rule } from "./index.validator.ts";
+import { STUDENT_ATTEMPT_STATUS } from "../constants/index.ts";
 
 export const TestSchema = Joi.object({
     id: uuidv4Rule.optional(),
@@ -51,4 +52,5 @@ export const GetTestDataByStudentAttemptIdSchema = Joi.object({
 export const FinishTestSchema = Joi.object({
     slug: Joi.string().required(),
     student_attempt_id: uuidv4Rule.required(),
+    status: Joi.string().valid(...Object.values(STUDENT_ATTEMPT_STATUS)).required()
 });

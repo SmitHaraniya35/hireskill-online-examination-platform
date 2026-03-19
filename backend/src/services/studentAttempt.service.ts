@@ -1,8 +1,8 @@
-import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
-import { CodingProblem } from "../models/coding_problem.model.ts";
+import { ERROR_MESSAGES, HttpStatusCode, STUDENT_ATTEMPT_STATUS } from "../constants/index.ts";
 import { Student } from "../models/student.model.ts";
 import { StudentAttempt } from "../models/student_attempt.model.ts";
 import { Test } from "../models/test.model.ts";
+import type { StudentAttemptStatusType } from "../types/controller/studentAttemptData.types.ts";
 import type { StudentAttemptDocument } from "../types/model/student_attempt.document.ts";
 import type { TestDocument } from "../types/model/test.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
@@ -33,6 +33,7 @@ export const createStudentAttemptService = async (
     student_id,
     started_at,
     expires_at,
+    status: STUDENT_ATTEMPT_STATUS.IN_PROGRESS
   });
 
   if (!studentAttempt) {
@@ -75,7 +76,7 @@ export const getStudentAttemptsDetailsByTestIdService = async (
       select: "id name email phone -_id",
     })
     .select(
-      "id started_at expires_at finished_at is_submitted is_active student_id -_id",
+      "id started_at expires_at finished_at is_submitted status is_active student_id -_id",
     );
 
   if (!students) {
@@ -126,13 +127,31 @@ export const finishStudentAttemptService = async (id: string) => {
       { 
         is_active: false,
         is_submitted: true,
-        finished_at: new Date()
+        finished_at: new Date(),
+        status: STUDENT_ATTEMPT_STATUS.PROCESSING
       }
     );
 
   if(!studentAttempt) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ATTEMPT_FINISH_FAILED,
+      HttpStatusCode.INTERNAL_SERVER_ERROR
+    );
+  }
+
+  return { studentAttempt };
+};
+
+export const updateStudentAttemptStatusService = async (id: string, status: StudentAttemptStatusType) => {
+  const studentAttempt: StudentAttemptDocument | null = await StudentAttempt.updateOneByFilter({ id },
+    {
+      status
+    }
+  );
+
+  if(!studentAttempt) {
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPT_STATUS_UPDATE_FAILED,
       HttpStatusCode.INTERNAL_SERVER_ERROR
     );
   }

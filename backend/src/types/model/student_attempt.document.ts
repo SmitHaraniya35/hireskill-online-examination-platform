@@ -6,6 +6,7 @@ export interface StudentAttemptDocument extends BaseDocument {
     started_at: Date;
     expires_at: Date;
     finished_at: Date;
+    status: string;
     is_submitted: boolean;
     is_active: boolean;
 }

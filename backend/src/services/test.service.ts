@@ -7,8 +7,7 @@ import type { CodingProblemDocument } from "../types/model/coding_problem.docume
 import type { TestDocument } from "../types/model/test.document.ts";
 import { generateUniqueTestToken } from "../utils/helper.utils.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
-// import { selectRandomProblemService } from "./codingProblem.service.ts";
-import { createStudentAttemptService, finishStudentAttemptService, getStudentAttemptByIdService } from "./studentAttempt.service.ts";
+import { createStudentAttemptService, finishStudentAttemptService, getStudentAttemptByIdService, updateStudentAttemptStatusService } from "./studentAttempt.service.ts";
 import { createStudentAssignedProblemService, getStudentAssignedProblemsByStudentAttemptIdService } from "./studentAssignedProblem.service.ts";
 import { getAllSubmissionByStudentAttemptIdService } from "./submission.service.ts";
 import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
@@ -16,6 +15,7 @@ import { createResultService } from "./result.service.ts";
 import { submitCodeService } from "./executor.service.ts";
 import { LanguageExtensions } from "../types/controller/executorData.types.ts";
 import { attemptQueue } from "../queue/attempt.queue.ts";
+import type { StudentAttemptStatusType } from "../types/controller/studentAttemptData.types.ts";
 
 export const createTestService = async (input: TestData, adminId: string) => {
   const admin = await User.findByIdActive(adminId);
@@ -273,14 +273,15 @@ export const getTestDataByStudentAttemptIdService = async (studentAttemptId: str
 };
 
 export const finishTestService = async (input: FinishTestData) => {
-  const { student_attempt_id } = input;
+  const { student_attempt_id, status } = input;
 
   // mark attempt as finished immediately
   await finishStudentAttemptService(student_attempt_id);
 
   // ✅ Add job to queue instead of direct execution
   await attemptQueue.add("process-attempt", {
-    student_attempt_id
+    student_attempt_id,
+    status
   });
 };
 
@@ -316,7 +317,7 @@ export const toggleTestPublicStatusService = async (id: string) => {
   return { test };
 };
 
-export const processAttemptInBackground = async (student_attempt_id: string) => {
+export const processAttemptInBackground = async (student_attempt_id: string, status: StudentAttemptStatusType) => {
 
     const { studentAssignedProblems } =
       await getStudentAssignedProblemsByStudentAttemptIdService(student_attempt_id);
@@ -392,4 +393,6 @@ export const processAttemptInBackground = async (student_attempt_id: string) => 
       solved_problems,
       student_attempt_id
     });
+
+    await updateStudentAttemptStatusService(student_attempt_id, status);
 };

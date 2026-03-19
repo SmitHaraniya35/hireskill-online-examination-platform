@@ -1,4 +1,5 @@
 import type { StudentAssignedProblemDetailsData } from "./studentAssignedProblemData.types.ts";
+import type { StudentAttemptStatusType } from "./studentAttemptData.types.ts";
 
 export interface SubmissionData {
   id?: string;
@@ -16,6 +17,7 @@ export interface SubmissionData {
 export interface FinishTestData {
   slug: string;
   student_attempt_id: string;
+  status: StudentAttemptStatusType;
 }
 
 export interface SubmissionDetailsData extends SubmissionData {

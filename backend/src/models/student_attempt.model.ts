@@ -9,6 +9,7 @@ const StudentAttemptSchema = generateSchema<StudentAttemptDocument>({
     started_at: { type: Date },
     expires_at: { type: Date },
     finished_at: { type: Date, default: null },
+    status: { type: String },
     is_submitted: { type: Boolean, default: false },
     is_active: { type: Boolean, default: true },
 });
