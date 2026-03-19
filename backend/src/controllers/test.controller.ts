@@ -176,7 +176,6 @@ export const finishTest = async (
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    // const data = await finishTestService(input);
     await finishTestService(input);
 
     res.ok({}, SUCCESS_MESSAGES.TEST_COMPLETED);
