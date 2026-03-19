@@ -13,6 +13,8 @@ import { createStudentAssignedProblemService, getStudentAssignedProblemsByStuden
 import { getAllSubmissionByStudentAttemptIdService } from "./submission.service.ts";
 import { createTestAndProblemsByTestIdService, getCodingProblemsByTestIdService, deleteTestAndProblemsByTestIdService } from "./testAndProblem.service.ts";
 import { createResultService } from "./result.service.ts";
+import { submitCodeService } from "./executor.service.ts";
+import { LanguageExtensions } from "../types/controller/executorData.types.ts";
 
 export const createTestService = async (input: TestData, adminId: string) => {
   const admin = await User.findByIdActive(adminId);
@@ -271,73 +273,95 @@ export const getTestDataByStudentAttemptIdService = async (studentAttemptId: str
 
 export const finishTestService = async (input: FinishTestData) => {
 
+  // const { student_attempt_id } = input;
+
+  // const { studentAssignedProblems } =
+  //   await getStudentAssignedProblemsByStudentAttemptIdService(student_attempt_id);
+
+  // await Promise.all(studentAssignedProblems.map(async (sap) => {
+  //   if(sap.status === "Attempted") {
+  //     await submitCodeService({
+  //       assignedProblemId: sap.id,
+  //       problemId: sap.problem_id,
+  //       language: LanguageExtensions[sap.last_language]!,
+  //       code: sap.last_saved_code,
+  //     })
+  //   }
+  // }));
+ 
+  // const studentAssignedProblemIdToScore = studentAssignedProblems.map((sap: any) => ({
+  //   id: sap.id,
+  //   weight:
+  //     sap.codingProblem.difficulty.toLowerCase() === "easy"
+  //       ? 100
+  //       : sap.codingProblem.difficulty.toLowerCase() === "medium"
+  //       ? 200
+  //       : 300,
+  // }));
+
+  // const total_score = studentAssignedProblemIdToScore.reduce(
+  //   (acc: number, sap: any) => acc + sap.weight,
+  //   0
+  // );
+
+  // const studentAssignedProblemIds = studentAssignedProblems.map(
+  //   (sap: any) => sap.id
+  // );
+
+  // const { submissions } =
+  //   await getAllSubmissionByStudentAttemptIdService(studentAssignedProblemIds);
+
+  // let achieved_score = 0;
+  // const total_problems = studentAssignedProblemIdToScore.length;
+  // let solved_problems = 0;
+
+  // for (const sap of studentAssignedProblemIdToScore) {
+
+  //   const submission = submissions.find(
+  //     (sub: SubmissionData) => sub.assigned_problem_id === sap.id
+  //   );
+
+  //   if (!submission) {
+  //     // no submission → score 0
+  //     continue;
+  //   }
+
+  //   solved_problems++;
+  //   if (submission.status === "Accepted") {
+  //     achieved_score += sap.weight;
+  //   } 
+  //   else if (submission.status === "Partially Accepted") {
+  //     achieved_score +=
+  //       submission.passed_test_cases *
+  //       (sap.weight / submission.total_test_cases);
+  //   }
+  // }
+
+  // achieved_score = Number(achieved_score.toFixed(2));
+
+  // // update student attempt as finished
+  // await finishStudentAttemptService(student_attempt_id);
+
+  // const { result } = await createResultService({ 
+  //   total_score,
+  //   achieved_score,
+  //   total_problems,
+  //   solved_problems, 
+  //   student_attempt_id 
+  // });
+
+  // return { result };
+
+
   const { student_attempt_id } = input;
 
-  const { studentAssignedProblems } =
-    await getStudentAssignedProblemsByStudentAttemptIdService(student_attempt_id);
-
-  const studentAssignedProblemIdToScore = studentAssignedProblems.map((sap: any) => ({
-    id: sap.id,
-    weight:
-      sap.codingProblem.difficulty.toLowerCase() === "easy"
-        ? 100
-        : sap.codingProblem.difficulty.toLowerCase() === "medium"
-        ? 200
-        : 300,
-  }));
-
-  const total_score = studentAssignedProblemIdToScore.reduce(
-    (acc: number, sap: any) => acc + sap.weight,
-    0
-  );
-
-  const studentAssignedProblemIds = studentAssignedProblems.map(
-    (sap: any) => sap.id
-  );
-
-  const { submissions } =
-    await getAllSubmissionByStudentAttemptIdService(studentAssignedProblemIds);
-
-  let achieved_score = 0;
-  const total_problems = studentAssignedProblemIdToScore.length;
-  let solved_problems = 0;
-
-  for (const sap of studentAssignedProblemIdToScore) {
-
-    const submission = submissions.find(
-      (sub: SubmissionData) => sub.assigned_problem_id === sap.id
-    );
-
-    if (!submission) {
-      // no submission → score 0
-      continue;
-    }
-
-    solved_problems++;
-    if (submission.status === "Accepted") {
-      achieved_score += sap.weight;
-    } 
-    else if (submission.status === "Partially Accepted") {
-      achieved_score +=
-        submission.passed_test_cases *
-        (sap.weight / submission.total_test_cases);
-    }
-  }
-
-  achieved_score = Number(achieved_score.toFixed(2));
-
-  // update student attempt as finished
+  // mark attempt as finished immediately
   await finishStudentAttemptService(student_attempt_id);
 
-  const { result } = await createResultService({ 
-    total_score,
-    achieved_score,
-    total_problems,
-    solved_problems, 
-    student_attempt_id 
-  });
+  // trigger background processing (NO AWAIT)
+  processAttemptInBackground(student_attempt_id);
 
-  return { result };
+  // return { message: "Test submitted successfully" };
 };
 
 export const toggleTestActivationService = async (id: string) => {
@@ -370,4 +394,82 @@ export const toggleTestPublicStatusService = async (id: string) => {
   await test.save();
 
   return { test };
+};
+
+export const processAttemptInBackground = async (student_attempt_id: string) => {
+
+    const { studentAssignedProblems } =
+      await getStudentAssignedProblemsByStudentAttemptIdService(student_attempt_id);
+
+    // 1. Handle attempted but not submitted
+    for (const sap of studentAssignedProblems) {
+
+      if (sap.status === "Attempted") {
+        console.log(LanguageExtensions[sap.last_language]!);
+        await submitCodeService({
+          assignedProblemId: sap.id,
+          problemId: sap.problem_id,
+          language: LanguageExtensions[sap.last_language]!,
+          code: sap.last_saved_code,
+        });
+
+      }
+    }
+
+    // 2. Calculate result (same logic as yours)
+    const studentAssignedProblemIdToScore = studentAssignedProblems.map((sap: any) => ({
+      id: sap.id,
+      weight:
+        sap.codingProblem.difficulty.toLowerCase() === "easy"
+          ? 100
+          : sap.codingProblem.difficulty.toLowerCase() === "medium"
+          ? 200
+          : 300,
+    }));
+
+    const total_score = studentAssignedProblemIdToScore.reduce(
+      (acc: number, sap: any) => acc + sap.weight,
+      0
+    );
+
+    const studentAssignedProblemIds = studentAssignedProblems.map(
+      (sap: any) => sap.id
+    );
+
+    const { submissions } =
+      await getAllSubmissionByStudentAttemptIdService(studentAssignedProblemIds);
+
+    let achieved_score = 0;
+    const total_problems = studentAssignedProblemIdToScore.length;
+    let solved_problems = 0;
+
+    for (const sap of studentAssignedProblemIdToScore) {
+
+      const submission = submissions.find(
+        (sub: SubmissionData) => sub.assigned_problem_id === sap.id
+      );
+
+      if (!submission) continue;
+
+      solved_problems++;
+
+      if (submission.status === "Accepted") {
+        achieved_score += sap.weight;
+      } else if (submission.status === "Partially Accepted") {
+        achieved_score +=
+          submission.passed_test_cases *
+          (sap.weight / submission.total_test_cases);
+      }
+    }
+
+    achieved_score = Number(achieved_score.toFixed(2));
+
+    // 3. Store result
+    await createResultService({
+      total_score,
+      achieved_score,
+      total_problems,
+      solved_problems,
+      student_attempt_id
+    });
 };
