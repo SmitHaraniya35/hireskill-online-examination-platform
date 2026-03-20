@@ -7,7 +7,8 @@ import {
   getStudentAttemptSubmissionDetailsAndResultByIdService,
   getStudentAttemptByIdService,
   validateStudentAttemptByEmailAndTestIdService,
-  createStudentAttemptService
+  createStudentAttemptService,
+  validateStudentAttemptByIdService
 } from "../services/studentAttempt.service.ts";
 import type { StudentAttemptData, ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
 
@@ -122,6 +123,28 @@ export const validateStudentAttemptByEmailAndTestId = async (
 
     const data = await validateStudentAttemptByEmailAndTestIdService(email, test_id);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED);
+  } catch(err: any){
+    next(err);
+  }
+};
+
+export const validateStudentAttemptById = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.allParams;
+    if(!id) {
+      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    }
+
+    const data = await validateStudentAttemptByIdService(id);
+    res.ok({
+      id: data.studentAttempt.id,
+      is_active: data.studentAttempt.is_active,
+      is_submitted: data.studentAttempt.is_submitted
+    }, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED);
   } catch(err: any){
     next(err);
   }

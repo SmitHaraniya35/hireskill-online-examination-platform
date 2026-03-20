@@ -13,6 +13,7 @@ router.get("/get-student-attempts-details/:testId", authMiddleware, validateRequ
 router.delete("/delete-student-attempt/:id", authMiddleware, validateRequest(IdSchema), StudentAttemptController.deleteStudentAttempt);
 router.get("/get-student-attempt-submission-details-and-result/:id", validateRequest(IdSchema), StudentAttemptController.getStudentAttemptSubmissionDetailsAndResultById);
 
-router.post("/validate-student-attempt", validateRequest(ValidateStudentAttemptSchema), StudentAttemptController.validateStudentAttemptByEmailAndTestId);
+router.get("/validate-student-attempt/:id", validateRequest(IdSchema), StudentAttemptController.validateStudentAttemptById);
+router.post("/validate-student-attempt-by-email-and-test-id", validateRequest(ValidateStudentAttemptSchema), StudentAttemptController.validateStudentAttemptByEmailAndTestId);
 
 export default router;

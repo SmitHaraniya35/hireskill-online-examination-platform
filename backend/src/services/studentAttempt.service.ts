@@ -230,3 +230,21 @@ export const validateStudentAttemptByEmailAndTestIdService = async (email: strin
   }
 }; 
 
+export const validateStudentAttemptByIdService = async (id: string) => {
+  const studentAttempt = await StudentAttempt.findOneActive({ id });
+  if(!studentAttempt) {
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPTS_NOT_FOUND,
+      HttpStatusCode.NOT_FOUND
+    )
+  }
+
+  if(studentAttempt.is_submitted && !studentAttempt.is_active) {
+    throw new HttpError(
+      ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
+      HttpStatusCode.FORBIDDEN
+    );
+  }
+
+  return { studentAttempt };
+};
