@@ -6,9 +6,17 @@ import {
   type FinishData,
   type TestDataResponse,
   type ValidateStudentAttemptResponse,
-  type ValidateStudentAttemptByEmailData,
+  type ValidateStudentAttemptByEmailAndTestData,
   type ValidateStudentAttemptByEmailAndTestIdResponse,
   type StudentData,
+  type GetTestDataByStudentAttemptIdResponse,
+  type SaveDraftData,
+  type RunCodeData,
+  type RunCodeRespone,
+  type WorkerResponse,
+  type SubmitCodeData,
+  type SubmitCodeResponse,
+  type ValidateStudentAttemptById,
 } from "../types/testFlow.types";
 import type { axiosResponse } from "../types/index.types";
 import type { StudentAttemptResponse } from "../types/studentAttempts.types";
@@ -32,21 +40,22 @@ const testFlowService = {
       `${API_BASE_URL}/test/${slug}`,
       getCommonHeaders(),
     );
-    console.log(response);
     return response.data;
   },
-  validateStudentAttemptByEmail: async (
-    data: ValidateStudentAttemptByEmailData,
+
+  validateStudentAttemptByEmailAndTestId: async (
+    data: ValidateStudentAttemptByEmailAndTestData,
   ) => {
     const response = await axios.post<
       axiosResponse<ValidateStudentAttemptByEmailAndTestIdResponse>
     >(
-      `${API_BASE_URL}/student-attempt/validate-student-attempt`,
+      `${API_BASE_URL}/student-attempt/validate-student-attempt-by-email-and-test-id`,
       data,
       getCommonHeaders(),
     );
     return response.data;
   },
+
   completeStudentDetails: async (data: StudentData, id: string) => {
     const response = await axios.put<axiosResponse>(
       `${API_BASE_URL}/student/complete-student-profile/${id}`,
@@ -55,6 +64,7 @@ const testFlowService = {
     );
     return response.data;
   },
+  
   validateStudentAttempt: async (id: string) => {
     const response = await axios.get<
       axiosResponse<ValidateStudentAttemptResponse>
@@ -88,15 +98,67 @@ const testFlowService = {
     return response.data;
   },
 
-  finishTest: async (slug: string, data: FinishData) => {
+  getTestDataByStudentAttemptId: async (
+    slug: string,
+    studentAttemptId: string,
+  ) => {
+    const response = await axios.get<
+      axiosResponse<GetTestDataByStudentAttemptIdResponse>
+    >(
+      `${API_BASE_URL}/test/${slug}/get-test-data/${studentAttemptId}`,
+      getCommonHeaders(),
+    );
+    return response.data;
+  },
+
+  attempted: async (id: string) => {
+    const response = await axios.put<axiosResponse>(
+      `${API_BASE_URL}/student-assigned-problem/attempted/${id}`,
+      {},
+      getCommonHeaders(),
+    );
+    return response.data;
+  },
+
+  saveDraft: async (id: string, data: SaveDraftData) => {
+    const response = await axios.put<axiosResponse>(
+      `${API_BASE_URL}/student-assigned-problem/save-draft/${id}`,
+      data,
+      getCommonHeaders(),
+    );
+    return response.data;
+  },
+
+  submitted: async (id: string) => {
+    const response = await axios.put<axiosResponse>(
+      `${API_BASE_URL}/student-assigned-problem/submitted/${id}`,{},
+      getCommonHeaders(),
+    );
+    return response.data;
+  },
+
+  runCodeService: async (data: RunCodeData) => {
+    const response = await axios.post<axiosResponse<WorkerResponse>>(`${API_BASE_URL}/executor/run`, data, getCommonHeaders());
+    return response.data;
+  },
+  
+  submitCodeService: async (data: SubmitCodeData) => {
+    const response = await axios.post<axiosResponse<SubmitCodeResponse>>(`${API_BASE_URL}/executor/submit`, data, getCommonHeaders());
+    return response.data;
+  },
+
+  finishTestService: async (slug: string, data: FinishData) => {
     const response = await axios.post<axiosResponse<StudentAttemptResponse>>(
       `${API_BASE_URL}/test/${slug}/finish`,
       data,
       getCommonHeaders(),
     );
-    console.log(response);
     return response.data;
   },
+  validateStudentAttemptById: async (id: string) => {
+    const response = await axios.get<axiosResponse<ValidateStudentAttemptById>>(`${API_BASE_URL}/student-attempt/validate-student-attempt/${id}`,getCommonHeaders());
+    return response.data;
+  }
 };
 
 export default testFlowService;

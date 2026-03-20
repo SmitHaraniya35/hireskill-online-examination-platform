@@ -31,7 +31,7 @@ const submissionService = {
     },
 
     getSubmissionService: async (submissionId: string) => {
-        const response = await axios.get<axiosResponse<GetSubmissionResponse>>(`${API_URL}/${submissionId}`, getAuthHeaders());
+        const response = await axios.get<axiosResponse<GetSubmissionResponse>>(`${API_URL}/get-submission/${submissionId}`, getAuthHeaders());
         return response.data;
     },
     getSubmissionByStudentAttemptId: async (studentAttemptId: string) => {

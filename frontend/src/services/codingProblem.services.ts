@@ -43,7 +43,7 @@ const codingProblemService = {
     const response = await axios.get<axiosResponse<GelAllCodingProblemWithTestCases>>(`${API_URL}/get-coding-problem-with-testcases-and-templateCodes/${id}`, getAuthHeaders());
     return response.data;
   },
-
+  
   getAllCodingProblems: async () => {
     const response = await axios.get<axiosResponse<GetAllCodingProblemsResponse>>(`${API_URL}/get-all-coding-problems`, getAuthHeaders());
     return response.data;

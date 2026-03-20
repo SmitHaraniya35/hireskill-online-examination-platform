@@ -1,6 +1,6 @@
 import axios from 'axios';
 import type{ axiosResponse } from '../types/index.types';
-import type { StudentAttemptResponse, StudentAttemptsDetailsResponse } from '../types/studentAttempts.types';
+import type { GetStudentAttemptSubmissionDetailsAndResultResponse, StudentAttemptResponse, StudentAttemptsDetailsResponse } from '../types/studentAttempts.types';
 
 
 const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/student-attempt`;
@@ -24,6 +24,11 @@ const StudentAttemptService = {
 
     getStudentAttemptsDetails: async (testId: string) => {
         const response = await axios.get<axiosResponse<StudentAttemptsDetailsResponse>>(`${API_URL}/get-student-attempts-details/${testId}`,getAuthHeaders());
+        return response.data;
+    },
+
+    getStudentAttemptSubmissionDetailsAndResult: async (id: string ) => {
+        const response = await axios.get<axiosResponse<GetStudentAttemptSubmissionDetailsAndResultResponse>>(`${API_URL}/get-student-attempt-submission-details-and-result/${id}`,getAuthHeaders());
         return response.data;
     },
 
