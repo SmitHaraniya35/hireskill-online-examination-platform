@@ -62,5 +62,5 @@ export const LanguageExtensions: { [key: string]: string } = {
   "C++": "cpp",
   "C": "c",
   "Python": "py",
-  "Javascript": "javascript"
+  "JavaScript": "javascript"
 };

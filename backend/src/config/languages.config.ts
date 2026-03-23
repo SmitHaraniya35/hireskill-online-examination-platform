@@ -27,4 +27,11 @@ export const languages: Record<string, LanguageConfig> = {
     syntax: ["node", "--check", "Main.js"],
     run: ["node", "Main.js"],
   },
+
+  python: {
+    image: "python:3.11-slim",
+    extension: "py",
+    syntax: ["python3", "-m", "py_compile", "Main.py"],
+    run: ["python3", "Main.py"],
+  }
 };

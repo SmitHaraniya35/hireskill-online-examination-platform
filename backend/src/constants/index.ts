@@ -72,6 +72,7 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
   STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED : "Student attempt validated successfully. Editor access granted.",
   STUDENT_ATTEMPT_VALIDATED: "Student attempt validated successfully",
+  STUDENT_ATTEMPT_DETAILS_AND_RESULT_RETRIEVED: "Student attempt details and result retrieved successfully",
 
   // Student Assigned Problem
   STUDENT_ASSIGNED_PROBLEM_SAVE_DRAFT_SUCCESS: "Student assigned problem draft saved successfully",
@@ -182,12 +183,15 @@ export const ERROR_MESSAGES = {
   STUDENT_ATTEMPTS_NOT_FOUND: "No student attempts found",
   STUDENT_ATTEMPT_ALREADY_SUBMITTED: "Student attempt is already submitted",
   STUDENT_ALREADY_ATTEMPTED_TEST: "Student has already attempted this test",
+  STUDENT_ATTEMPT_FINISH_FAILED: "Failed to finish student attempt",
+  STUDENT_ATTEMPT_STATUS_UPDATE_FAILED: "Failed to update student attempt status",
 
   // Student Assigned Problem
   STUDENT_ASSIGNED_PROBLEM_CREATION_FAILED: "Failed to create student assigned problem",
   STUDENT_ASSIGNED_PROBLEMS_NOT_FOUND: "No student assigned problems for this student attempt",
   STUDENT_ASSIGNED_PROBLEM_SAVE_DRAFT_FAILED: "Failed to save student assigned problem draft",
   ASSIGNED_PROBLEM_ID_REQUIRED: "Assigned problem ID is required",
+  STUDENT_ASSIGNED_PROBLEM_DRAFT_NOT_FOUND: "Student assigned problem draft not found",
 
   // Judge0
   JUDGE0_SUBMISSION_ID_REQUIRED: "Judge0 submission ID is required",
@@ -197,9 +201,11 @@ export const ERROR_MESSAGES = {
   // Submission
   SUBMISSION_CREATION_FAILED: "Failed to create submission",
   SUBMISSION_NOT_FOUND: "Submission not found",
+  SUBMISSION_ID_REQUIRED: "Submission ID is required",
 
   // Result
-  RESULT_CREATION_FAILED: "Failed to create result"
+  RESULT_CREATION_FAILED: "Failed to create result",
+  RESULT_NOT_FOUND: "Result not found"
 };
 
 export const HttpStatusCode = {
@@ -213,3 +219,10 @@ export const HttpStatusCode = {
   INTERNAL_SERVER_ERROR: 500,
   BAD_GATEWAY: 502
 };
+
+export const STUDENT_ATTEMPT_STATUS = {
+    IN_PROGRESS: "In Progress",
+    SUBMITTED: "Submitted",
+    PROCESSING: "Processing",
+    AUTO_SUBMITTED: "Auto Submitted",
+} as const;
