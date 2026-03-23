@@ -99,12 +99,12 @@ export const getStudentAttemptSubmissionDetailsAndResultByIdService = async (id:
   const { student_id, test_id } = studentAttempt;
 
   const { student } = await getStudentByIdService(student_id);
-  const formattedStudent = {
-    id: student.id,
-    name: student.name,
-    email: student.email,
-    phone: student.phone
-  }
+  // const formattedStudent = {
+  //   id: student.id,
+  //   name: student.name,
+  //   email: student.email,
+  //   phone: student.phone
+  // }
 
   const { test } = await getTestByIdService(test_id);
   const formattedTest = {
@@ -117,7 +117,8 @@ export const getStudentAttemptSubmissionDetailsAndResultByIdService = async (id:
   const { studentAssignedProblems } = await getStudentAssignedProblemsWithSubmissionDetailsByStudentAttemptIdService(id);
 
   return {
-    student: formattedStudent, 
+    // student: formattedStudent, 
+    student, 
     test: formattedTest,
     studentAttempt,
     result,
