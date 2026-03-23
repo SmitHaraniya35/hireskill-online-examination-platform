@@ -9,7 +9,7 @@ const router = express();
 
 router.post("/create-coding-problem", authMiddleware, validateRequest(CodingProblemSchema), CodingProblemController.createCodingProblem);
 router.post("/create-coding-problem-with-testcases-and-templateCodes", authMiddleware, validateRequest(CodingProblemWithTestCasesAndTemplateCodesSchema), CodingProblemController.createCodingProblemWithTestCasesAndTemplateCodes);
-router.get("/get-coding-problem-with-testcases-and-templateCodes/:id", validateRequest(IdSchema), CodingProblemController.getCodingProblemWithTestCasesAndTemplateCodes);
+router.get("/get-coding-problem-with-testcases-and-templateCodes/:id", validateRequest(), CodingProblemController.getCodingProblemWithTestCasesAndTemplateCodes);
 router.patch("/update-coding-problem-with-testcases-and-templateCodes/:id", authMiddleware, validateRequest(CodingProblemWithTestCasesAndTemplateCodesSchema), CodingProblemController.updateCodingProblemWithTestCasesAndTemplateCodes)
 router.get("/get-coding-problem/:id", validateRequest(IdSchema), CodingProblemController.getCodingProblemById);
 router.get("/get-all-coding-problems", authMiddleware, CodingProblemController.getAllCodingProblems);

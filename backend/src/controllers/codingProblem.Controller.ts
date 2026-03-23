@@ -151,12 +151,12 @@ export const getCodingProblemWithTestCasesAndTemplateCodes = async (
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.allParams;
-    if (!id) {
+    const { id, sample_only } = req.allParams;
+    if (!id || !sample_only) {
       return res.badRequest(ERROR_MESSAGES.CODING_PROBLEM_ID_REQUIRED);
     }
 
-    const data = await getCodingProblemWithTestCasesAndTemplateCodesService(id);
+    const data = await getCodingProblemWithTestCasesAndTemplateCodesService(id, sample_only);
     res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
   } catch (err: any) {
     next(err);

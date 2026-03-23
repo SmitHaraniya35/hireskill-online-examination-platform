@@ -184,7 +184,7 @@ export const selectRandomProblemService = async () => {
   return problems[index];
 };
 
-export const getCodingProblemWithTestCasesAndTemplateCodesService = async (id: string) => {
+export const getCodingProblemWithTestCasesAndTemplateCodesService = async (id: string, sample_only: string) => {
   const codingProblemWithTestCases = await CodingProblem.findByIdActive(id, {
     _id: 0,
     createdAt: 0,
@@ -193,7 +193,7 @@ export const getCodingProblemWithTestCasesAndTemplateCodesService = async (id: s
     isDeleted: 0,
   }).populate({
     path: "testCases",
-    match: { isDeleted: false, is_hidden: false },
+    match: { isDeleted: false, ...(sample_only === "true" ? { is_hidden: false } : {}) },
     select: "id input expected_output is_hidden image_url -_id -problem_id",
   }).populate({
     path: "templateCodes",
@@ -267,7 +267,7 @@ export const updateCodingProblemWithTestCasesAndTemplateCodesService = async (
   });
 
   const updatedCodingProblem =
-    await getCodingProblemWithTestCasesAndTemplateCodesService(problem_id);
+    await getCodingProblemWithTestCasesAndTemplateCodesService(problem_id, "all");
 
   return { updatedCodingProblem };
 };
