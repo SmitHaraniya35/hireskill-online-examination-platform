@@ -13,6 +13,16 @@ const ResultSchema = generateSchema<ResultDocument>({
 
 export class ResultClass extends BaseClass<ResultDocument> {}
 
+ResultSchema.virtual('studentAttempt', {
+    ref: 'StudentAttempt',
+    localField: 'student_attempt_id',
+    foreignField: 'id',
+    justOne: true
+});
+
+ResultSchema.set('toObject', { virtuals: true });
+ResultSchema.set('toJSON', { virtuals: true });
+
 ResultSchema.loadClass(ResultClass);
 
 export const Result = model<ResultDocument, ResultModel>(

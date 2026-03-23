@@ -75,8 +75,12 @@ export const getStudentAttemptsDetailsByTestIdService = async (
       path: "student",
       select: "id name email phone -_id",
     })
+    .populate({
+      path: "result",
+      select: "id total_score achieved_score -_id",
+    })
     .select(
-      "id started_at expires_at finished_at is_submitted status is_active student_id -_id",
+      "id started_at expires_at finished_at status student_id -_id",
     );
 
   if (!students) {
@@ -239,7 +243,7 @@ export const validateStudentAttemptByIdService = async (id: string) => {
     )
   }
 
-  if(studentAttempt.is_submitted && !studentAttempt.is_active) {
+  if(studentAttempt.is_submitted) {
     throw new HttpError(
       ERROR_MESSAGES.STUDENT_ATTEMPT_ALREADY_SUBMITTED,
       HttpStatusCode.FORBIDDEN
