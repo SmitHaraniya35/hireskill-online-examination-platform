@@ -35,6 +35,12 @@ StudentAttemptSchema.virtual('result', {
     justOne: true
 });
 
+StudentAttemptSchema.virtual('studentAssignedProblems', {
+    ref: 'StudentAssignedProblem',
+    localField: 'id',
+    foreignField: 'student_attempt_id'
+});
+
 StudentAttemptSchema.set('toObject', { virtuals: true });
 StudentAttemptSchema.set('toJSON', { virtuals: true });
 
