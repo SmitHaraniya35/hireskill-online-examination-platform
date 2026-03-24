@@ -5,7 +5,7 @@ export interface ValidateStudentAttemptData {
     email: string;
 }
 
-export interface StudentAttemptData {
+export interface CreateStudentAttemptData {
     test_id: string,
     student_id: string,
 }

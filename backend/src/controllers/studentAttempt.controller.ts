@@ -10,7 +10,7 @@ import {
   createStudentAttemptService,
   validateStudentAttemptByIdService
 } from "../services/studentAttempt.service.ts";
-import type { StudentAttemptData, ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
+import type { CreateStudentAttemptData, ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
 
 export const createStudentAttempt = async (
   req: AuthRequest,
@@ -18,7 +18,7 @@ export const createStudentAttempt = async (
   next: NextFunction,
 ) => {
   try {
-    const { test_id, student_id } = req.allParams as StudentAttemptData;
+    const { test_id, student_id } = req.allParams as CreateStudentAttemptData;
     if (!test_id || !student_id) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
