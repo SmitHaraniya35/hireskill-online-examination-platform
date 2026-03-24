@@ -318,7 +318,14 @@ export const processSubmission = async ({
   const start = Date.now();
 
   const config = languages[language];
-  if (!config) throw new Error("Unsupported language");
+  if (!config) {
+    const workerResponse: WorkerResponse = {
+      status: "Failed",
+      error: ERROR_MESSAGES.UNSUPPORTED_LANGUAGE,
+    };
+
+    return workerResponse;
+  };
 
   const submissionId = uuid();
   const submissionsPath = path.join("submissions", submissionId);

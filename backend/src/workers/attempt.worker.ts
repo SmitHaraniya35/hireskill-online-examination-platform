@@ -13,8 +13,12 @@ export const attemptWorker = new Worker(
     const { student_attempt_id, status } = job.data;
 
     console.log("Processing attempt started:", job.id, student_attempt_id);
-
-    await processAttemptInBackground(student_attempt_id, status);
+    
+    try {
+      await processAttemptInBackground(student_attempt_id, status);
+    } catch (err: any) {
+      console.error("Error processing attempt:", err);
+    }
 
     console.log("Processing attempt completed:", job.id, student_attempt_id)
   },
