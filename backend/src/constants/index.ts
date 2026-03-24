@@ -64,6 +64,7 @@ export const SUCCESS_MESSAGES = {
   STUDENT_UPDATED: "Student updated successfully",
   STUDENT_IMPORTED: "Student imported successfully",
   STUDENT_PROFILE_COMPLETED: "Student profile completed successfully",
+  SELECTED_STUDENTS_DELETED: "Selected students deleted successfully",
 
   // Code Execution
   CODE_EXECUTED: "Code executed successfully",
@@ -178,6 +179,7 @@ export const ERROR_MESSAGES = {
   STUDENT_CREATION_FAILED: "Failed to create student",
   STUDENT_DELETION_FAILED: "Failed to delete student",
   STUDENT_UPDATE_FAILED: "Failed to update student",
+  SELECTED_STUDENTS_DELETION_FAILED: "Failed to delete selected students",
 
   // Student Attempt
   STUDENT_ATTEMPT_CREATION_FAILED: "Failed to create student attempt",

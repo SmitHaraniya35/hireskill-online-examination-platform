@@ -33,3 +33,7 @@ export const StudentProfileSchema = Joi.object({
     // linkedin_url: Joi.string().uri().optional(),
     // github_url: Joi.string().uri().optional();
 });
+
+export const DeleteManyStudentsSchema = Joi.object({
+    ids: Joi.array().items(uuidv4Rule).required()
+});

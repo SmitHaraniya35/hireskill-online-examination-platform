@@ -130,6 +130,18 @@ export const deleteStudentService = async (id: string) => {
     return { student };
 };
 
+export const deleteManyStudentsService = async (ids: string[]) => {
+    const students = await Student.softDelete({ id: { $in: ids } });
+    if(!students){
+        throw new HttpError(
+            ERROR_MESSAGES.  SELECTED_STUDENTS_DELETION_FAILED,
+            HttpStatusCode.INTERNAL_SERVER_ERROR
+        );
+    }
+
+    return { students };
+};
+
 export const completeStudentProfileService = async (id: string, input: StudentProfileData) => {
     const student =  await Student.findOneActive({ id });
     if(!student) { 

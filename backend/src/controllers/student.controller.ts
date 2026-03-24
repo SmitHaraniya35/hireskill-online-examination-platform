@@ -6,7 +6,8 @@ import {
   getStudentByIdService,
   updateStudentService,
   importStudentsService,
-  completeStudentProfileService
+  completeStudentProfileService,
+  deleteManyStudentsService
 } from "../services/student.service.ts";
 import type { AuthRequest } from "../types/controller/index.ts";
 import type { NextFunction, Response } from "express";
@@ -120,6 +121,24 @@ export const deleteStudent = async (
     next(err);
   }
 };
+
+export const deleteManyStudent = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { ids } = req.allParams;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    }
+
+    const data = await deleteManyStudentsService(ids);
+    res.ok(data, SUCCESS_MESSAGES.SELECTED_STUDENTS_DELETED);
+  } catch (err: any) {
+    next(err);
+  }
+}
 
 export const completeStudentProfile = async (
   req: AuthRequest,
