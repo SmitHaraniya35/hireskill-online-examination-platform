@@ -15,6 +15,10 @@ export const SUCCESS_MESSAGES = {
   OTP_GENERATED: "Password reset OTP generated successfully",
   OTP_VERIFIED: "OTP verified successfully",
 
+  // Analytics
+  ALL_OVER_TESTS_ANALYTICS_FETCHED: "Analytics for all tests fetched successfully",
+  TEST_ANALYTICS_FETCHED: "Analytics for the test fetched successfully",
+
   // Admin
   ADMIN_CREATED: "Admin created successfully",
   ADMIN_RETRIEVED: "Admin retrieved successfully",
@@ -197,6 +201,7 @@ export const ERROR_MESSAGES = {
   JUDGE0_SUBMISSION_ID_REQUIRED: "Judge0 submission ID is required",
   CODE_EXECUTION_FAILED: "Failed to execute code",
   JUDGE0_FETCH_FAILED: "Failed to fetch submission result from Judge0",
+  UNSUPPORTED_LANGUAGE: "Unsupported programming language",
 
   // Submission
   SUBMISSION_CREATION_FAILED: "Failed to create submission",
