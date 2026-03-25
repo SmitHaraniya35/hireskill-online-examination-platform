@@ -10,7 +10,7 @@ import { generateApiKey, generateResetPasswordOTP } from "../utils/helper.utils.
 import type { UserDocument } from "../types/model/user.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 import { Client } from "../models/client.model.ts";
-import sendEmail from "./email.service.ts";
+import { sendEmail } from "./email.service.ts";
 
 export const loginService = async (email: string, password: string) => {
   const user: UserDocument | null = await User.findOneActive({ email });
@@ -114,7 +114,7 @@ export const forgetPasswordService = async (email: string) => {
   await user.save();
 
   // Logic: Send otp to admin's email...
-  // sendEmail({
+  // await sendEmail({
   //   to: user.email,
   //   subject: "Password Reset OTP",
   //   text: `Your OTP for password reset is: ${otp}. It will expire in 2 minutes.`,
