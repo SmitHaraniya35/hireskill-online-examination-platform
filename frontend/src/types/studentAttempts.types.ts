@@ -29,6 +29,12 @@ export interface StudentAttemptResponse {
   submission?: Submission;
 }
 
+export interface Result {
+  id: string;
+  student_attempt_id: string;
+  total_score: number;
+  achieved_score: number;
+}
 
 export interface GetStudentAttempts {
   id: string;
@@ -40,6 +46,7 @@ export interface GetStudentAttempts {
   is_submitted?: string;
   is_active: boolean;
   student: Student;
+  result: Result | null;
 }
 
 export interface StudentAttemptsDetailsResponse {
@@ -73,6 +80,12 @@ export interface Student {
   name: string;
   email: string;
   phone: number;
+  college: string;
+  degree: string;
+  branch: string;
+  graduation_year: number;
+  skills: string;
+  complete_profile: boolean;
 }
 
 export interface Test {
