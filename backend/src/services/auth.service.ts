@@ -5,6 +5,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
   generateRefreshTokenId,
+  verifyRefreshToken,
 } from "../utils/jwt.utils.ts";
 import { generateApiKey, generateResetPasswordOTP } from "../utils/helper.utils.ts";
 import type { UserDocument } from "../types/model/user.document.ts";
@@ -75,10 +76,15 @@ export const createAdminService = async (email: string, password: string) => {
   return { user };
 };
 
-export const refreshTokenService = async (
-  userId: string,
-  refreshTokenId: string,
-) => {
+export const refreshTokenService = async (refreshToken: string) => {
+  const { userId, refreshTokenId } = verifyRefreshToken(refreshToken);
+  if (!userId || !refreshTokenId) {
+    throw new HttpError(
+      ERROR_MESSAGES.INVALID_REFRESH_TOKEN, 
+      HttpStatusCode.UNAUTHORIZED
+    );
+  }
+
   const user: UserDocument | null = await User.findOneActive({ id: userId });
   if (!user) {
     throw new HttpError(
@@ -95,7 +101,12 @@ export const refreshTokenService = async (
   }
 
   const accessToken: string = generateAccessToken(user.id, user.email);
-  return { accessToken };
+  const newRefreshTokenId: string = (await generateRefreshTokenId()).toString();
+  user.refreshTokenId = newRefreshTokenId;
+  const newRefreshToken: string = generateRefreshToken(user.id, newRefreshTokenId);
+  await user.save();
+  
+  return { accessToken, refreshToken: newRefreshToken };
 };
 
 export const forgetPasswordService = async (email: string) => {
