@@ -16,7 +16,9 @@ const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/auth`;
 const getAuthHeaders = () => {
   const token = localStorage.getItem("admin_token");
 
-  if (!token) return {};
+  if (!token) return {
+    withCredentials: true
+  };
 
   return {
     headers: {
@@ -83,6 +85,15 @@ const authService = {
 
     return response.data;
   },
+
+  refreshToken: async () => {
+    const response = await axios.get<axiosResponse>(
+      `${API_URL}/refresh-token`,
+      getAuthHeaders(),
+    );
+
+    return response.data;
+  }
 };
 
 export default authService;

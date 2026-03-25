@@ -35,6 +35,16 @@ const StudentService = {
   getAllStudentsList: async() => {
     const response = await axios.get<axiosResponse<GetAllStudentsListData>>(`${API_URL}/get-all-student`, getAuthHeaders());
     return response.data;
+  },
+
+  updateStudent: async (id: string) => {
+    const response = await axios.put<axiosResponse>(`${API_URL}/update-student/${id}`, getAuthHeaders());
+    return response.data;
+  },
+
+   deleteStudent: async (id: string) => {
+    const response = await axios.delete<axiosResponse>(`${API_URL}/delete-student/${id}`, getAuthHeaders());
+    return response.data;
   }
 };
     

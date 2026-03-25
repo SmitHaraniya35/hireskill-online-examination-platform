@@ -39,8 +39,8 @@ const codingProblemService = {
       return response.data;
   },
 
-  getCodingProblemWithTestCases: async (id: string) => {
-    const response = await axios.get<axiosResponse<GelAllCodingProblemWithTestCases>>(`${API_URL}/get-coding-problem-with-testcases-and-templateCodes/${id}`, getAuthHeaders());
+  getCodingProblemWithTestCases: async (id: string, sample_only: boolean) => {
+    const response = await axios.get<axiosResponse<GelAllCodingProblemWithTestCases>>(`${API_URL}/get-coding-problem-with-testcases-and-templateCodes/${id}?sample_only=${sample_only}`, getAuthHeaders());
     return response.data;
   },
   
