@@ -79,9 +79,9 @@ const ExamTimer: React.FC<ExamTimerProps> = ({
         ? 'bg-orange-50 border-orange-400' 
         : 'bg-gray-50 border-gray-200'
     }`}>
-      <span className="font-semibold font-mono text-2xl text-indigo-800 text-gray-700">Time left:</span>
+      <span className="font-semibold  text-2xl text-indigo-800 text-gray-700">Time left:</span>
       <span 
-        className={`font-mono font-bold text-2xl ml-2 ${
+        className={` font-bold text-2xl ml-2 ${
           isCritical 
             ? 'text-red-600 animate-pulse' 
             : isLowTime 
