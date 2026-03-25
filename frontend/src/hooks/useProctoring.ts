@@ -1,42 +1,161 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export const useProctoring = (onViolation: (msg: string) => void) => {
+export const useProctoring = (onAutoFinish: () => void, enabled: boolean) => {
+  const [isViolation, setIsViolation] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+
+  const timerRef = useRef<number | null>(null);
+  const intervalRef = useRef<number | null>(null);
+
+  // // --- FIX START ---
+  // // Create a ref to store the LATEST version of the callback
+  // const onAutoFinishRef = useRef(onAutoFinish);
+
+  // // Keep the ref updated whenever the function passed from the parent changes
+  // useEffect(() => {
+  //   onAutoFinishRef.current = onAutoFinish;
+  // }, [onAutoFinish]);
+  // // --- FIX END ---
+
+  const onAutoFinishRef = useRef(onAutoFinish);
   useEffect(() => {
-    // 1. Detect Tab Switching (Visibility API)
-    const handleVisibilityChange = () => {
+    onAutoFinishRef.current = onAutoFinish;
+  }, [onAutoFinish]);
+
+
+
+  const startPenalty = () => {
+    if (timerRef.current) return;
+
+    setIsViolation(true);
+    setCountdown(5);
+
+    // ✅ Call via ref — always gets the latest version
+    timerRef.current = window.setTimeout(() => {
+      onAutoFinishRef.current();
+    }, 5000);
+
+    // timerRef.current = window.setTimeout(() => {
+    //   onAutoFinish();
+    // }, 5000);
+
+  //   intervalRef.current = window.setInterval(() => {
+  //     setCountdown((prev) => {
+  //       if (prev <= 1) {
+  //         if (intervalRef.current) clearInterval(intervalRef.current);
+  //         return 0;
+  //       }
+  //       return prev - 1;
+  //     });
+  //   }, 1000);
+  // };
+
+      intervalRef.current = window.setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          if (intervalRef.current) clearInterval(intervalRef.current);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const clearPenalty = () => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+    setIsViolation(false);
+  };
+
+  const enterFullscreen = () => {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem
+        .requestFullscreen()
+        .then(() => {
+          clearPenalty();
+        })
+        .catch((err) => {
+          console.error("Fullscreen entry failed:", err);
+        });
+    }
+  };
+
+  // --- TAB & FULLSCREEN DETECTION ---
+  // --- TAB, BLUR & FULLSCREEN DETECTION ---
+  useEffect(() => {
+    if (!enabled) return;
+
+    const handleVisibility = () => {
       if (document.hidden) {
-        onViolation("Tab Switch Detected! Your activity is being logged.");
+        startPenalty();
       }
     };
 
-    // 2. Detect Fullscreen Exit
-    const handleFullscreenChange = () => {
+    const handleFullscreen = () => {
       if (!document.fullscreenElement) {
-        onViolation("You exited full-screen mode. Please return to continue.");
+        startPenalty();
+      } else {
+        clearPenalty();
       }
     };
 
-    // 3. Disable Right Click (Context Menu)
-    const disableRightClick = (e: MouseEvent) => e.preventDefault();
-
-    // 4. Disable Copy/Paste
-    const disableCopyPaste = (e: ClipboardEvent) => {
-      e.preventDefault();
-      onViolation("Copy/Paste is disabled during the exam.");
+    // NEW: Handle Window Blur (This catches the 3-finger swipe/Alt+Tab immediately)
+    const handleBlur = () => {
+      startPenalty();
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    document.addEventListener("fullscreenchange", handleFullscreenChange);
-    document.addEventListener("contextmenu", disableRightClick);
-    document.addEventListener("copy", disableCopyPaste);
-    document.addEventListener("paste", disableCopyPaste);
+    // NEW: Handle Window Focus (Clears penalty if they come back)
+    const handleFocus = () => {
+      if (document.fullscreenElement && !document.hidden) {
+        clearPenalty();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    document.addEventListener("fullscreenchange", handleFullscreen);
+    window.addEventListener("blur", handleBlur); 
+    window.addEventListener("focus", handleFocus); 
+
+    if (!document.fullscreenElement) {
+      startPenalty();
+    }
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      document.removeEventListener("fullscreenchange", handleFullscreenChange);
-      document.removeEventListener("contextmenu", disableRightClick);
-      document.removeEventListener("copy", disableCopyPaste);
-      document.removeEventListener("paste", disableCopyPaste);
+      document.removeEventListener("visibilitychange", handleVisibility);
+      document.removeEventListener("fullscreenchange", handleFullscreen);
+      window.removeEventListener("blur", handleBlur); 
+      window.removeEventListener("focus", handleFocus); 
+      clearPenalty();
     };
-  }, [onViolation]);
+  }, [enabled]);
+
+  // --- KEYBOARD BLOCKING ---
+  useEffect(() => {
+    if (!enabled) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toLowerCase();
+
+      // Block Copy, Paste, Cut, Save, Inspect, and Print
+      const forbidden = ["c", "v", "x", "s", "i", "p"];
+      const isSystemKey = e.key === "Meta" || (e.altKey && e.key === "Tab");
+
+      if ((e.ctrlKey && forbidden.includes(key)) || isSystemKey) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [enabled]);
+
+  return { isViolation, countdown, enterFullscreen };
 };
