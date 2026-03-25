@@ -22,7 +22,7 @@ const Navbar: React.FC = () => {
 
     // Reusable tailwind classes for the NavLink
     const navLinkClasses = ({ isActive }: { isActive: boolean }) => `
-        relative pb-1 text-[18px] font-bold transition-colors duration-300 group
+        relative pb-1 text-[18px] font-semibold transition-colors duration-300 group
         ${isActive ? 'text-[#1DA077]' : 'text-gray-800 hover:text-[#1DA077]'}
     `;
 
@@ -30,14 +30,14 @@ const Navbar: React.FC = () => {
     const underlineClasses = "absolute bottom-0 left-1/2 w-0 h-[2px] bg-[#1DA077] transition-all duration-300 ease-in-out group-hover:w-full group-hover:left-0";
 
     return (
-        <nav className="flex flex-row items-center justify-between h-auto px-6 py-2 bg-white shadow-sm font-mono">
+        <nav className="flex flex-row items-center justify-between h-auto px-6 py-2 bg-white shadow-sm ">
             <div className="flex flex-row items-center justify-center">
                 <div 
                     className="cursor-pointer" 
                     onClick={() => navigate('/admin/dashboard')}
                 >
                     <img 
-                        className="h-[60px] w-[210px] object-cover" 
+                        className="h-[50px] w-[210px] object-cover" 
                         src={LOGO} 
                         alt="logo" 
                     />
