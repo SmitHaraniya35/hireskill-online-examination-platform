@@ -92,7 +92,7 @@ export const updateStudent = async (
   next: NextFunction,
 ) => {
   try {
-    const input = req.allParams as StudentData;
+    const input = req.allParams as StudentProfileData;
     if (input && !input.id) {
       return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
     }

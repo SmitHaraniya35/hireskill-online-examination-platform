@@ -50,7 +50,7 @@ export const importStudentsService = async (input: ImportStudentsData) => {
 }
 
 export const getStudentByIdService = async (id: string) => {
-    const student = await Student.findByIdActive(id,{
+    const student = await Student.findOne({ id},{
         _id: 0,
         createdAt: 0,
         updatedAt: 0,
@@ -85,11 +85,12 @@ export const getAllStudentService = async () => {
     return { student };
 };
 
-export const updateStudentService = async (studentId: string, input: StudentData) => {
+export const updateStudentService = async (studentId: string, input: StudentProfileData) => {
     const { email, phone } = input;
+
     const studentExists = await Student.findOneActive({
         $or: [
-            {email: input.email},
+            {email: input.email!},
             {phone: input.phone}
         ],
         id: { $ne: studentId }
