@@ -81,7 +81,7 @@ export interface LeaderboardData {
   total_score: number;
   achieved_score: number;
   performance: number;
-  timeTaken: Date | number;
+  timeTaken: number;
 }
 
 export interface DifficultyStateData {

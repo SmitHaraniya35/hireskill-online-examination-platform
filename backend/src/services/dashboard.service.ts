@@ -230,6 +230,18 @@ const getTestWiseAnalytics = async (
 
   const map = new Map<string, any>();
 
+  // // Initialize map with all tests to ensure even those without attempts are included
+  // for(const t of tests) {
+  //   map.set(t.id, {
+  //       testId: t.id,
+  //       title: t?.title || "Unknown Test",
+  //       start_at: t?.start_at || null,
+  //       totalStudents: 0,
+  //       totalScore: 0,
+  //       completed: 0,
+  //   });
+  // }
+
   for (const a of attempts) {
     if (!map.has(a.test_id)) {
       const t = testMap.get(a.test_id);
@@ -265,7 +277,7 @@ const getTestWiseAnalytics = async (
     completionRate: round(
       (t.completed / t.totalStudents) * 100
     ),
-    avgScore: round(t.totalScore / t.totalStudents),
+    avgScore: round(t.totalScore / t.totalStudents) || 0,
   }));
 
   return data;
@@ -311,6 +323,16 @@ export const getSingleTestAnalyticsService = async (
 
   const attempts = await fetchAttempts(testId);
   const assignedProblems = await fetchAssignedProblems(testId);
+  const leaderboard = await getLeaderboard(attempts); 
+
+  // Sort leaderboard by performance in descending order and if tie, by time taken in ascending order
+  leaderboard.sort((a, b) => {
+    if (b.performance === a.performance) {
+      return (a.timeTaken ?? 0) - (b.timeTaken ?? 0);
+    }
+    return b.performance - a.performance;
+  });
+
 
   const data: SingleTestAnalyticsData = {
     test: formattedTest,
@@ -318,7 +340,7 @@ export const getSingleTestAnalyticsService = async (
     scoreDistributions: getScoreDistribution(attempts),
     difficultyStats: getDifficultyStats(assignedProblems),
     problemAnalytics: getProblemAnalytics(assignedProblems),
-    leaderboard: getLeaderboard(attempts),
+    leaderboard,
   };
 
   return data;
