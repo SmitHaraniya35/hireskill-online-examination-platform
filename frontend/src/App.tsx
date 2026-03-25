@@ -19,6 +19,10 @@ import StudentAttemptListView from "./features/TestManagement/StudentAttemptList
 import CompletionPage from "./features/Assessment/ComplitionPage.tsx";
 import AdminRoutes from "./routes/AdminRoutes.tsx";
 import TestFlowPage from "./features/Assessment/Onboarding/TestFlowPage.tsx";
+import StudentProtectedRoute from "./routes/StudentProtectedRoute.tsx";
+import StudentDetailPage from "./features/StudentManagement/StudentDetailPage.tsx";
+import AnalyticsDashboard from "./features/DashboardManagement/temp.tsx";
+import Dashboard from "./features/DashboardManagement/temp.tsx";
 
 const App: React.FC = () => {
   return (
@@ -34,7 +38,8 @@ const App: React.FC = () => {
 
         <Route element={<AdminRoutes />}>
           <Route element={<AdminLayout />}>
-            <Route path="/admin/dashboard" element={<AdminDashboardLayout />} />
+            {/* <Route path="/admin/dashboard" element={<AdminDashboardLayout />} /> */}
+            <Route path="/admin/dashboard" element={<Dashboard />} />
             <Route path="/admin/create-exam" element={<TestLinkManager />} />
             <Route
               path="/admin/create-exam/create-new-test"
@@ -49,6 +54,7 @@ const App: React.FC = () => {
               path="/admin/student-management"
               element={<StudentManagementLayout />}
             />
+            <Route path="/admin/student-management/students/:id" element={<StudentDetailPage/>}/>
             <Route
               path="/admin/tests/:testId/attempts"
               element={<StudentAttemptListView />}
@@ -61,9 +67,9 @@ const App: React.FC = () => {
         <Route
           path="/test/:slug/start/:studentAttemptId"
           element={
-            // <StudentProtectedRoute>
+            <StudentProtectedRoute>
               <AssessmentPage />
-            // </StudentProtectedRoute>
+            </StudentProtectedRoute>
           }
         />
         <Route path="/test/complete" element={<CompletionPage />} />
