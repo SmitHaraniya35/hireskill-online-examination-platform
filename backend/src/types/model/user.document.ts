@@ -4,7 +4,7 @@ export interface UserDocument extends BaseDocument{
     email: string,
     password: string,
     role: string,
-    refreshTokenId: string | null,
+    refresh_token_id: string | null,
     password_reset_otp: string | null,
     password_reset_otp_expires: number | null,
     is_otp_verified: boolean

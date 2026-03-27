@@ -27,11 +27,11 @@ export const generateRefreshTokenId = async () => {
 }
 
 // generate refresh token using jwt
-export const generateRefreshToken = (userId: string, refreshTokenId: string) => {
+export const generateRefreshToken = (userId: string, refresh_token_id: string) => {
     return jwt.sign(
         {
             userId,
-            refreshTokenId
+            refresh_token_id
         },
         process.env.JWT_REFRESH_SECRETKEY as string,
         { expiresIn: "24h" }
@@ -40,15 +40,15 @@ export const generateRefreshToken = (userId: string, refreshTokenId: string) => 
 
 // verify refresh token using jwt 
 export const verifyRefreshToken = (token: string) => {
-    const { userId, refreshTokenId } = jwt.verify(
+    const { userId, refresh_token_id } = jwt.verify(
         token,
         process.env.JWT_REFRESH_SECRETKEY as string
     ) as {
         userId: string,
-        refreshTokenId: string
+        refresh_token_id: string
     }
         
-    return { userId, refreshTokenId };
+    return { userId, refresh_token_id };
 }
 
 

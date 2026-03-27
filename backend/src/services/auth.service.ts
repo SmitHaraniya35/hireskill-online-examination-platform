@@ -32,10 +32,10 @@ export const loginService = async (email: string, password: string) => {
 
   const accessToken = generateAccessToken(user.id, user.email);
 
-  user.refreshTokenId = (await generateRefreshTokenId()).toString();
+  user.refresh_token_id = (await generateRefreshTokenId()).toString();
   await user.save();
 
-  const refreshToken = generateRefreshToken(user.id, user.refreshTokenId);
+  const refreshToken = generateRefreshToken(user.id, user.refresh_token_id);
 
   return { user, accessToken, refreshToken };
 };
@@ -77,8 +77,8 @@ export const createAdminService = async (email: string, password: string) => {
 };
 
 export const refreshTokenService = async (refreshToken: string) => {
-  const { userId, refreshTokenId } = verifyRefreshToken(refreshToken);
-  if (!userId || !refreshTokenId) {
+  const { userId, refresh_token_id } = verifyRefreshToken(refreshToken);
+  if (!userId || !refresh_token_id) {
     throw new HttpError(
       ERROR_MESSAGES.INVALID_REFRESH_TOKEN, 
       HttpStatusCode.UNAUTHORIZED
@@ -93,7 +93,7 @@ export const refreshTokenService = async (refreshToken: string) => {
     );
   }
 
-  if (user.refreshTokenId !== refreshTokenId) {
+  if (user.refresh_token_id !== refresh_token_id) {
     throw new HttpError(
       ERROR_MESSAGES.INVALID_REFRESH_TOKEN,
       HttpStatusCode.UNAUTHORIZED,
@@ -102,7 +102,7 @@ export const refreshTokenService = async (refreshToken: string) => {
 
   const accessToken: string = generateAccessToken(user.id, user.email);
   const newRefreshTokenId: string = (await generateRefreshTokenId()).toString();
-  user.refreshTokenId = newRefreshTokenId;
+  user.refresh_token_id = newRefreshTokenId;
   const newRefreshToken: string = generateRefreshToken(user.id, newRefreshTokenId);
   await user.save();
   
@@ -206,7 +206,7 @@ export const logoutService = async (userId: string) => {
     );
   }
 
-  user.refreshTokenId = null;
+  user.refresh_token_id = null;
   await user.save();
   return;
 };
