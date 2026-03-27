@@ -132,7 +132,7 @@ export const deleteStudentService = async (id: string) => {
 };
 
 export const deleteManyStudentsService = async (ids: string[]) => {
-    const students = await Student.softDelete({ id: { $in: ids } });
+    const students = await Student.softDeleteMany({ id: { $in: ids } });
     if(!students){
         throw new HttpError(
             ERROR_MESSAGES.  SELECTED_STUDENTS_DELETION_FAILED,
@@ -144,8 +144,16 @@ export const deleteManyStudentsService = async (ids: string[]) => {
 };
 
 export const completeStudentProfileService = async (id: string, input: StudentProfileData) => {
-    const student =  await Student.findOneActive({ id });
-    if(!student) { 
+    const studentExistWithPhone =  await Student.findOneActive({ phone: input.phone, id: { $ne: id } });
+    if(studentExistWithPhone) { 
+        throw new HttpError(
+            ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_PHONE,
+            HttpStatusCode.CONFLICT
+        );
+    }
+    
+    const student = await Student.findOneActive({ id });
+    if(!student){
         throw new HttpError(
             ERROR_MESSAGES.STUDENT_NOT_FOUND,
             HttpStatusCode.NOT_FOUND

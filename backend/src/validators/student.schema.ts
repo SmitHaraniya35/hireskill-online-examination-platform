@@ -7,13 +7,6 @@ export const StudentSchema = Joi.object({
     name: Joi.string().required(),
     phone: indianPhoneRule.required(),
     college: Joi.string().required()
-    // degree: string;
-    // branch: string;
-    // graduation_year: number;
-    // skills: string;
-    // resume_url: string;
-    // linkedin_url: string;
-    // github_url: string;
 });
 
 export const ImportStudentsSchema = Joi.object({
@@ -23,6 +16,7 @@ export const ImportStudentsSchema = Joi.object({
 export const StudentProfileSchema = Joi.object({
     id: uuidv4Rule.optional(),
     name: Joi.string().required(),
+    email: Joi.string().email().optional(),
     phone: indianPhoneRule.required(),
     college: Joi.string().required(),
     degree:  Joi.string().required(),

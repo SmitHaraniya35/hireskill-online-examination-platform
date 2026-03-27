@@ -11,7 +11,7 @@ import {
 } from "../services/student.service.ts";
 import type { AuthRequest } from "../types/controller/index.ts";
 import type { NextFunction, Response } from "express";
-import type { StudentData, ImportStudentsData, StudentProfileData } from "../types/controller/studentData.types.ts";
+import type { ImportStudentsData, StudentProfileData } from "../types/controller/studentData.types.ts";
 
 export const createStudent = async (
   req: AuthRequest,

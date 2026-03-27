@@ -11,7 +11,7 @@ router.post("/create-student", validateRequest(), StudentController.createStuden
 router.post("/import", validateRequest(ImportStudentsSchema), StudentController.importStudents);
 router.get("/get-student/:id", validateRequest(IdSchema), StudentController.getStudentById);
 router.get("/get-all-student", authMiddleware, validateRequest(), StudentController.getAllStudent);
-router.put("/update-student/:id", authMiddleware, validateRequest(StudentSchema), StudentController.updateStudent);
+router.put("/update-student/:id", authMiddleware, validateRequest(StudentProfileSchema), StudentController.updateStudent);
 router.delete("/delete-student/:id", authMiddleware, validateRequest(IdSchema), StudentController.deleteStudent);
 router.delete("/delete-many-student", authMiddleware, validateRequest(DeleteManyStudentsSchema), StudentController.deleteManyStudent);
 router.put("/complete-student-profile/:id", validateRequest(StudentProfileSchema), StudentController.completeStudentProfile);
