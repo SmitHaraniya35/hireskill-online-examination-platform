@@ -13,17 +13,16 @@ import studentAttemptRoutes from "./routes/studentAttempt.routes.ts";
 import codingProblemTemplateRoutes from "./routes/codingProblemTemplate.routes.ts";
 import studentAssignedProblemRoutes from "./routes/studentAssignedProblem.routes.ts";
 import executorRoutes from "./routes/executor.routes.ts";
+import dashboardRoutes from "./routes/dashboard.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
 // import { validateApiKey } from "./middlewares/apikey.middleware.ts";
-// import { submissionQueue } from "./queue/submission.queue.ts";
-// import { redis } from "./store/redis.store.ts";
-// import { processSubmission } from "./services/executor.service.ts";
 
 const app = express();
 
 // Security & core
 app.use(cors({
-    origin: "http://192.168.0.109:5173",
+    origin: "https://unsnouted-unescapably-mira.ngrok-free.dev",
+    // origin: "http://192.168.0.107:5173",
     credentials: true
 }));
 
@@ -50,6 +49,7 @@ app.use("/api/student-attempt", studentAttemptRoutes);
 app.use("/api/coding-problem-template", codingProblemTemplateRoutes);
 app.use("/api/student-assigned-problem", studentAssignedProblemRoutes);
 app.use("/api/executor", executorRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Custom Error Middleware
 app.use(errorHandlerMiddleware);
