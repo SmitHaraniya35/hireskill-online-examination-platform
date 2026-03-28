@@ -29,6 +29,7 @@ export interface BaseModel<T> extends Model<T> {
   updateOneByFilter(filter: QueryFilter<T>, update: UpdateQuery<T>): any;
   updateManyByFilter(filter: QueryFilter<T>, update: UpdateQuery<T>): any;
   softDelete(filter: QueryFilter<T>): any;
+  softDeleteMany(filter: QueryFilter<T>): any;
   restore(filter: QueryFilter<T>): any;
   hardDelete(filter: QueryFilter<T>): any;
 }

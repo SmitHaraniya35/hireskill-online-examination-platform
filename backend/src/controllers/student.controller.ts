@@ -5,11 +5,13 @@ import {
   getAllStudentService,
   getStudentByIdService,
   updateStudentService,
-  importStudentsService
+  importStudentsService,
+  completeStudentProfileService,
+  deleteManyStudentsService
 } from "../services/student.service.ts";
 import type { AuthRequest } from "../types/controller/index.ts";
 import type { NextFunction, Response } from "express";
-import type { StudentData, ImportStudentsData } from "../types/controller/studentData.types.ts";
+import type { ImportStudentsData, StudentProfileData } from "../types/controller/studentData.types.ts";
 
 export const createStudent = async (
   req: AuthRequest,
@@ -17,12 +19,12 @@ export const createStudent = async (
   next: NextFunction,
 ) => {
   try {
-    const input = req.allParams as StudentData;
-    if (!input) {
-      return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
+    const { email } = req.allParams;
+    if (!email) {
+      return res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
     }
 
-    const data = await createStudentService(input);
+    const data = await createStudentService(email);
 
     return res.created(data, SUCCESS_MESSAGES.STUDENT_CREATED);
   } catch (err: any) {
@@ -90,7 +92,7 @@ export const updateStudent = async (
   next: NextFunction,
 ) => {
   try {
-    const input = req.allParams as StudentData;
+    const input = req.allParams as StudentProfileData;
     if (input && !input.id) {
       return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
     }
@@ -115,6 +117,44 @@ export const deleteStudent = async (
 
     const data = await deleteStudentService(id);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_DELETED);
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const deleteManyStudent = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { ids } = req.allParams;
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    }
+
+    const data = await deleteManyStudentsService(ids);
+    res.ok(data, SUCCESS_MESSAGES.SELECTED_STUDENTS_DELETED);
+  } catch (err: any) {
+    next(err);
+  }
+}
+
+export const completeStudentProfile = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const input = req.allParams as StudentProfileData;
+    const { id } = input;
+    if(!input || !id) {
+      res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
+      return;
+    }
+
+    const data = await completeStudentProfileService(id, input);
+    res.ok(data, SUCCESS_MESSAGES.STUDENT_PROFILE_COMPLETED);
   } catch (err: any) {
     next(err);
   }

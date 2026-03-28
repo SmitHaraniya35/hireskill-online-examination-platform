@@ -2,17 +2,18 @@ import type { Response, NextFunction } from "express";
 import type { AuthRequest } from "../types/controller/index.ts";
 import type {
   CodingProblemData,
-  CodingProblemWithTestCasesData,
+  CodingProblemWithTestCasesAndTemplateData,
 } from "../types/controller/codingProblemData.types.ts";
 import {
   createCodingProblemService,
-  createCodingProblemWithTestCasesService,
-  getCodingProblemWithTestCasesService,
-  updateCodingProblemWithTestCasesService,
+  createCodingProblemWithTestCasesAndTemplateCodesService,
+  getCodingProblemWithTestCasesAndTemplateCodesService,
+  updateCodingProblemWithTestCasesAndTemplateCodesService,
   deleteCodingProblemService,
   getAllCodingProblemsService,
   getCodingProblemByIdService,
   updateCodingProblemService,
+  getAllSupportedLanguagesService,
 } from "../services/codingProblem.service.ts";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
 
@@ -118,7 +119,7 @@ export const deleteCodingProblem = async (
   }
 };
 
-export const createCodingProblemWithTestCases = async (
+export const createCodingProblemWithTestCasesAndTemplateCodes = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
@@ -129,12 +130,12 @@ export const createCodingProblemWithTestCases = async (
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    const input = req.allParams as CodingProblemWithTestCasesData;
+    const input = req.allParams as CodingProblemWithTestCasesAndTemplateData;
     if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const data = await createCodingProblemWithTestCasesService(
+    const data = await createCodingProblemWithTestCasesAndTemplateCodesService(
       input,
       admin.userId,
     );
@@ -144,25 +145,25 @@ export const createCodingProblemWithTestCases = async (
   }
 };
 
-export const getCodingProblemWithTestCases = async (
+export const getCodingProblemWithTestCasesAndTemplateCodes = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const { id } = req.allParams;
-    if (!id) {
+    const { id, sample_only } = req.allParams;
+    if (!id || !sample_only) {
       return res.badRequest(ERROR_MESSAGES.CODING_PROBLEM_ID_REQUIRED);
     }
 
-    const data = await getCodingProblemWithTestCasesService(id);
+    const data = await getCodingProblemWithTestCasesAndTemplateCodesService(id, sample_only);
     res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
   } catch (err: any) {
     next(err);
   }
 };
 
-export const updateCodingProblemWithTestCases = async (
+export const updateCodingProblemWithTestCasesAndTemplateCodes = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
@@ -173,17 +174,31 @@ export const updateCodingProblemWithTestCases = async (
       return res.badRequest(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    const input = req.allParams as CodingProblemWithTestCasesData;
+    const input = req.allParams as CodingProblemWithTestCasesAndTemplateData;
     if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const data = await updateCodingProblemWithTestCasesService(
+    const data = await updateCodingProblemWithTestCasesAndTemplateCodesService(
       input,
       admin.userId,
     );
     res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
   } catch (err: any) {
+    next(err);
+  }
+};
+
+export const getAllSupportedLanguages = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const data = await getAllSupportedLanguagesService();
+    res.ok(data, SUCCESS_MESSAGES.LANGUAGES_RETRIEVED);
+  }   
+  catch (err: any) {
     next(err);
   }
 };

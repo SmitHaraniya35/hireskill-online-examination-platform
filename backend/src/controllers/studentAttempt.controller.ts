@@ -1,17 +1,16 @@
 import type { Response, NextFunction } from "express";
-import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
+import type { AuthRequest } from "../types/controller/index.ts";
 import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
   deleteStudentAttemptService,
   getStudentAttemptsDetailsByTestIdService,
-  submitStudentAttemptService,
-  validateStudentAttemptAndGetCodingProblemIdService,
+  getStudentAttemptSubmissionDetailsAndResultByIdService,
   getStudentAttemptByIdService,
-  validateStudentAttemptByEmailService,
-  createStudentAttemptService
-} from "../services/student_attempt.service.ts";
-import { verifyAccessToken } from "../utils/jwt.utils.ts";
-import type { StudentAttemptData, ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
+  validateStudentAttemptByEmailAndTestIdService,
+  createStudentAttemptService,
+  validateStudentAttemptByIdService
+} from "../services/studentAttempt.service.ts";
+import type { CreateStudentAttemptData, ValidateStudentAttemptData } from "../types/controller/studentAttemptData.types.ts";
 
 export const createStudentAttempt = async (
   req: AuthRequest,
@@ -19,12 +18,12 @@ export const createStudentAttempt = async (
   next: NextFunction,
 ) => {
   try {
-    const { test_id, problem_id, student_id } = req.allParams as StudentAttemptData;
-    if (!test_id || !problem_id || !student_id) {
+    const { test_id, student_id } = req.allParams as CreateStudentAttemptData;
+    if (!test_id || !student_id) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const data = await createStudentAttemptService(test_id, problem_id, student_id);
+    const data = await createStudentAttemptService(test_id, student_id);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_CREATED);
   } catch (err: any) {
     next(err);
@@ -72,52 +71,19 @@ export const getStudentAttemptsDetailsByTestId = async (
   }
 };
 
-export const submitStudentAttempt = async (
+export const getStudentAttemptSubmissionDetailsAndResultById = async (
   req: AuthRequest,
   res: Response,
-  next: NextFunction,
+  next: NextFunction
 ) => {
   try {
     const { id } = req.allParams;
-    if (!id) {
-      return res.notFound(ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND);
+    if(!id) {
+      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
     }
 
-    const data = await submitStudentAttemptService(id);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_UPDATED);
-  } catch (err: any) {
-    next(err);
-  }
-};
-
-export const validateStudentAttemptAndGetCodingProblemId = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const { id } = req.allParams;
-    const studentToken = req.cookies["studentToken"];
-    if (!studentToken) {
-      return res.badRequest(ERROR_MESSAGES.ACCESS_TOKEN_REQUIRED);
-    }
-
-    let studentTokenData = null;
-    try {
-      studentTokenData = verifyAccessToken(studentToken) as AuthJwtPayload;
-    } catch (err: any) {
-      return res.unauthorized(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
-    }
-
-    const data = await validateStudentAttemptAndGetCodingProblemIdService(
-      id,
-      studentTokenData,
-    );
-
-    res.ok(
-      data,
-      SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED,
-    );
+    const data = await getStudentAttemptSubmissionDetailsAndResultByIdService(id);
+    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_DETAILS_AND_RESULT_RETRIEVED);
   } catch (err: any) {
     next(err);
   }
@@ -142,29 +108,43 @@ export const getStudentAttemptById = async (
   }
 };
 
-export const validateStudentAttemptByEmail = async (
+export const validateStudentAttemptByEmailAndTestId = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
 ) => {
   try {
-    const { email } = req.allParams as ValidateStudentAttemptData;
+    const { test_id, email } = req.allParams as ValidateStudentAttemptData;
     
-    if(!email){
-      res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
+    if(!email || !test_id){
+      res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
       return;
     }
 
-    const data = await validateStudentAttemptByEmailService(email);
-
-    res.cookie("studentToken", data.studentToken, {
-      maxAge: 2 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
-
+    const data = await validateStudentAttemptByEmailAndTestIdService(email, test_id);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED);
+  } catch(err: any){
+    next(err);
+  }
+};
+
+export const validateStudentAttemptById = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.allParams;
+    if(!id) {
+      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    }
+
+    const data = await validateStudentAttemptByIdService(id);
+    res.ok({
+      id: data.studentAttempt.id,
+      is_active: data.studentAttempt.is_active,
+      is_submitted: data.studentAttempt.is_submitted
+    }, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED);
   } catch(err: any){
     next(err);
   }

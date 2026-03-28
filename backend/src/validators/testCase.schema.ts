@@ -6,5 +6,6 @@ export const TestCaseSchema = Joi.object({
     problem_id: Joi.string().required(),
     input: Joi.string().required(),
     expected_output: Joi.string().required(),
-    is_hidden: Joi.boolean().required()
+    is_hidden: Joi.boolean().required(),
+    image_url: Joi.string().optional(),
 });

@@ -53,6 +53,16 @@ export class BaseClass<T> {
         });
     }
 
+    static softDeleteMany<T>(
+        this: BaseModel<T>,
+        filter: QueryFilter<T>
+    ) {
+        return this.updateMany(filter, {
+            isDeleted: true,
+            deletedAt: new Date()
+        });
+    }
+
     static restore<T>(
         this: BaseModel<T>,
         filter: QueryFilter<T>

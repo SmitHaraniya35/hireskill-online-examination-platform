@@ -10,10 +10,10 @@ import {
   startTestService,
   finishTestService,
   toggleTestActivationService,
+  toggleTestPublicStatusService,
+  getTestDataByStudentAttemptIdService,
 } from "../services/test.service.ts";
-import type { SubmissionData } from "../types/controller/submissionData.types.ts";
-import { submitStudentAttemptService } from "../services/student_attempt.service.ts";
-import { createSubmissionService } from "../services/submission.service.ts";
+import type { FinishTestData } from "../types/controller/submissionData.types.ts";
 import type { TestData } from "../types/controller/testData.types.ts";
 
 export const createTest = async (
@@ -22,20 +22,21 @@ export const createTest = async (
   next: NextFunction,
 ) => {
   try {
-    const { title, duration_minutes, expiration_at } = req.allParams as TestData;
+    const input = req.allParams as TestData;
 
     const adminId = req.user!.userId;
     if (!adminId) {
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    if (!title || !duration_minutes || !expiration_at) {
+    if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const expiry = new Date(expiration_at);
+    input.start_at = new Date(input.start_at);
+    input.expiration_at = new Date(input.expiration_at);
 
-    const data = await createTestService(title, duration_minutes, expiry, adminId);
+    const data = await createTestService(input, adminId);
     res.ok(data, SUCCESS_MESSAGES.TEST_CREATED);
   } catch (err: any) {
     next(err);
@@ -89,13 +90,15 @@ export const updateTest = async (
       return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
     }
 
-    const { id, title, duration_minutes, expiration_at } = req.allParams as TestData;
-    if (!id || !title || !duration_minutes || !expiration_at) {
+    const input = req.allParams as TestData;
+    if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const expiry = new Date(expiration_at);
-    const data = await updateTestService(id, title, duration_minutes, expiry);
+    input.expiration_at = new Date(input.expiration_at);
+    input.start_at = new Date(input.start_at);
+
+    const data = await updateTestService(input);
     res.ok(data, SUCCESS_MESSAGES.TEST_UPDATED);
   } catch (err: any) {
     next(err);
@@ -143,27 +146,39 @@ export const startTest = async (
   }
 };
 
+export const getTestDataByStudentAttemptId = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { studentAttemptId } = req.allParams;
+    if (!studentAttemptId) {
+      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    }
+
+    const data = await getTestDataByStudentAttemptIdService(studentAttemptId);
+    res.ok(data, SUCCESS_MESSAGES.TEST_DATA_RETRIEVED);
+  } catch (err: any) {
+    next(err);
+  }
+};
+
 export const finishTest = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
 ) => {
   try {
-    const input = req.allParams as SubmissionData;
+    const input = req.allParams as FinishTestData;
 
     if (!input) {
       return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const data = await finishTestService(input);
+    await finishTestService(input);
 
-    res.clearCookie("studentToken", {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
-
-    res.ok(data, SUCCESS_MESSAGES.TEST_COMPLETED);
+    res.ok({}, SUCCESS_MESSAGES.TEST_COMPLETED);
   } catch (err: any) {
     next(err);
   }
@@ -185,4 +200,22 @@ export const toggleTestActivation = async (
   } catch (err: any) {
     next(err);
   }
+};
+
+export const toggleTestPublicStatus = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {    
+    const { id } = req.allParams;
+    if (!id) {
+      return res.badRequest(ERROR_MESSAGES.TEST_ID_REQUIRED);
+    }
+
+    const data = await toggleTestPublicStatusService(id);
+    res.ok(data, SUCCESS_MESSAGES.TEST_PUBLIC_STATUS_TOGGLED);
+  } catch (err: any) {
+    next(err);
+  } 
 };

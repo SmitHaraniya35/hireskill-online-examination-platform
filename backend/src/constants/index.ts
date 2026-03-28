@@ -5,6 +5,7 @@ export const SUCCESS_MESSAGES = {
   // General
   OK: "Operation completed successfully",
   CREATED: "Resource created successfully",
+  LANGUAGES_RETRIEVED: "Supported languages retrieved successfully",
 
   // Authentication
   LOGIN_SUCCESS: "Login successful",
@@ -13,6 +14,10 @@ export const SUCCESS_MESSAGES = {
   ACCESS_TOKEN_GENERATED: "Access token generated successfully",
   OTP_GENERATED: "Password reset OTP generated successfully",
   OTP_VERIFIED: "OTP verified successfully",
+
+  // Analytics
+  ALL_OVER_TESTS_ANALYTICS_FETCHED: "Analytics for all tests fetched successfully",
+  TEST_ANALYTICS_FETCHED: "Analytics for the test fetched successfully",
 
   // Admin
   ADMIN_CREATED: "Admin created successfully",
@@ -27,6 +32,7 @@ export const SUCCESS_MESSAGES = {
   TEST_UPDATED: "Test updated successfully",
   TEST_STARTED: "Test started successfully",
   TEST_COMPLETED: "Test completed successfully",
+  TEST_DATA_RETRIEVED: "Test data retrieved successfully",
 
   // Coding Problem
   CODING_PROBLEM_CREATED: "Coding problem created successfully",
@@ -42,6 +48,10 @@ export const SUCCESS_MESSAGES = {
   TEST_CASE_DELETED: "Test case deleted successfully",
   TEST_CASE_UPDATED: "Test case updated successfully",
   TEST_ACTIVATION_TOGGLED: "Test activation toggled successfully",
+  TEST_PUBLIC_STATUS_TOGGLED: "Test public status toggled successfully",
+
+  // Coding Problem Template
+  CODING_PROBLEM_TEMPLATE_DELETED: "Coding problem template deleted successfully",
 
   // Test Link
   TEST_LINK_VALID: "Test link is valid",
@@ -53,6 +63,8 @@ export const SUCCESS_MESSAGES = {
   STUDENT_DELETED: "Student deleted successfully",
   STUDENT_UPDATED: "Student updated successfully",
   STUDENT_IMPORTED: "Student imported successfully",
+  STUDENT_PROFILE_COMPLETED: "Student profile completed successfully",
+  SELECTED_STUDENTS_DELETED: "Selected students deleted successfully",
 
   // Code Execution
   CODE_EXECUTED: "Code executed successfully",
@@ -65,6 +77,12 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ATTEMPT_UPDATED: "Student attempt updated successfully",
   STUDENT_ATTEMPT_VALIDATED_AND_EDITOR_ACCESS_GRANTED : "Student attempt validated successfully. Editor access granted.",
   STUDENT_ATTEMPT_VALIDATED: "Student attempt validated successfully",
+  STUDENT_ATTEMPT_DETAILS_AND_RESULT_RETRIEVED: "Student attempt details and result retrieved successfully",
+
+  // Student Assigned Problem
+  STUDENT_ASSIGNED_PROBLEM_SAVE_DRAFT_SUCCESS: "Student assigned problem draft saved successfully",
+  STUDENT_ASSIGNED_PROBLEM_ATTEMPTED_SUCCESS: "Student assigned problem marked as attempted successfully",
+  STUDENT_ASSIGNED_PROBLEM_SUBMITTED_SUCCESS: "Student assigned problem marked as submitted successfully",
 
   // Judge0
   JUDGE0_SUBMISSION_RETRIEVED: "Judge0 submission retrieved successfully",
@@ -102,6 +120,7 @@ export const ERROR_MESSAGES = {
   INVALID_CREDENTIALS: "Invalid credentials",
   INVALID_TEST_LINK: "Test link is invalid",
   TEST_LINK_EXPIRED: "Test link has expired",
+  TEST_NOT_STARTED: "This test has not started yet",
 
   VALIDATION_FAILED: "Input validation failed",
   REQUIRED_FIELDS_MISSING: "Required fields are missing",
@@ -124,6 +143,9 @@ export const ERROR_MESSAGES = {
   TEST_UPDATE_FAILED: "Failed to update test",
   TEST_CLOSED_BY_ADMIN: "This test has been closed by the administrator",
 
+  // Test and Problem
+  TEST_AND_PROBLEMS_NOT_FOUND: "No coding problems found for this test",
+
   // Coding Problem
   CODING_PROBLEM_CREATION_FAILED: "Failed to create coding problem",
   CODING_PROBLEM_NOT_FOUND: "Coding problem not found",
@@ -140,6 +162,13 @@ export const ERROR_MESSAGES = {
   TEST_CASE_DELETION_FAILED: "Failed to delete test case",
   TEST_CASE_UPDATE_FAILED: "Failed to update test case",
 
+  // Coding Problem Template
+  CODING_PROBLEM_TEMPLATE_CREATION_FAILED: "Failed to create coding problem template",
+  CODING_PROBLEM_TEMPLATE_NOT_FOUND: "Coding problem template not found",
+  CODING_PROBLEM_TEMPLATE_UPDATE_FAILED: "Failed to update coding problem template",
+  CODING_PROBLEM_TEMPLATE_DELETION_FAILED: "Failed to delete coding problem template",
+  CODING_PROBLEM_TEMPLATE_ID_REQUIRED: "Coding problem template ID is required",
+
   // Student
   STUDENT_ALREADY_EXISTS_WITH_EMAIL: "A student already exists with this email",
   STUDENT_ALREADY_EXISTS_WITH_PHONE: "A student already exists with this phone",
@@ -150,6 +179,7 @@ export const ERROR_MESSAGES = {
   STUDENT_CREATION_FAILED: "Failed to create student",
   STUDENT_DELETION_FAILED: "Failed to delete student",
   STUDENT_UPDATE_FAILED: "Failed to update student",
+  SELECTED_STUDENTS_DELETION_FAILED: "Failed to delete selected students",
 
   // Student Attempt
   STUDENT_ATTEMPT_CREATION_FAILED: "Failed to create student attempt",
@@ -159,15 +189,30 @@ export const ERROR_MESSAGES = {
   STUDENT_ATTEMPTS_NOT_FOUND: "No student attempts found",
   STUDENT_ATTEMPT_ALREADY_SUBMITTED: "Student attempt is already submitted",
   STUDENT_ALREADY_ATTEMPTED_TEST: "Student has already attempted this test",
+  STUDENT_ATTEMPT_FINISH_FAILED: "Failed to finish student attempt",
+  STUDENT_ATTEMPT_STATUS_UPDATE_FAILED: "Failed to update student attempt status",
+
+  // Student Assigned Problem
+  STUDENT_ASSIGNED_PROBLEM_CREATION_FAILED: "Failed to create student assigned problem",
+  STUDENT_ASSIGNED_PROBLEMS_NOT_FOUND: "No student assigned problems for this student attempt",
+  STUDENT_ASSIGNED_PROBLEM_SAVE_DRAFT_FAILED: "Failed to save student assigned problem draft",
+  ASSIGNED_PROBLEM_ID_REQUIRED: "Assigned problem ID is required",
+  STUDENT_ASSIGNED_PROBLEM_DRAFT_NOT_FOUND: "Student assigned problem draft not found",
 
   // Judge0
   JUDGE0_SUBMISSION_ID_REQUIRED: "Judge0 submission ID is required",
   CODE_EXECUTION_FAILED: "Failed to execute code",
   JUDGE0_FETCH_FAILED: "Failed to fetch submission result from Judge0",
+  UNSUPPORTED_LANGUAGE: "Unsupported programming language",
 
   // Submission
   SUBMISSION_CREATION_FAILED: "Failed to create submission",
-  SUBMISSION_NOT_FOUND: "Submission not found"
+  SUBMISSION_NOT_FOUND: "Submission not found",
+  SUBMISSION_ID_REQUIRED: "Submission ID is required",
+
+  // Result
+  RESULT_CREATION_FAILED: "Failed to create result",
+  RESULT_NOT_FOUND: "Result not found"
 };
 
 export const HttpStatusCode = {
@@ -181,3 +226,10 @@ export const HttpStatusCode = {
   INTERNAL_SERVER_ERROR: 500,
   BAD_GATEWAY: 502
 };
+
+export const STUDENT_ATTEMPT_STATUS = {
+    IN_PROGRESS: "In Progress",
+    SUBMITTED: "Submitted",
+    PROCESSING: "Processing",
+    AUTO_SUBMITTED: "Auto Submitted",
+} as const;
