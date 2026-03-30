@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import StatusBadge from "../Shared/StatusBadge";
 import {
   useAssessment,

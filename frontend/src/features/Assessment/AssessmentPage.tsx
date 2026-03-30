@@ -5,10 +5,10 @@ import ProblemGrid from "./components/Dashboard/ProblemGrid";
 import Sidebar from "./components/IDE/Sidebar";
 import DescriptionPanel from "./components/IDE/DescriptionPanel";
 import EditorPanel from "./components/IDE/EditorPanel";
-import testFlowService from "../../services/testFlow.services";
-import { STUDENT_ATTEMPT_STATUS } from "../../types/studentAttempts.types";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProctoring } from "../../hooks/useProctoring";
+import testFlowService from "@/services/testFlow.services";
+import { STUDENT_ATTEMPT_STATUS } from "@/types/studentAttempts.types";
 
 const AssessmentContent: React.FC = () => {
   const {
@@ -24,73 +24,8 @@ const AssessmentContent: React.FC = () => {
   const { slug } = useParams();
   const [hasStarted, setHasStarted] = useState(false);
 
-  // const handleAutoFinish = async () => {
-  //   console.log(currentAssignedProblemId, currentCode, currentLanguage);
-  //   await saveDraft(currentAssignedProblemId!, {
-  //     last_saved_code: currentCode,
-  //     last_language: currentLanguage,
-  //   });
-  //   // await testFlowService.finishTestService(slug!, {
-  //   //   student_attempt_id: studentAttemptId,
-  //   //   status: STUDENT_ATTEMPT_STATUS.AUTO_SUBMITTED,
-  //   // });
-  //   // if (document.fullscreenElement) {
-  //   //   document
-  //   //     .exitFullscreen()
-  //   //     .then(() => {
-  //   //       console.log("Fullscreen exited successfully.");
-  //   //     })
-  //   //     .catch((err) => {
-  //   //       console.error(`Error attempting to exit full-screen: ${err.message}`);
-  //   //     });
-  //   // }
-  //   // navigate("/test/complete", { replace: true });
-  // };
- 
-  //   // FIX: Memoize handleAutoFinish so it always has the LATEST state
-  // const handleAutoFinish = useCallback(async () => {
-  //   console.log("Auto-finishing with:", currentAssignedProblemId, currentCode, currentLanguage);
-
-  //   // 1. Validation: Only save if we have a valid GUID and actual code
-  //   if (currentAssignedProblemId && currentCode.trim() !== "") {
-  //     try {
-  //       await saveDraft(currentAssignedProblemId, {
-  //         last_saved_code: currentCode,
-  //         last_language: currentLanguage,
-  //       });
-  //     } catch (err) {
-  //       console.error("Draft save failed during auto-submit:", err);
-  //     }
-  //   }
-
-  //   // 2. Proceed to submit the test regardless of draft success
-  //   try {
-  //     // await testFlowService.finishTestService(slug!, {
-  //     //   student_attempt_id: studentAttemptId,
-  //     //   status: STUDENT_ATTEMPT_STATUS.AUTO_SUBMITTED,
-  //     // });
-  //   } catch (err) {
-  //     console.error("Final submission failed:", err);
-  //   }
-
-  //   // 3. UI Cleanup
-  //   // if (document.fullscreenElement) {
-  //   //   await document.exitFullscreen().catch(() => {});
-  //   // }
-    
-  //   // navigate("/test/complete", { replace: true });
-  // }, [
-  //   currentAssignedProblemId, 
-  //   currentCode, 
-  //   currentLanguage, 
-  //   studentAttemptId, 
-  //   slug, 
-  //   saveDraft, 
-  //   navigate
-  // ]);
-
   const handleAutoFinish = useCallback(async () => {
-  console.log(currentAssignedProblemId, currentCode, currentLanguage); 
+  // console.log(currentAssignedProblemId, currentCode, currentLanguage); 
 
   if (currentAssignedProblemId && currentCode.trim() !== "") {
     try {

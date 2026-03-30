@@ -3,11 +3,18 @@ import { useState, useEffect, useCallback } from "react";
 import Stepper from "../../../components/shared/Stepper";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { emailSchema, type EmailInput } from "../../../validators/testEntryPage.validators"
-import { studentDetailsSchema, type StudentDetailsInput } from "../../../validators/studentDetails.validators";
-import testFlowService from "../../../services/testFlow.services"
+import {
+  emailSchema,
+  type EmailInput,
+} from "../../../validators/testEntryPage.validators";
+import {
+  studentDetailsSchema,
+  type StudentDetailsInput,
+} from "../../../validators/studentDetails.validators";
+import testFlowService from "../../../services/testFlow.services";
 import studentService from "../../../services/student.services";
-import type { TestData } from '../../../types/testFlow.types';
+import type { TestData } from "../../../types/testFlow.types";
+import { CalendarIcon, ClipboardIcon, ClockIcon } from "lucide-react";
 
 // ─── Step type ────────────────────────────────────────────────────────────────
 type Step = 1 | 2 | 3;
@@ -41,10 +48,11 @@ const Step1EmailVerification = ({ testData, onSuccess }: Step1Props) => {
   const onFormSubmit = async (data: EmailInput) => {
     setServerError("");
     try {
-      const response = await testFlowService.validateStudentAttemptByEmailAndTestId({
-        test_id: testData.id,
-        email: data.email,
-      });
+      const response =
+        await testFlowService.validateStudentAttemptByEmailAndTestId({
+          test_id: testData.id,
+          email: data.email,
+        });
       onSuccess({
         studentId: response.payload!.studentId,
         testId: testData.id,
@@ -54,62 +62,120 @@ const Step1EmailVerification = ({ testData, onSuccess }: Step1Props) => {
     }
   };
 
-  const expirationDate = new Date(testData.expiration_at).toLocaleString("en-US", {
-    month: "numeric",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
+  const expirationDate = new Date(testData.expiration_at).toLocaleString(
+    "en-US",
+    {
+      month: "numeric",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true,
+    },
+  );
 
   return (
-    <div className="bg-white p-10 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.04)] w-full max-w-md border border-gray-100 mt-10 relative">
-      <h1 className="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">
-        Step 1: Get Access
-      </h1>
-      <p className="text-gray-500 font-semibold mb-8">Verify your email</p>
+    <div className="bg-white border border-gray-100 rounded-[2rem] p-10 w-full max-w-md mt-10 relative">
+      {/* Header */}
+      <div className="mb-7">
+        <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-5">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="text-[11px] font-medium text-gray-500 tracking-wide">
+            Step 1 of 3
+          </span>
+        </div>
+        <h1 className="text-[1.4rem] font-medium text-gray-900 leading-snug tracking-tight mb-1.5">
+          Get access
+        </h1>
+        <p className="text-[14px] text-gray-400 font-normal">
+          Verify your email to continue
+        </p>
+      </div>
 
-      <div className="bg-[#fcfcfc] border border-gray-100 p-6 rounded-2xl mb-8 shadow-sm">
-        <h2 className="text-xl font-bold text-gray-800 leading-tight">{testData.title}</h2>
-        <div className="mt-2 space-y-1">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">
-            Duration: {testData.duration_minutes} minutes
-          </p>
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-wide">
-            Expires at: {expirationDate}
-          </p>
+      {/* Assessment card */}
+      <div className="border border-gray-100 rounded-2xl p-5 mb-7">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex-1">
+            <p className="text-[9.5px] font-medium uppercase tracking-widest text-gray-400 mb-1.5">
+              Assessment
+            </p>
+            <h2 className="text-[15px] font-medium text-gray-900 leading-snug">
+              {testData.title}
+            </h2>
+          </div>
+          <div className="shrink-0 w-9 h-9 rounded-full border border-gray-100 flex items-center justify-center text-gray-300">
+            <ClipboardIcon className="w-[18px] h-[18px]" />
+          </div>
+        </div>
+
+        <div className="h-px bg-gray-100 my-4" />
+
+        <div className="flex flex-wrap gap-2">
+          <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-1.5">
+            <ClockIcon className="w-3.5 h-3.5 text-gray-400 shrink-0" />
+            <div>
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 mb-0.5">
+                Duration
+              </p>
+              <p className="text-[12px] font-medium text-gray-800">
+                {testData.duration_minutes} minutes
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl px-3 py-1.5">
+            <CalendarIcon className="w-3.5 h-3.5 text-gray-400" />
+            <div>
+              <p className="text-[9px] font-medium uppercase tracking-widest text-gray-400 mb-0.5">
+                Expires
+              </p>
+              <p className="text-[12px] font-medium text-gray-800">
+                {expirationDate}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-[#E1F5EE] border border-[#9FE1CB] rounded-xl px-3 py-1.5">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#0F6E56]" />
+            <p className="text-[12px] font-medium text-[#085041]">Active</p>
+          </div>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onFormSubmit)} className="mb-10">
-        <div>
-          <label className="block text-[10px] font-black text-gray-400 uppercase mb-2 tracking-widest ml-1">
-            Email Address
+      {/* Form */}
+      <form onSubmit={handleSubmit(onFormSubmit)} className="mb-2">
+        <div className="mb-5">
+          <label className="block text-[10px] font-medium uppercase tracking-widest text-gray-400 mb-2 ml-0.5">
+            Email address
           </label>
           <input
             type="email"
             {...register("email")}
-            placeholder="Enter valid email address"
-            className={`w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-[#24a17e]/20 focus:border-[#24a17e] transition-all bg-white text-gray-700 font-medium ${
-              errors.email ? "border-red-500" : "border-gray-200"
-            }`}
+            placeholder="your@email.com"
+            className={`w-full px-4 py-3 text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800 font-normal
+            placeholder:text-gray-300
+            focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+            ${errors.email ? "border-red-300 focus:ring-red-100 focus:border-red-400" : "border-gray-200"}`}
           />
           {errors.email && (
-            <p className="text-red-500 text-xs mt-1 ml-1">{errors.email.message}</p>
+            <p className="text-red-400 text-xs mt-1.5 ml-0.5 font-normal">
+              {errors.email.message}
+            </p>
           )}
         </div>
 
         {serverError && (
-          <p className="text-red-500 text-sm mt-4 text-center">{serverError}</p>
+          <p className="text-red-400 text-sm mb-4 text-center font-normal">
+            {serverError}
+          </p>
         )}
 
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-[#24a17e] text-white font-bold py-4 rounded-xl hover:bg-[#1d8265] transition-all text-lg shadow-lg shadow-emerald-100 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+          className="w-full bg-[#1D9E75] text-white font-medium py-3.5 rounded-xl hover:bg-[#188c67] active:scale-[0.99] transition-all text-[14px] tracking-wide disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          {isSubmitting ? "Verifying..." : "Continue"}
+          {isSubmitting ? "Verifying…" : "Continue"}
         </button>
       </form>
     </div>
@@ -151,21 +217,26 @@ const Step2StudentDetails = ({ flowState, onSuccess }: Step2Props) => {
         setLoading(true);
         setIsPublicTest(false);
         const response = await studentService.getStudentById(studentId);
-        
-        if (response.payload!.student.name){
+
+        if (response.payload!.student.name) {
           reset({
-          name: response.payload!.student.name,
-          phone: response.payload!.student.phone ? String(response.payload!.student.phone): " ",
-          college: response.payload!.student.college,
-          degree: response.payload!.student.degree,
-          graduation_year: response.payload!.student.graduation_year ? String(response.payload!.student.graduation_year): " ",
-          skills: response.payload!.student.skills,
-          branch: response.payload!.student.branch,
-        });
+            name: response.payload!.student.name,
+            phone: response.payload!.student.phone
+              ? String(response.payload!.student.phone)
+              : " ",
+            college: response.payload!.student.college,
+            degree: response.payload!.student.degree,
+            graduation_year: response.payload!.student.graduation_year
+              ? String(response.payload!.student.graduation_year)
+              : " ",
+            skills: response.payload!.student.skills,
+            branch: response.payload!.student.branch,
+          });
         }
-        
       } catch (error: any) {
-        setServerError(error.response?.data?.message || "Failed to load student details");
+        setServerError(
+          error.response?.data?.message || "Failed to load student details",
+        );
       } finally {
         setLoading(false);
       }
@@ -183,7 +254,9 @@ const Step2StudentDetails = ({ flowState, onSuccess }: Step2Props) => {
       await testFlowService.completeStudentDetails(data, studentId);
       onSuccess();
     } catch (error: any) {
-      setServerError(error.response?.data?.message || "Failed to save student details");
+      setServerError(
+        error.response?.data?.message || "Failed to save student details",
+      );
     }
   };
 
@@ -192,152 +265,203 @@ const Step2StudentDetails = ({ flowState, onSuccess }: Step2Props) => {
       <div className="flex items-center justify-center mt-20">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-[#24a17e] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading student details...</p>
+          <p className="text-gray-600 font-medium">
+            Loading student details...
+          </p>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="bg-white p-10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] w-full max-w-4xl border border-gray-100 mt-10">
-      <h1 className="text-3xl font-bold text-center mb-2">Welcome, Complete Your Profile</h1>
-      <p className="text-center text-gray-400 font-bold mb-10">
-        {isPublicTest ? "Fill your details" : "Verify and update your details"}
+return (
+  <div className="bg-white border border-gray-100 rounded-[2rem] p-10 w-full max-w-2xl mt-10">
+
+    {/* Header */}
+    <div className="mb-8">
+      <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-5">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="text-[11px] font-medium text-gray-500 tracking-wide">
+            Step 2 of 3
+          </span>
+        </div>
+      <h1 className="text-[1.4rem] font-medium text-gray-900 leading-snug tracking-tight mb-1">
+        Complete your profile
+      </h1>
+      <p className="text-[14px] text-gray-400 font-normal">
+        {isPublicTest ? "Fill in your details to continue" : "Verify and update your details"}
       </p>
+    </div>
 
-      <form onSubmit={handleSubmit(onFormSubmit)}>
-        <div className="grid grid-cols-12 gap-6">
-          {/* Section 1 */}
-          <div className="col-span-12 md:col-span-7 space-y-4">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Section 1: Personal Information
-            </p>
-            <div>
-              <label className="text-xs font-bold text-gray-600">
-                Full Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                {...register("name")}
-                className={`w-full p-3 border rounded-lg mt-1 ${errors.name ? "border-red-500" : "border-gray-200"}`}
-                placeholder="Enter your full name"
-              />
-              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-bold text-gray-600">
-                  Contact Phone <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("phone")}
-                  className={`w-full p-3 border rounded-lg mt-1 ${errors.phone ? "border-red-500" : "border-gray-200"}`}
-                  placeholder="e.g. 9876543210"
-                />
-                {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone.message}</p>}
-              </div>
-              <div>
-                <label className="text-xs font-bold text-gray-600">
-                  Branch <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("branch")}
-                  className={`w-full p-3 border rounded-lg mt-1 ${errors.branch ? "border-red-500" : "border-gray-200"}`}
-                  placeholder="e.g. Computer Science"
-                />
-                {errors.branch && <p className="text-red-500 text-xs mt-1">{errors.branch.message}</p>}
-              </div>
-            </div>
-          </div>
+    <div className="h-px bg-gray-100 mb-8" />
 
-          {/* Resume Box */}
-          <div className="col-span-12 md:col-span-5 flex flex-col pt-6">
-            <div className="border-2 border-dashed border-gray-200 rounded-2xl flex-1 flex flex-col items-center justify-center p-6 bg-gray-50 hover:bg-white transition-colors cursor-pointer">
-              <div className="text-gray-300 text-3xl mb-2">📤</div>
-              <p className="text-xs font-bold text-gray-600">Resume Upload (Optional)</p>
-              <p className="text-[10px] text-gray-400 mt-1">
-                {isPublicTest ? "No file uploaded" : "Current File: Student_Resume.pdf"}
-              </p>
-            </div>
-          </div>
+    <form onSubmit={handleSubmit(onFormSubmit)}>
 
-          {/* Section 2 */}
-          <div className="col-span-12 space-y-4 mt-4">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Section 2: Educational Background
-            </p>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs font-bold text-gray-600">
-                  College <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("college")}
-                  className={`w-full p-3 border rounded-lg ${errors.college ? "border-red-500" : "border-gray-200"}`}
-                  placeholder="College name"
-                />
-                {errors.college && <p className="text-red-500 text-xs mt-1">{errors.college.message}</p>}
-              </div>
-              <div>
-                <label className="text-xs font-bold text-gray-600">
-                  Degree <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("degree")}
-                  className={`w-full p-3 border rounded-lg ${errors.degree ? "border-red-500" : "border-gray-200"}`}
-                  placeholder="e.g. B.Tech"
-                />
-                {errors.degree && <p className="text-red-500 text-xs mt-1">{errors.degree.message}</p>}
-              </div>
-              <div>
-                <label className="text-xs font-bold text-gray-600">
-                  Graduation Year <span className="text-red-500">*</span>
-                </label>
-                <input
-                  {...register("graduation_year")}
-                  className={`w-full p-3 border rounded-lg ${errors.graduation_year ? "border-red-500" : "border-gray-200"}`}
-                  placeholder="e.g. 2026"
-                />
-                {errors.graduation_year && (
-                  <p className="text-red-500 text-xs mt-1">{errors.graduation_year.message}</p>
-                )}
-              </div>
-            </div>
-            <p className="text-[10px] text-gray-400 italic">
-              Please ensure details match your academic records.
-            </p>
-          </div>
+      {/* Section 1 — Personal Information */}
+      <div className="mb-8 space-y-5">
+        <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+          Personal information
+        </p>
 
-          {/* Section 3 */}
-          <div className="col-span-12 space-y-4 mt-4">
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-              Section 3: Technical Skills
-            </p>
-            <div>
-              <label className="text-xs font-bold text-gray-600">
-                Skills <span className="text-red-500">*</span>
-              </label>
-              <input
-                {...register("skills")}
-                className={`w-full p-3 border rounded-lg ${errors.skills ? "border-red-500" : "border-gray-200"}`}
-                placeholder="e.g. C++, Java, Python"
-              />
-              {errors.skills && <p className="text-red-500 text-xs mt-1">{errors.skills.message}</p>}
-            </div>
-          </div>
+        <div>
+          <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+            Full name <span className="text-red-400">*</span>
+          </label>
+          <input
+            {...register("name")}
+            placeholder="Enter your full name"
+            className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+              placeholder:text-gray-300 font-normal
+              focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+              ${errors.name ? "border-red-300" : "border-gray-200"}`}
+          />
+          {errors.name && (
+            <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.name.message}</p>
+          )}
         </div>
 
-        {serverError && <p className="text-red-500 text-sm mt-6 text-center">{serverError}</p>}
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              Contact phone <span className="text-red-400">*</span>
+            </label>
+            <input
+              {...register("phone")}
+              placeholder="e.g. 9876543210"
+              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+                placeholder:text-gray-300 font-normal
+                focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+                ${errors.phone ? "border-red-300" : "border-gray-200"}`}
+            />
+            {errors.phone && (
+              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.phone.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              Branch <span className="text-red-400">*</span>
+            </label>
+            <input
+              {...register("branch")}
+              placeholder="e.g. Computer Science"
+              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+                placeholder:text-gray-300 font-normal
+                focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+                ${errors.branch ? "border-red-300" : "border-gray-200"}`}
+            />
+            {errors.branch && (
+              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.branch.message}</p>
+            )}
+          </div>
+        </div>
+      </div>
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-[#24a17e] text-white font-bold py-4 rounded-xl mt-10 hover:bg-[#1d8265] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? "Saving..." : "Save & Continue"}
-        </button>
-      </form>
-    </div>
-  );
+      <div className="h-px bg-gray-100 mb-8" />
+
+      {/* Section 2 — Educational Background */}
+      <div className="mb-8 space-y-5">
+        <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+          Educational background
+        </p>
+
+        <div className="grid grid-cols-3 gap-4">
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              College <span className="text-red-400">*</span>
+            </label>
+            <input
+              {...register("college")}
+              placeholder="College name"
+              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+                placeholder:text-gray-300 font-normal
+                focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+                ${errors.college ? "border-red-300" : "border-gray-200"}`}
+            />
+            {errors.college && (
+              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.college.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              Degree <span className="text-red-400">*</span>
+            </label>
+            <input
+              {...register("degree")}
+              placeholder="e.g. B.Tech"
+              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+                placeholder:text-gray-300 font-normal
+                focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+                ${errors.degree ? "border-red-300" : "border-gray-200"}`}
+            />
+            {errors.degree && (
+              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.degree.message}</p>
+            )}
+          </div>
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              Graduation year <span className="text-red-400">*</span>
+            </label>
+            <input
+              {...register("graduation_year")}
+              placeholder="e.g. 2026"
+              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+                placeholder:text-gray-300 font-normal
+                focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+                ${errors.graduation_year ? "border-red-300" : "border-gray-200"}`}
+            />
+            {errors.graduation_year && (
+              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.graduation_year.message}</p>
+            )}
+          </div>
+        </div>
+        <p className="text-[11px] text-gray-400 italic font-normal">
+          Ensure details match your academic records.
+        </p>
+      </div>
+
+      <div className="h-px bg-gray-100 mb-8" />
+
+      {/* Section 3 — Technical Skills */}
+      <div className="mb-8 space-y-5">
+        <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+          Technical skills
+        </p>
+
+        <div>
+          <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+            Skills <span className="text-red-400">*</span>
+          </label>
+          <input
+            {...register("skills")}
+            placeholder="e.g. C++, Java, Python"
+            className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+              placeholder:text-gray-300 font-normal
+              focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
+              ${errors.skills ? "border-red-300" : "border-gray-200"}`}
+          />
+          {errors.skills && (
+            <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.skills.message}</p>
+          )}
+          <p className="text-[11px] text-gray-400 mt-2 font-normal">
+            Separate each skill with a comma.
+          </p>
+        </div>
+      </div>
+
+      {serverError && (
+        <p className="text-red-400 text-sm mb-6 text-center font-normal">{serverError}</p>
+      )}
+
+      <button
+        type="submit"
+        disabled={isSubmitting}
+        className="w-full bg-[#1D9E75] text-white font-medium py-3.5 rounded-xl hover:bg-[#188c67] active:scale-[0.99] transition-all text-[14px] tracking-wide disabled:opacity-40 disabled:cursor-not-allowed"
+      >
+        {isSubmitting ? "Saving…" : "Save & continue"}
+      </button>
+
+    </form>
+  </div>
+);
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -352,9 +476,10 @@ interface Step3Props {
 const Step3Instructions = ({ flowState, slug, onBegin }: Step3Props) => {
   const { studentId, testId } = flowState;
   const [loading, setLoading] = useState(false);
+  const [rulesAccepted, setRulesAccepted] = useState(false);
 
   const handleBeginTest = async () => {
-    if (!slug || !testId || !studentId) return;
+    if (!slug || !testId || !studentId || !rulesAccepted) return; 
     setLoading(true);
     try {
       const response = await testFlowService.startTest(slug, testId, studentId);
@@ -371,56 +496,95 @@ const Step3Instructions = ({ flowState, slug, onBegin }: Step3Props) => {
 
   return (
     <div className="bg-white p-10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] w-full max-w-2xl mt-10 border border-gray-100">
-      <h1 className="text-3xl font-bold mb-1 tracking-tight">Step 3: Test Access</h1>
+      <h1 className="text-3xl font-bold mb-1 tracking-tight">
+        Step 3: Test Access
+      </h1>
       <p className="text-gray-500 font-bold mb-8">Test Instructions</p>
 
       <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-8">
-        <h2 className="text-xl font-bold mb-4">Assessment: Software Engineer</h2>
-        <div className="grid grid-cols-3 gap-0 bg-[#f8f9fa] rounded-xl overflow-hidden border border-gray-100">
+        <h2 className="text-xl font-bold mb-4">
+          Assessment: Software Engineer
+        </h2>
+        <div className="grid grid-cols-2 gap-0 bg-[#f8f9fa] rounded-xl overflow-hidden border border-gray-100">
           <div className="p-4 border-r border-gray-200">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">Total Problems</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase">
+              Total Problems
+            </p>
             <p className="text-lg font-bold">2</p>
           </div>
           <div className="p-4 border-r border-gray-200">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">Total Time</p>
+            <p className="text-[10px] font-bold text-gray-400 uppercase">
+              Total Time
+            </p>
             <p className="text-lg font-bold">120 Minutes</p>
-          </div>
-          <div className="p-4">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">Remaining Time</p>
-            <p className="text-lg font-bold text-gray-400">[Not Started]</p>
           </div>
         </div>
       </div>
 
       <div className="space-y-4 mb-8">
-        <p className="font-bold text-gray-800">Key and Instructions:</p>
+        <p className="font-bold text-gray-800">Key Instructions:</p>
         <ul className="space-y-3">
           <li className="flex gap-2 text-sm text-gray-600">
             <span className="text-[#24a17e]">•</span>
-            <span>Environment Check: Complete system test before starting.</span>
+            <span>Integrity: Plagiarism is strictly prohibited.</span>
           </li>
           <li className="flex gap-2 text-sm text-gray-600">
             <span className="text-[#24a17e]">•</span>
-            <span>Integrity: Plagiarism is strictly prohibited.</span>
+            <span>
+              <strong>Fullscreen Required:</strong> Test will end if you exit
+              fullscreen or switch tabs.
+            </span>
+          </li>
+          <li className="flex gap-2 text-sm text-gray-600">
+            <span className="text-[#24a17e]">•</span>
+            <span>
+              <strong>Proctoring Active:</strong> Webcam & microphone monitoring
+              enabled (no talking/whispering).
+            </span>
+          </li>
+          <li className="flex gap-2 text-sm text-gray-600">
+            <span className="text-[#24a17e]">•</span>
+            <span>
+              <strong>Shortcuts Blocked:</strong> Copy/Paste (Ctrl+C/V), Print
+              (Ctrl+P), Inspect (Ctrl+Shift+I) disabled.
+            </span>
+          </li>
+          <li className="flex gap-2 text-sm text-gray-600">
+            <span className="text-[#24a17e]">•</span>
+            <span>
+              <strong>5s Penalty:</strong> Tab switch or Alt+Tab triggers
+              5-second auto-finish countdown.
+            </span>
           </li>
         </ul>
       </div>
 
       <div className="space-y-2 mb-10">
         <p className="font-bold text-gray-800">Readiness Checklist:</p>
-        <div className="flex items-center gap-3 text-sm text-gray-500">
-          <input type="checkbox" checked readOnly className="accent-[#24a17e]" />
-          <span>
-            Read rules – <span className="text-emerald-600 font-bold">Ready</span>
+        <div className="flex items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            checked={rulesAccepted}
+            onChange={(e) => setRulesAccepted(e.target.checked)}
+            className="accent-[#24a17e] w-4 h-4 cursor-pointer"
+          />
+          <span
+            className={
+              rulesAccepted ? "text-emerald-600 font-bold" : "text-gray-500"
+            }
+          >
+            I have read and agree to follow all rules
           </span>
         </div>
       </div>
 
       <button
         onClick={handleBeginTest}
-        disabled={loading}
-        className={`w-full bg-[#24a17e] text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-50 transition-all ${
-          loading ? "opacity-70 cursor-not-allowed" : "hover:bg-[#1d8265]"
+        disabled={loading || !rulesAccepted} // ✅ Disabled until checkbox checked
+        className={`w-full font-bold py-4 rounded-xl shadow-lg shadow-emerald-50 transition-all duration-200 ${
+          loading || !rulesAccepted
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-70"
+            : "bg-[#24a17e] text-white hover:bg-[#1d8265] hover:shadow-emerald-100"
         }`}
       >
         {loading ? "Starting..." : "Begin Test"}
@@ -453,8 +617,8 @@ const TestFlowPage = () => {
       (e) => {
         if (isTestInProgress) e.preventDefault();
       },
-      [isTestInProgress]
-    )
+      [isTestInProgress],
+    ),
   );
 
   // ── Fetch test by slug ─────────────────────────────────────────────────────
@@ -466,7 +630,9 @@ const TestFlowPage = () => {
         const response = await testFlowService.getTestBySlug(slug);
         setTestData(response.payload!.test);
       } catch (error: any) {
-        setFetchError(error.response?.data?.message || "Failed to load test details");
+        setFetchError(
+          error.response?.data?.message || "Failed to load test details",
+        );
       } finally {
         setLoadingTest(false);
       }
@@ -488,7 +654,7 @@ const TestFlowPage = () => {
     (studentAttemptId: string) => {
       navigate(`/test/${slug}/start/${studentAttemptId}`);
     },
-    [navigate, slug]
+    [navigate, slug],
   );
 
   // ── Loading / error states ─────────────────────────────────────────────────
@@ -507,7 +673,9 @@ const TestFlowPage = () => {
     return (
       <div className="min-h-screen bg-[#f8f9fa] flex items-center justify-center">
         <div className="text-center">
-          <p className="text-red-500 font-medium mb-4">{fetchError || "Test not found"}</p>
+          <p className="text-red-500 font-medium mb-4">
+            {fetchError || "Test not found"}
+          </p>
         </div>
       </div>
     );
@@ -519,7 +687,10 @@ const TestFlowPage = () => {
       <Stepper step={step} />
 
       {step === 1 && (
-        <Step1EmailVerification testData={testData} onSuccess={handleStep1Success} />
+        <Step1EmailVerification
+          testData={testData}
+          onSuccess={handleStep1Success}
+        />
       )}
 
       {step === 2 && (
@@ -531,7 +702,11 @@ const TestFlowPage = () => {
       )}
 
       {step === 3 && (
-        <Step3Instructions flowState={flowState} slug={slug!} onBegin={handleBegin} />
+        <Step3Instructions
+          flowState={flowState}
+          slug={slug!}
+          onBegin={handleBegin}
+        />
       )}
     </div>
   );

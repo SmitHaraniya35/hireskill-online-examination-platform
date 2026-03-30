@@ -61,12 +61,6 @@ const EditorPanel: React.FC = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (currentAssignedProblemId && currentProblem) {
-  //     // This runs AFTER loadProblemDetails sets the code
-  //   }
-  // }, [currentAssignedProblemId, currentCode]);
-
   useEffect(() => {
     setTestCases([]);
     setWorkerResponse(null);

@@ -9,7 +9,7 @@ const DescriptionPanel: React.FC = () => {
     loadProblemDetails,
     currentAssignedProblemId,
   } = useAssessment();
-  const [loading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   useEffect(() => {
     setLoading(true);
@@ -148,4 +148,4 @@ const DescriptionPanel: React.FC = () => {
   );
 };
 
-export default DescriptionPanel;
+export default React.memo(DescriptionPanel);
