@@ -12,7 +12,7 @@ import {
   createClientService,
 } from "../services/auth.service.ts";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
-import type { Admin, LoginResponse } from "../types/controller/authData.types.ts";
+import type { Admin, LoginRequestData, LoginResponseData, ResetPasswordData, VerifyOtpData } from "../types/controller/authData.types.ts";
 import { generateApiKey } from "../utils/helper.utils.ts";
 import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 
@@ -22,7 +22,7 @@ export const login = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, password } = req.allParams;
+    const { email, password } = req.allParams as LoginRequestData;
     if (!email || !password) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED);
     }
@@ -41,7 +41,7 @@ export const login = async (
       secure: true,
     });
 
-    const data: LoginResponse = {
+    const data: LoginResponseData = {
       admin: safeUser,
       accessToken
     }
@@ -86,7 +86,7 @@ export const createAdmin = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, password } = req.allParams;
+    const { email, password } = req.allParams as LoginRequestData;
     if (!email || !password) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED);
     }
@@ -141,7 +141,7 @@ export const forgotPassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { email } = req.allParams;
+    const { email } = req.allParams as { email: string };
     if (!email) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
     }
@@ -159,7 +159,7 @@ export const verifyOtp = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, otp } = req.allParams;
+    const { email, otp } = req.allParams as VerifyOtpData;
     if (!email) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
     }
@@ -181,7 +181,7 @@ export const resetPassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, newPassword } = req.allParams;
+    const { email, newPassword } = req.allParams as ResetPasswordData;
     if (!email || !newPassword) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_NEWPASSWORD_REQUIRED);
     }
