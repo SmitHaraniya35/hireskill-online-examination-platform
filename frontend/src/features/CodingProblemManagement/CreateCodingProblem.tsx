@@ -1,16 +1,20 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import TiptapEditor from "../../components/TipTapEditor";
+// import TiptapEditor from "../../components/TipTapEditor";
 import codingProblemService from "../../services/codingProblem.services";
 import codingProblemTemplateService from "../../services/codingProblemTemplate.services";
 import testCaseService from "../../services/testCase.services";
 import { toast } from "react-toastify";
-import { Editor } from "@monaco-editor/react";
+// import { Editor } from "@monaco-editor/react";
 import type { CodingProblemData, TemplateCodes } from "../../types/codingProblem.types";
 import { problemSchema, type ProblemFormInput } from "../../validators/createCodingProblem.validators";
 import { ArrowLeft } from "lucide-react";
+import { lazy } from "react";
+
+const Editor = lazy(() => import("@monaco-editor/react"));
+const TiptapEditor = lazy(() => import("../../components/TipTapEditor"));
 
 // ─── Static Topics List ───────────────────────────────────────────────────────
 const ALL_TOPICS = [
@@ -739,7 +743,12 @@ const CreateCodingProblemPage: React.FC = () => {
                   className={`border rounded-xl overflow-hidden ${templateErrors[activeLang] ? "border-red-400" : "border-gray-200"}`}
                   style={{ height: "260px" }}
                 >
-                  <Editor
+                  <Suspense fallback={
+                    <div className="flex items-center justify-center h-full bg-gray-900 text-gray-400 text-sm">
+                      Loading editor...
+                    </div>
+                  }>
+                    <Editor
                     key={activeLang}
                     height="100%"
                     width="100%"
@@ -766,6 +775,8 @@ const CreateCodingProblemPage: React.FC = () => {
                       </div>
                     }
                   />
+                  </Suspense>
+                  
                 </div>
               )}
 
