@@ -34,7 +34,7 @@ export const generateRefreshToken = (userId: string, refresh_token_id: string) =
             refresh_token_id
         },
         process.env.JWT_REFRESH_SECRETKEY as string,
-        { expiresIn: "24h" }
+        { expiresIn: "7d" }
     )
 };
 

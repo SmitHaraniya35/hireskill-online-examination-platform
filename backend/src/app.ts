@@ -21,9 +21,9 @@ const app = express();
 
 // Security & core
 app.use(cors({
-    origin: "https://unsnouted-unescapably-mira.ngrok-free.dev",
-    // origin: "http://192.168.0.107:5173",
-    credentials: true
+    // origin: "https://unsnouted-unescapably-mira.ngrok-free.dev",
+    origin: "http://192.168.0.105:5173",
+    credentials: true,
 }));
 
 // we will see this later...
