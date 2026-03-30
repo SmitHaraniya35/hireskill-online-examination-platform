@@ -4,11 +4,19 @@ import studentAttemptService from "../../services/studentAttempt.services";
 import StudentAttemptListSkeleton from "../../skeleton/StudentAttemptListSkeleton";
 import CustomTable from "../../components/shared/CustomTable";
 import type { GetStudentAttempts } from "../../types/studentAttempts.types";
-import View from "../../assets/View.svg";
-import Delete from "../../assets/Delete.svg";
 import { toast } from "react-toastify";
 import { ArrowLeft, RefreshCcw } from "lucide-react";
 import { IconDelete, IconView } from "../../components/icons";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
 
 const StudentAttemptListView: React.FC = () => {
   const { testId } = useParams<{ testId: string }>();
@@ -17,6 +25,11 @@ const StudentAttemptListView: React.FC = () => {
   );
   const [attemptLoading, setAttemptLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedAttemptId, setSelectedAttemptId] = useState<string | null>(
+    null,
+  );
+
   const navigate = useNavigate();
 
   const formatDateDDMMYYYY = (dateString: string) => {
@@ -73,17 +86,24 @@ const StudentAttemptListView: React.FC = () => {
   }, [fetchAttempts]);
 
   const handleView = (id: string) => navigate(`/submission/${id}`);
+  const confirmDelete = async () => {
+    if (!selectedAttemptId) return;
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this student attempt?")) return;
     try {
-      await studentAttemptService.deleteStudentAttempt(id);
+      await studentAttemptService.deleteStudentAttempt(selectedAttemptId);
+
       toast.success("Student attempt deleted successfully!");
+
       setStudentAttempts((prev) =>
-        applyDefaultSorting(prev.filter((attempt) => attempt.id !== id)),
+        applyDefaultSorting(
+          prev.filter((attempt) => attempt.id !== selectedAttemptId),
+        ),
       );
-    } catch (err: any) {
+    } catch {
       toast.error("Failed to delete student attempt");
+    } finally {
+      setOpenDeleteDialog(false);
+      setSelectedAttemptId(null);
     }
   };
 
@@ -303,7 +323,10 @@ const StudentAttemptListView: React.FC = () => {
                 <IconView className="w-4 h-4" />
               </button>
               <button
-                onClick={() => handleDelete(row.id!)}
+                onClick={() => {
+                  setSelectedAttemptId(row.id!);
+                  setOpenDeleteDialog(true);
+                }}
                 title="Delete attempt"
                 className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#fff1f2] hover:border-[#fecdd3] hover:text-[#dc2626] transition-all duration-150"
               >
@@ -370,6 +393,31 @@ const StudentAttemptListView: React.FC = () => {
           />
         )}
       </div>
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent size="sm" className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-rose-600 flex items-center gap-2">
+              Delete Attempt?
+            </AlertDialogTitle>
+
+            <AlertDialogDescription className="text-sm text-gray-500">
+              Are you sure you want to delete this student attempt? This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-rose-700 hover:bg-rose-800 text-white rounded-lg"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
