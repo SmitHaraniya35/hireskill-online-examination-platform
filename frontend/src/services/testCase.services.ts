@@ -1,7 +1,9 @@
-import axios from "axios";
+// import axios from "axios";
 import type { axiosResponse } from "../types/index.types";
+import api from "./api";
 
-const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/test-case`;
+// const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/test-case`;
+const API_URL = api.defaults.baseURL + "/test-case";
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem("admin_token");
@@ -16,7 +18,7 @@ const getAuthHeaders = () => {
 
 const testCaseService = {
   deleteTestCase: async (id: string) => {
-    const response = await axios.delete<axiosResponse>(
+    const response = await api.delete<axiosResponse>(
       `${API_URL}/delete-test-case/${id}`,
       getAuthHeaders(),
     );
