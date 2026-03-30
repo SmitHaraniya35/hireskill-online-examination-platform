@@ -32,9 +32,6 @@ const Problems: React.FC<ProblemsProps> = ({
     if (p.status === "Submitted") return "bg-green-50 text-green-700";
     if (p.status === "Not Attempted") return "bg-gray-100 text-gray-500";
     if (p.status === "Attempted") return "bg-blue-100 text-blue-500";
-    // const s = p.status?.toLowerCase();
-    // if (s === "failed") return "bg-red-50 text-red-600";
-    // return "bg-green-50 text-green-700";
   };
 
   const getStatusLabel = (p: StudentAssignedProblems) => {
@@ -51,9 +48,6 @@ const Problems: React.FC<ProblemsProps> = ({
     if (p.status === "Submitted") return "bg-green-400";
     if (p.status === "Not Attempted") return "bg-gray-400";
     if (p.status === "Attempted") return "bg-blue-400";
-    // const s = p.status?.toLowerCase();
-    // if (s === "failed") return "bg-red-400";
-    // return "bg-green-400";
   };
 
   return (

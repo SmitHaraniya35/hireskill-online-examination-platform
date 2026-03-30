@@ -7,8 +7,8 @@
         x="55"
         y="45"
         fill="#0F212E"
-        style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 500; font-size: 30px; letter-spacing: 1px;">
+        style="font-family: 'Plus Jakarta Sans', sans-serif; font-weight: bold; font-size: 30px; letter-spacing: 1px;">
         Hireskill
     </text>
-    <rect x="148" y="23.6" width="3" height="3" fill="#1DA077" />
+    <rect x="154.9" y="23.6" width="4" height="3.5" fill="#1DA077" />
 </svg>

@@ -6,17 +6,6 @@ export const useProctoring = (onAutoFinish: () => void, enabled: boolean) => {
 
   const timerRef = useRef<number | null>(null);
   const intervalRef = useRef<number | null>(null);
-
-  // // --- FIX START ---
-  // // Create a ref to store the LATEST version of the callback
-  // const onAutoFinishRef = useRef(onAutoFinish);
-
-  // // Keep the ref updated whenever the function passed from the parent changes
-  // useEffect(() => {
-  //   onAutoFinishRef.current = onAutoFinish;
-  // }, [onAutoFinish]);
-  // // --- FIX END ---
-
   const onAutoFinishRef = useRef(onAutoFinish);
   useEffect(() => {
     onAutoFinishRef.current = onAutoFinish;
@@ -30,26 +19,10 @@ export const useProctoring = (onAutoFinish: () => void, enabled: boolean) => {
     setIsViolation(true);
     setCountdown(5);
 
-    // ✅ Call via ref — always gets the latest version
+    // Call via ref — always gets the latest version
     timerRef.current = window.setTimeout(() => {
       onAutoFinishRef.current();
     }, 5000);
-
-    // timerRef.current = window.setTimeout(() => {
-    //   onAutoFinish();
-    // }, 5000);
-
-  //   intervalRef.current = window.setInterval(() => {
-  //     setCountdown((prev) => {
-  //       if (prev <= 1) {
-  //         if (intervalRef.current) clearInterval(intervalRef.current);
-  //         return 0;
-  //       }
-  //       return prev - 1;
-  //     });
-  //   }, 1000);
-  // };
-
       intervalRef.current = window.setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -144,7 +117,7 @@ export const useProctoring = (onAutoFinish: () => void, enabled: boolean) => {
       const key = e.key.toLowerCase();
 
       // Block Copy, Paste, Cut, Save, Inspect, and Print
-      const forbidden = ["c", "v", "x", "s", "i", "p"];
+      const forbidden = ["c", "v", "x", "s", "r", "p"];
       const isSystemKey = e.key === "Meta" || (e.altKey && e.key === "Tab");
 
       if ((e.ctrlKey && forbidden.includes(key)) || isSystemKey) {

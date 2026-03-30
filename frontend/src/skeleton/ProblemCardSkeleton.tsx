@@ -1,29 +1,25 @@
 const ProblemCardSkeleton = () => {
   return (
-    <div className="bg-white rounded-2xl shadow p-6 animate-pulse">
-      
-      {/* Top Section */}
-      <div className="flex justify-between items-start">
-        
-        {/* Left Content */}
-        <div className="flex-1">
-          
-          {/* Title + Difficulty */}
-          <div className="flex items-center gap-4 mb-4">
-            <div className="h-7 bg-gray-300 rounded w-94" />
-            <div className="h-6 w-16 bg-gray-300 rounded-full" />
-          </div>
+    <div className="grid grid-cols-[28px_1fr_64px] sm:grid-cols-[28px_1fr_100px_150px_100px] gap-x-3 items-center px-4 py-3 rounded-xl bg-[#fafafa] border border-[#eaecef] animate-pulse">
 
-          {/* Topic */}
-          <div className="h-5 bg-gray-200 rounded w-40" />
-        </div>
+      {/* Index number */}
+      <div className="h-3 w-5 bg-gray-200 rounded ml-auto" />
 
-        {/* Right Icons */}
-        <div className="flex gap-6 ml-4">
-          <div className="w-6 h-6 bg-gray-300 rounded" />
-          <div className="w-6 h-6 bg-gray-300 rounded" />
-        </div>
+      {/* Title */}
+      <div className="h-[13px] bg-gray-200 rounded w-2/5" />
+
+      {/* Difficulty badge */}
+      <div className="h-5 w-14 bg-gray-100 rounded-full" />
+
+      {/* Topic pill — desktop only */}
+      <div className="hidden sm:block h-5 w-24 bg-gray-100 rounded-md" />
+
+      {/* Action icons — desktop only */}
+      <div className="hidden sm:flex items-center gap-1.5 justify-end">
+        <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
+        <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
       </div>
+
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import ResultSummary from "./ResultSummary";
 import Problems from "./Problems";
-import ProblemDetails from "./ProblemDetails";
+import ProblemDetails from "./SubmissionDetails";
 import type { GetStudentAttemptSubmissionDetailsAndResultResponse } from "../../../types/studentAttempts.types";
 import type { GetSubmissionResponse } from "../../../types/submission.types";
 import StudentAttemptService from "../../../services/studentAttempt.services";
@@ -29,8 +29,11 @@ const StudentAttemptDetails: React.FC = () => {
   const [pageLoading, setPageLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
 
-  const [selectedSubmissionId, setSelectedSubmissionId] = useState<string | null>(null);
-  const [submissionData, setSubmissionData] = useState<GetSubmissionResponse | null>(null);
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState<
+    string | null
+  >(null);
+  const [submissionData, setSubmissionData] =
+    useState<GetSubmissionResponse | null>(null);
   const [submissionLoading, setSubmissionLoading] = useState(false);
   const [submissionError, setSubmissionError] = useState<string | null>(null);
 
@@ -41,19 +44,24 @@ const StudentAttemptDetails: React.FC = () => {
       setPageLoading(true);
       setPageError(null);
       try {
-        const response = await StudentAttemptService.getStudentAttemptSubmissionDetailsAndResult(id);
+        const response =
+          await StudentAttemptService.getStudentAttemptSubmissionDetailsAndResult(
+            id,
+          );
         setPageData(response.payload!);
 
         // Auto-select first submitted problem
         const first = response.payload!.studentAssignedProblems.find(
-          (p) => !(p.status === "Not Attempted") && p.submission?.id
+          (p) => !(p.status === "Not Attempted") && p.submission?.id,
         );
         if (first?.submission?.id) {
           setSelectedSubmissionId(first.submission.id);
         }
       } catch (err: unknown) {
         setPageError(
-          err instanceof Error ? err.message : "Failed to load attempt details."
+          err instanceof Error
+            ? err.message
+            : "Failed to load attempt details.",
         );
       } finally {
         setPageLoading(false);
@@ -70,11 +78,12 @@ const StudentAttemptDetails: React.FC = () => {
       setSubmissionError(null);
       setSubmissionData(null);
       try {
-        const response = await submissionService.getSubmissionService(selectedSubmissionId);
+        const response =
+          await submissionService.getSubmissionService(selectedSubmissionId);
         setSubmissionData(response.payload!);
       } catch (err: unknown) {
         setSubmissionError(
-          err instanceof Error ? err.message : "Failed to load submission."
+          err instanceof Error ? err.message : "Failed to load submission.",
         );
       } finally {
         setSubmissionLoading(false);
@@ -114,15 +123,16 @@ const StudentAttemptDetails: React.FC = () => {
     );
   }
 
-  const { student, test, studentAttempt, result, studentAssignedProblems } = pageData;
+  const { student, test, studentAttempt, result, studentAssignedProblems } =
+    pageData;
 
   const durationMinutes = computeDuration(
     studentAttempt.started_at,
-    studentAttempt.finished_at
+    studentAttempt.finished_at,
   );
 
-  return (
-    <div className="min-h-screen bg-gray-100 px-6 py-6 flex flex-col gap-5">
+return (
+    <div className="min-h-screen bg-gray-100 px-6 py-6 flex flex-col gap-5 font-sans">
       {/* Header */}
       <Header
         student={student}

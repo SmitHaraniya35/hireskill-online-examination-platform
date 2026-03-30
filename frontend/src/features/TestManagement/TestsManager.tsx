@@ -6,8 +6,18 @@ import TestCardSkeleton from "../../skeleton/TestCardSkeleton";
 import type { Test, TestList } from "../../types/test.types";
 import type { axiosResponse } from "../../types/index.types";
 import { toast } from "react-toastify";
-import { Plus } from "lucide-react";
+import { Plus, Trash2 } from "lucide-react";
 import { IconView, IconEdit, IconDelete } from "../../components/icons";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
 
 const TestManager: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +25,8 @@ const TestManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedTestId, setSelectedTestId] = useState<string | null>(null);
 
   const loadLinks = async () => {
     try {
@@ -72,15 +84,21 @@ const TestManager: React.FC = () => {
     navigate(`/admin/create-exam/create-new-test?editId=${id}`);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm("Delete this test link?")) return;
+  const confirmDelete = async () => {
+    if (!selectedTestId) return;
+
     try {
-      await testLinkService.deleteTest(id);
+      await testLinkService.deleteTest(selectedTestId);
+
       toast.success("Test Deleted Successfully!");
-      setTestList((prevLinks) => prevLinks!.filter((link) => link.id !== id));
+
+      setTestList((prev) => prev!.filter((link) => link.id !== selectedTestId));
     } catch (err: any) {
       setIsError(true);
       setErrorMsg(err.response?.data?.message || "Failed to delete test");
+    } finally {
+      setOpenDeleteDialog(false);
+      setSelectedTestId(null);
     }
   };
 
@@ -234,7 +252,10 @@ const TestManager: React.FC = () => {
 
                     {/* Delete Button */}
                     <button
-                      onClick={() => handleDelete(link.id!)}
+                      onClick={() => {
+                        setSelectedTestId(link.id!);
+                        setOpenDeleteDialog(true);
+                      }}
                       title="Delete test"
                       className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#fff1f2] hover:border-[#fecdd3] hover:text-[#dc2626] transition-all duration-150"
                     >
@@ -302,6 +323,40 @@ const TestManager: React.FC = () => {
           </div>
         )}
       </div>
+      <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+        <AlertDialogContent
+          size="sm"
+          className="rounded-2xl border border-gray-100 shadow-lg"
+        >
+          <AlertDialogHeader className="space-y-1">
+            <div className="flex items-center gap-2.5 mb-1">
+              <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-4 h-4 text-rose-700" strokeWidth={1.8} />
+              </div>
+              <AlertDialogTitle className="text-[15px] font-medium text-gray-900">
+                Delete test?
+              </AlertDialogTitle>
+            </div>
+
+            <AlertDialogDescription className="text-[13px] text-gray-500 leading-relaxed">
+              This action is permanent and cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <AlertDialogFooter className="mt-1 sm:space-x-0 gap-2">
+            <AlertDialogCancel className="h-8 px-4 text-[13px] font-medium rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 shadow-none m-0">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="h-8 px-4 text-[13px] font-medium rounded-lg bg-rose-700 hover:bg-rose-800 text-white shadow-none m-0 flex items-center gap-1.5"
+            >
+              <Trash2 className="w-3 h-3" strokeWidth={2} />
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

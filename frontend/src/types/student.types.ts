@@ -12,6 +12,16 @@ export interface Student{
     linkedin_url?: string;
     github_url?: string;
 }
+export interface StudentInfo {
+    name: string;
+    email: string;
+    phone: string;
+    college: string;
+    degree: string;
+    graduation_year: string;
+    skills: string;
+    branch: string;
+}
 
 export interface StudentListData {
     studentList: Student[];
@@ -22,5 +32,5 @@ export interface GetAllStudentsListData {
 }
 
 export interface StudentInfoData {
-    student: Student
+    student: StudentInfo
 }

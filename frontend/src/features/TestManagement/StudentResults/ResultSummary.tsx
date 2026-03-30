@@ -1,5 +1,4 @@
 import React from "react";
-import { CheckCircle2, XCircle } from "lucide-react";
 import type { Result } from "../../../types/studentAttempts.types";
 
 interface ResultSummaryProps {
@@ -43,18 +42,6 @@ const ResultSummary: React.FC<ResultSummaryProps> = ({
         {/* Status */}
         <div className="bg-gray-50 border border-gray-100 rounded-xl p-3.5 flex flex-col gap-1.5">
           <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider leading-none">Status</span>
-          {/* <span
-            className={`flex items-center gap-1.5 text-base font-bold leading-none mt-1 ${
-              isPassed ? "text-green-600" : "text-red-500"
-            }`}
-          >
-            {isPassed ? (
-              <CheckCircle2 size={16} strokeWidth={2.5} />
-            ) : (
-              <XCircle size={16} strokeWidth={2.5} />
-            )}
-            {isPassed ? "Passed" : "Failed"}
-          </span> */}
           <span> N/A </span>
         </div>
 
