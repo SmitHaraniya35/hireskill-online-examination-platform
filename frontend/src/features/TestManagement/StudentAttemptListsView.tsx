@@ -148,7 +148,7 @@ const StudentAttemptListView: React.FC = () => {
 
   const columns = useMemo(
     () => [
-      // ── # ──────────────────────────── 4%
+      // ── # ──────────────────────────── 
       {
         header: "#",
         width: "4%",
@@ -160,7 +160,7 @@ const StudentAttemptListView: React.FC = () => {
         ),
         sortable: false,
       },
-      // ── Name ───────────────────────── 13%
+      // ── Name ───────────────────────── 
       {
         header: "Name",
         width: "12%",
@@ -171,7 +171,7 @@ const StudentAttemptListView: React.FC = () => {
         ),
         sortable: true,
       },
-      // ── Email ──────────────────────── 17%
+      // ── Email ────────────────────────
       {
         header: "Email",
         width: "12%",
@@ -182,7 +182,7 @@ const StudentAttemptListView: React.FC = () => {
         ),
         sortable: true,
       },
-      // ── Phone ──────────────────────── 9%
+      // ── Phone ────────────────────────
       {
         header: "Phone",
         width: "9%",
@@ -193,7 +193,7 @@ const StudentAttemptListView: React.FC = () => {
         ),
         sortable: true,
       },
-      // ── Started ────────────────────── 9%
+      // ── Started ──────────────────────
       {
         header: "Started",
         width: "8%",
@@ -202,7 +202,7 @@ const StudentAttemptListView: React.FC = () => {
         ),
         sortable: true,
       },
-      // ── Expiry ─────────────────────── 9%
+      // ── Expiry ───────────────────────
       {
         header: "Expiry",
         width: "8%",
@@ -211,7 +211,7 @@ const StudentAttemptListView: React.FC = () => {
         ),
         sortable: true,
       },
-      // ── Finished ───────────────────── 9%
+      // ── Finished ─────────────────────
       {
         header: "Finished",
         width: "9%",
@@ -220,7 +220,7 @@ const StudentAttemptListView: React.FC = () => {
         ),
         sortable: true,
       },
-      // ── Status ─────────────────────── 10%
+      // ── Status ───────────────────────
       {
         header: "Status",
         width: "10%",
@@ -269,7 +269,7 @@ const StudentAttemptListView: React.FC = () => {
         },
         sortable: true,
       },
-      // ── Result ─────────────────────── 8%
+      // ── Result ───────────────────────
       {
         header: "Result",
         width: "10%",
@@ -289,7 +289,7 @@ const StudentAttemptListView: React.FC = () => {
         },
         sortable: true,
       },
-      // ── Time ───────────────────────── 8%
+      // ── Time ─────────────────────────
       {
         header: "Time Taken",
         width: "8%",
@@ -298,7 +298,7 @@ const StudentAttemptListView: React.FC = () => {
           calculateDuration(row.started_at, row.finished_at),
         sortable: true,
       },
-      // ── Actions ────────────────────── 7%
+      // ── Actions ──────────────────────
       {
         header: "Actions",
         width: "7%",

@@ -132,7 +132,9 @@ const StudentDetailPage: React.FC = () => {
 
   const handleCancel = () => {
     if (student) setFormData({ ...student });
-    setSearchParams({});
+    // navigate("/admin/student-management", { replace: true });
+    // setSearchParams({});
+    setSearchParams({}, { replace: true });
   };
 
   // ─── Loading ───────────────────────────────────────────────────────────────

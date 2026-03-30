@@ -133,6 +133,25 @@ const StudentsListView: React.FC = () => {
 
   return (
     <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden">
+      {/* Error Banner */}
+      {isError && (
+        <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 flex items-center gap-2">
+          <svg
+            className="w-4 h-4 flex-shrink-0"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"
+            />
+          </svg>
+          {errorMsg}
+        </div>
+      )}
       {/* Card Header */}
       <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -188,26 +207,6 @@ const StudentsListView: React.FC = () => {
         )}
       </div>
 
-      {/* Error Banner */}
-      {isError && (
-        <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 flex items-center gap-2">
-          <svg
-            className="w-4 h-4 flex-shrink-0"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01M12 3a9 9 0 100 18A9 9 0 0012 3z"
-            />
-          </svg>
-          {errorMsg}
-        </div>
-      )}
-
       {/* Table / Skeleton */}
       {isLoading ? (
         <div className="p-4 space-y-3">
@@ -226,39 +225,40 @@ const StudentsListView: React.FC = () => {
         />
       )}
       <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
-  <AlertDialogContent
-    size="sm"
-    className="rounded-2xl border border-gray-100 shadow-lg"
-  >
-    <AlertDialogHeader className="space-y-1">
-      <div className="flex items-center gap-2.5 mb-1">
-        <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center flex-shrink-0">
-          <Trash2 className="w-4 h-4 text-rose-700" strokeWidth={1.8} />
-        </div>
-        <AlertDialogTitle className="text-[15px] font-medium text-gray-900">
-          Delete Students
-        </AlertDialogTitle>
-      </div>
+        <AlertDialogContent
+          size="sm"
+          className="rounded-2xl border border-gray-100 shadow-lg"
+        >
+          <AlertDialogHeader className="space-y-1">
+            <div className="flex items-center gap-2.5 mb-1">
+              <div className="w-8 h-8 rounded-lg bg-rose-50 flex items-center justify-center flex-shrink-0">
+                <Trash2 className="w-4 h-4 text-rose-700" strokeWidth={1.8} />
+              </div>
+              <AlertDialogTitle className="text-[15px] font-medium text-gray-900">
+                Delete Students
+              </AlertDialogTitle>
+            </div>
 
-      <AlertDialogDescription className="text-[13px] text-gray-500 leading-relaxed">
-        Are you sure you want to delete this student(s)? This action cannot be undone.
-      </AlertDialogDescription>
-    </AlertDialogHeader>
+            <AlertDialogDescription className="text-[13px] text-gray-500 leading-relaxed">
+              Are you sure you want to delete this student(s)? This action
+              cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
 
-    <AlertDialogFooter className="mt-1 sm:space-x-0 gap-2">
-      <AlertDialogCancel className="h-8 px-4 text-[13px] font-medium rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 shadow-none m-0">
-        Cancel
-      </AlertDialogCancel>
-      <AlertDialogAction
-        onClick={handleDeleteSelected}
-        className="h-8 px-4 text-[13px] font-medium rounded-lg bg-rose-700 hover:bg-rose-800 text-white shadow-none m-0 flex items-center gap-1.5"
-      >
-        <Trash2 className="w-3 h-3" strokeWidth={2} />
-        Delete
-      </AlertDialogAction>
-    </AlertDialogFooter>
-  </AlertDialogContent>
-</AlertDialog>
+          <AlertDialogFooter className="mt-1 sm:space-x-0 gap-2">
+            <AlertDialogCancel className="h-8 px-4 text-[13px] font-medium rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 shadow-none m-0">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteSelected}
+              className="h-8 px-4 text-[13px] font-medium rounded-lg bg-rose-700 hover:bg-rose-800 text-white shadow-none m-0 flex items-center gap-1.5"
+            >
+              <Trash2 className="w-3 h-3" strokeWidth={2} />
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
