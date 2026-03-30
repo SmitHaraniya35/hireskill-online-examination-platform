@@ -1,5 +1,5 @@
 import {Navigate, Outlet } from "react-router-dom";
-import { AdminAuthProvider, useAuth } from "../context/authContext"
+import { useAuth } from "../context/authContext"
 
 
 const AdminRoutes: React.FC = () => {
