@@ -51,7 +51,7 @@ const AssessmentPage = lazy(
 const CompletionPage = lazy(
   () => import("./features/Assessment/ComplitionPage.tsx"),
 );
-const Dashboard = lazy(() => import("./features/DashboardManagement/temp.tsx"));
+const Dashboard = lazy(() => import("./features/DashboardManagement/Dashboard.tsx"));
 const NotFound = lazy(() => import("./components/shared/NotFound.tsx"));
 
 // Simple Loader (replace with spinner UI)
