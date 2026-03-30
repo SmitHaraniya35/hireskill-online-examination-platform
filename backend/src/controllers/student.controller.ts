@@ -4,9 +4,8 @@ import {
   deleteStudentService,
   getAllStudentService,
   getStudentByIdService,
-  updateStudentService,
+  updateStudentProfileService,
   importStudentsService,
-  completeStudentProfileService,
   deleteManyStudentsService
 } from "../services/student.service.ts";
 import type { AuthRequest } from "../types/controller/index.ts";
@@ -86,7 +85,7 @@ export const getAllStudent = async (
   }
 };
 
-export const updateStudent = async (
+export const updateStudentProfile = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction,
@@ -97,8 +96,8 @@ export const updateStudent = async (
       return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
     }
 
-    const data = await updateStudentService(input!.id!, input);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_UPDATED);
+    const data = await updateStudentProfileService(input!.id!, input);
+    res.ok(data, SUCCESS_MESSAGES.STUDENT_PROFILE_UPDATED);
   } catch (err: any) {
     next(err);
   }
@@ -135,26 +134,6 @@ export const deleteManyStudent = async (
 
     const data = await deleteManyStudentsService(ids);
     res.ok(data, SUCCESS_MESSAGES.SELECTED_STUDENTS_DELETED);
-  } catch (err: any) {
-    next(err);
-  }
-}
-
-export const completeStudentProfile = async (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const input = req.allParams as StudentProfileData;
-    const { id } = input;
-    if(!input || !id) {
-      res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
-      return;
-    }
-
-    const data = await completeStudentProfileService(id, input);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_PROFILE_COMPLETED);
   } catch (err: any) {
     next(err);
   }

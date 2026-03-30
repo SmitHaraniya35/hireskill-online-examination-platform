@@ -63,7 +63,7 @@ export const SUCCESS_MESSAGES = {
   STUDENT_DELETED: "Student deleted successfully",
   STUDENT_UPDATED: "Student updated successfully",
   STUDENT_IMPORTED: "Student imported successfully",
-  STUDENT_PROFILE_COMPLETED: "Student profile completed successfully",
+  STUDENT_PROFILE_UPDATED: "Student profile updated successfully",
   SELECTED_STUDENTS_DELETED: "Selected students deleted successfully",
 
   // Code Execution
