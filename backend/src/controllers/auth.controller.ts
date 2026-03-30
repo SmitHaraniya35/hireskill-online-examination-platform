@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
+import { ERROR_MESSAGES, HttpStatusCode, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
   loginService,
   getMeService,
@@ -14,6 +14,7 @@ import {
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
 import type { Admin, LoginResponse } from "../types/controller/authData.types.ts";
 import { generateApiKey } from "../utils/helper.utils.ts";
+import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 
 export const login = async (
   req: Request,
@@ -104,20 +105,31 @@ export const refreshToken = async (
 ) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
+    if(!refreshToken) {
       return res.unauthorized(ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED);
     }
 
-    const data = await refreshTokenService(refreshToken);
+    try {
+      const { userId, refresh_token_id } = verifyRefreshToken(refreshToken);
 
-    res.cookie("refreshToken", data.refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+      const data = await refreshTokenService(userId, refresh_token_id);
 
-    res.ok(data, SUCCESS_MESSAGES.ACCESS_TOKEN_GENERATED);
+      res.cookie("refreshToken", data.refreshToken, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+
+      res.ok({ accessToken: data.accessToken }, SUCCESS_MESSAGES.ACCESS_TOKEN_GENERATED);
+    } catch (err: any) {
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      res.unauthorized(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
+    }
   } catch (err: any) {
     next(err);
   }
@@ -187,18 +199,16 @@ export const logout = async (
   next: NextFunction,
 ) => {
   try {
-    const user: AuthJwtPayload | undefined = req.user;
-    if (!user) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+    const refreshToken = req.cookies.refreshToken;
+
+    if(refreshToken) {
+      try {
+        const { userId, refresh_token_id } = verifyRefreshToken(refreshToken);
+        await logoutService(userId, refresh_token_id);
+      } catch (err: any) {
+        res.unauthorized(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
+      }
     }
-
-    await logoutService(user.userId);
-
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
