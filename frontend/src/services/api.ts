@@ -49,7 +49,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         // ❌ Refresh failed → logout
         localStorage.removeItem("admin_token");
-        // window.location.href = "/admin/login"; // force redirect
+        window.location.href = "/admin/login"; // force redirect
         return Promise.reject(refreshError);
       }
     }

@@ -59,7 +59,7 @@ const testFlowService = {
 
   completeStudentDetails: async (data: StudentData, id: string) => {
     const response = await api.put<axiosResponse>(
-      `${API_BASE_URL}/student/complete-student-profile/${id}`,
+      `${API_BASE_URL}/student/update-student-profile/${id}`,
       data,
       getCommonHeaders(),
     );

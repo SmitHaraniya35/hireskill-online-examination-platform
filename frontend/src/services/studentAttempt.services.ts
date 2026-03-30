@@ -1,4 +1,4 @@
-import axios from 'axios';
+// import axios from 'axios';
 import type{ axiosResponse } from '../types/index.types';
 import type { GetStudentAttemptSubmissionDetailsAndResultResponse, StudentAttemptResponse, StudentAttemptsDetailsResponse } from '../types/studentAttempts.types';
 import api from './api';

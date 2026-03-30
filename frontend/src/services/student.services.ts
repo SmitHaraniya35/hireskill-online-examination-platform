@@ -59,7 +59,7 @@ const StudentService = {
 
   updateStudent: async (id: string, data: StudentInfo) => {
     const response = await api.put<axiosResponse>(
-      `${API_URL}/update-student/${id}`,data,
+      `${API_URL}/update-student-profile/${id}`,data,
       getAuthHeaders(),
     );
     return response.data;

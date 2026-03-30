@@ -39,6 +39,7 @@ const testLinkService = {
 
     updateTest: async (id: string, updateData: Test) => {
         const response = await api.put<axiosResponse<TestDetails>>(`${API_URL}/update-test/${id}`, updateData, testLinkService.getHeaders());
+        throw new Error("Test error"); // For testing error handling
         return response.data;    
     },
 
