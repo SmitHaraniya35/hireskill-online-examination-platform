@@ -169,21 +169,6 @@ export const createCodingProblemWithTestCasesAndTemplateCodesService = async (
   return { codingProblem, testCases: testCasesData.testCases, templateCodes: templateCodesData.codingProblemTemplates };
 };
 
-export const selectRandomProblemService = async () => {
-  const problems: CodingProblemDocument[] = await CodingProblem.findActive();
-  if (!problems.length) {
-    throw new HttpError(
-      ERROR_MESSAGES.CODING_PROBLEM_NOT_FOUND,
-      HttpStatusCode.NOT_FOUND,
-    );
-  }
-
-  const len = problems.length;
-  const index = Math.floor(Math.random() * len);
-
-  return problems[index];
-};
-
 export const getCodingProblemWithTestCasesAndTemplateCodesService = async (id: string, sample_only: string) => {
   const codingProblemWithTestCases = await CodingProblem.findByIdActive(id, {
     _id: 0,
@@ -199,7 +184,7 @@ export const getCodingProblemWithTestCasesAndTemplateCodesService = async (id: s
     path: "templateCodes",
     match: { isDeleted: false },
     select: "id language basic_code_layout -_id -problem_id",
-  });
+  }) as CodingProblemWithTestCasesAndTemplateData | null;
 
   if (!codingProblemWithTestCases) {
     throw new HttpError(

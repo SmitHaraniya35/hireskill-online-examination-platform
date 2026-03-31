@@ -1,6 +1,6 @@
 // import { Queue } from "bullmq";
-// import { redis } from "../store/redis.store.ts";
+// import { submissionRedis } from "../store/submission.store.ts";
 
 // export const submissionQueue = new Queue("submissionQueue", {
-//   connection: redis,
+//   connection: submissionRedis,
 // });

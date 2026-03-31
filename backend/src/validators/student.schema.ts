@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { emailRule, indianPhoneRule, uuidv4Rule } from "./index.validator.ts";
+import { indianPhoneRule, uuidv4Rule } from "./index.validator.ts";
 
 export const StudentSchema = Joi.object({
     id: uuidv4Rule.optional(),

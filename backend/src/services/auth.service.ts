@@ -76,19 +76,11 @@ export const createAdminService = async (email: string, password: string) => {
   return { user };
 };
 
-export const refreshTokenService = async (refreshToken: string) => {
-  const { userId, refresh_token_id } = verifyRefreshToken(refreshToken);
-  if (!userId || !refresh_token_id) {
-    throw new HttpError(
-      ERROR_MESSAGES.INVALID_REFRESH_TOKEN, 
-      HttpStatusCode.UNAUTHORIZED
-    );
-  }
-
+export const refreshTokenService = async (userId: string, refresh_token_id: string) => {
   const user: UserDocument | null = await User.findOneActive({ id: userId });
   if (!user) {
     throw new HttpError(
-      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      ERROR_MESSAGES.INVALID_REFRESH_TOKEN,
       HttpStatusCode.NOT_FOUND,
     );
   }
@@ -197,12 +189,19 @@ export const resetPasswordService = async (
   return { oldPassword, newPassword: hashed };
 };
 
-export const logoutService = async (userId: string) => {
+export const logoutService = async (userId: string, refresh_token_id: string) => {
   const user = await User.findOneActive({ id: userId });
   if (!user) {
     throw new HttpError(
-      ERROR_MESSAGES.ADMIN_NOT_FOUND,
+      ERROR_MESSAGES.INVALID_REFRESH_TOKEN,
       HttpStatusCode.NOT_FOUND,
+    );
+  }
+
+  if(user.refresh_token_id !== refresh_token_id) {
+    throw new HttpError(
+      ERROR_MESSAGES.INVALID_REFRESH_TOKEN,
+      HttpStatusCode.UNAUTHORIZED,
     );
   }
 

@@ -85,7 +85,7 @@ export const getAllStudentService = async () => {
     return { student };
 };
 
-export const updateStudentService = async (studentId: string, input: StudentProfileData) => {
+export const updateStudentProfileService = async (studentId: string, input: StudentProfileData) => {
     const { email, phone } = input;
 
     const studentExists = await Student.findOneActive({
@@ -141,35 +141,4 @@ export const deleteManyStudentsService = async (ids: string[]) => {
     }
 
     return { students };
-};
-
-export const completeStudentProfileService = async (id: string, input: StudentProfileData) => {
-    const studentExistWithPhone =  await Student.findOneActive({ phone: input.phone, id: { $ne: id } });
-    if(studentExistWithPhone) { 
-        throw new HttpError(
-            ERROR_MESSAGES.STUDENT_ALREADY_EXISTS_WITH_PHONE,
-            HttpStatusCode.CONFLICT
-        );
-    }
-    
-    const student = await Student.findOneActive({ id });
-    if(!student){
-        throw new HttpError(
-            ERROR_MESSAGES.STUDENT_NOT_FOUND,
-            HttpStatusCode.NOT_FOUND
-        );
-    }
-
-    student.name = input.name;
-    student.phone = input.phone;
-    student.college = input.college;
-    student.degree = input.degree;
-    student.skills = input.skills;
-    student.branch = input.branch;
-    student.graduation_year = input.graduation_year;
-    student.complete_profile = true;
-
-    await student.save();
-
-    return { student }
 };

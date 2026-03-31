@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
+import { ERROR_MESSAGES, HttpStatusCode, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
   loginService,
   getMeService,
@@ -12,8 +12,9 @@ import {
   createClientService,
 } from "../services/auth.service.ts";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
-import type { Admin, LoginResponse } from "../types/controller/authData.types.ts";
+import type { Admin, LoginRequestData, LoginResponseData, ResetPasswordData, VerifyOtpData } from "../types/controller/authData.types.ts";
 import { generateApiKey } from "../utils/helper.utils.ts";
+import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 
 export const login = async (
   req: Request,
@@ -21,7 +22,7 @@ export const login = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, password } = req.allParams;
+    const { email, password } = req.allParams as LoginRequestData;
     if (!email || !password) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED);
     }
@@ -34,13 +35,13 @@ export const login = async (
     }
 
     res.cookie("refreshToken", refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "none",
       secure: true,
     });
 
-    const data: LoginResponse = {
+    const data: LoginResponseData = {
       admin: safeUser,
       accessToken
     }
@@ -85,7 +86,7 @@ export const createAdmin = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, password } = req.allParams;
+    const { email, password } = req.allParams as LoginRequestData;
     if (!email || !password) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED);
     }
@@ -104,20 +105,31 @@ export const refreshToken = async (
 ) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
+    if(!refreshToken) {
       return res.unauthorized(ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED);
     }
 
-    const data = await refreshTokenService(refreshToken);
+    try {
+      const { userId, refresh_token_id } = verifyRefreshToken(refreshToken);
 
-    res.cookie("refreshToken", data.refreshToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
+      const data = await refreshTokenService(userId, refresh_token_id);
 
-    res.ok(data, SUCCESS_MESSAGES.ACCESS_TOKEN_GENERATED);
+      res.cookie("refreshToken", data.refreshToken, {
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+
+      res.ok({ accessToken: data.accessToken }, SUCCESS_MESSAGES.ACCESS_TOKEN_GENERATED);
+    } catch (err: any) {
+      res.clearCookie("refreshToken", {
+        httpOnly: true,
+        sameSite: "none",
+        secure: true,
+      });
+      res.unauthorized(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
+    }
   } catch (err: any) {
     next(err);
   }
@@ -129,7 +141,7 @@ export const forgotPassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { email } = req.allParams;
+    const { email } = req.allParams as { email: string };
     if (!email) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
     }
@@ -147,7 +159,7 @@ export const verifyOtp = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, otp } = req.allParams;
+    const { email, otp } = req.allParams as VerifyOtpData;
     if (!email) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
     }
@@ -169,7 +181,7 @@ export const resetPassword = async (
   next: NextFunction,
 ) => {
   try {
-    const { email, newPassword } = req.allParams;
+    const { email, newPassword } = req.allParams as ResetPasswordData;
     if (!email || !newPassword) {
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_NEWPASSWORD_REQUIRED);
     }
@@ -187,18 +199,16 @@ export const logout = async (
   next: NextFunction,
 ) => {
   try {
-    const user: AuthJwtPayload | undefined = req.user;
-    if (!user) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+    const refreshToken = req.cookies.refreshToken;
+
+    if(refreshToken) {
+      try {
+        const { userId, refresh_token_id } = verifyRefreshToken(refreshToken);
+        await logoutService(userId, refresh_token_id);
+      } catch (err: any) {
+        res.unauthorized(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
+      }
     }
-
-    await logoutService(user.userId);
-
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
 
     res.clearCookie("refreshToken", {
       httpOnly: true,

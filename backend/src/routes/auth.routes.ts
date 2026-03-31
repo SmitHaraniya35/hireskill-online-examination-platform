@@ -9,11 +9,11 @@ const router = express.Router();
 router.post("/login", validateRequest(LoginSchema), AdminController.login);
 router.get("/me", authMiddleware, AdminController.getMe);
 router.post("/create-admin", validateRequest(CreateAdminSchema), AdminController.createAdmin);
-router.get("/refresh-token", validateRequest(), AdminController.refreshToken);
+router.post("/refresh-token", validateRequest(), AdminController.refreshToken);
 router.post("/forgot-password", validateRequest(ForgotPasswordSchema), AdminController.forgotPassword);
 router.post("/verify-otp", validateRequest(OtpSchema), AdminController.verifyOtp);
 router.post("/reset-password", validateRequest(ResetPasswordSchema), AdminController.resetPassword);
-router.post("/logout", authMiddleware, AdminController.logout);
+router.post("/logout", validateRequest(), AdminController.logout);
 
 router.post("/create-client", AdminController.createClient);
 
