@@ -51,7 +51,7 @@ export const deleteTestAndProblemsByTestIdService = async (codingProblemIdList: 
 
     if(!testAndProblems){
         throw new HttpError(
-            ERROR_MESSAGES.TEST_AND_PROBLEMS_NOT_FOUND,
+            ERROR_MESSAGES.TEST_AND_PROBLEMS_DELETION_FAILED,
             HttpStatusCode.NOT_FOUND
         )
     }

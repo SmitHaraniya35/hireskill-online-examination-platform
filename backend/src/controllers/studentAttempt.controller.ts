@@ -38,7 +38,7 @@ export const deleteStudentAttempt = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const { id } = req.allParams;
@@ -102,7 +102,7 @@ export const getStudentAttemptById = async (
 
     const data = await getStudentAttemptByIdService(id);
 
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPTS_RETRIEVED);
+    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_RETRIEVED);
   } catch (err: any) {
     next(err);
   }

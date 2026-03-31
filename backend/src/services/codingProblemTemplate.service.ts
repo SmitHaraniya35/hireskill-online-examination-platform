@@ -39,7 +39,7 @@ export const getAllCodingProblemTemplateByProblemId = async (problem_id: string)
 
     if (!codingProblemTemplate) {
         throw new HttpError(
-            ERROR_MESSAGES.CODING_PROBLEM_TEMPLATE_NOT_FOUND,
+            ERROR_MESSAGES.CODING_PROBLEM_TEMPLATES_NOT_FOUND,
             HttpStatusCode.NOT_FOUND
         );
     }

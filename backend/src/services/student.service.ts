@@ -135,7 +135,7 @@ export const deleteManyStudentsService = async (ids: string[]) => {
     const students = await Student.softDeleteMany({ id: { $in: ids } });
     if(!students){
         throw new HttpError(
-            ERROR_MESSAGES.  SELECTED_STUDENTS_DELETION_FAILED,
+            ERROR_MESSAGES.SELECTED_STUDENTS_DELETION_FAILED,
             HttpStatusCode.INTERNAL_SERVER_ERROR
         );
     }

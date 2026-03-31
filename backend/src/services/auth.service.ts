@@ -5,7 +5,6 @@ import {
   generateAccessToken,
   generateRefreshToken,
   generateRefreshTokenId,
-  verifyRefreshToken,
 } from "../utils/jwt.utils.ts";
 import { generateApiKey, generateResetPasswordOTP } from "../utils/helper.utils.ts";
 import type { UserDocument } from "../types/model/user.document.ts";

@@ -25,7 +25,7 @@ export const createCodingProblem = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const input = req.allParams as CodingProblemData;
@@ -52,7 +52,7 @@ export const getCodingProblemById = async (
     }
 
     const data = await getCodingProblemByIdService(id);
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
+    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_RETRIEVED);
   } catch (err: any) {
     next(err);
   }
@@ -66,7 +66,7 @@ export const getAllCodingProblems = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const data = await getAllCodingProblemsService();
@@ -84,7 +84,7 @@ export const updateCodingProblem = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const updatedInput = req.allParams as CodingProblemData;
@@ -127,7 +127,7 @@ export const createCodingProblemWithTestCasesAndTemplateCodes = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const input = req.allParams as CodingProblemWithTestCasesAndTemplateData;
@@ -157,7 +157,7 @@ export const getCodingProblemWithTestCasesAndTemplateCodes = async (
     }
 
     const data = await getCodingProblemWithTestCasesAndTemplateCodesService(id, sample_only);
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
+    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_RETRIEVED);
   } catch (err: any) {
     next(err);
   }
@@ -171,7 +171,7 @@ export const updateCodingProblemWithTestCasesAndTemplateCodes = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.badRequest(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.badRequest(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const input = req.allParams as CodingProblemWithTestCasesAndTemplateData;
@@ -183,7 +183,7 @@ export const updateCodingProblemWithTestCasesAndTemplateCodes = async (
       input,
       admin.userId,
     );
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
+    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_UPDATED);
   } catch (err: any) {
     next(err);
   }

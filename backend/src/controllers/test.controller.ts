@@ -26,7 +26,7 @@ export const createTest = async (
 
     const adminId = req.user!.userId;
     if (!adminId) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     if (!input) {
@@ -55,7 +55,7 @@ export const getTestById = async (
     }
 
     const data = await getTestByIdService(id);
-    res.ok(data, SUCCESS_MESSAGES.TESTS_RETRIEVED);
+    res.ok(data, SUCCESS_MESSAGES.TEST_RETRIEVED);
   } catch (err: any) {
     next(err);
   }
@@ -69,7 +69,7 @@ export const getAllTests = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const data = await getAllTestService();
@@ -87,7 +87,7 @@ export const updateTest = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const input = req.allParams as TestData;
@@ -113,7 +113,7 @@ export const deleteTest = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const { id } = req.allParams;
