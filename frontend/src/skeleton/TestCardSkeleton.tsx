@@ -23,6 +23,7 @@ const TestCardSkeleton = () => {
           <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
           <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
           <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
+          <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
         </div>
 
         {/* Row 2 — 2 toggle pills */}

@@ -51,10 +51,13 @@ const Problems: React.FC<ProblemsProps> = ({
   };
 
   return (
-    <div className="bg-white border max-h-[120vh] border-gray-200 rounded-2xl shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-white border max-h-[50vh] border-gray-200 rounded-2xl shadow-sm overflow-y-auto flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-4 flex-wrap gap-3 flex-shrink-0">
+        {/* <h2 className="text-sm font-bold text-gray-900">Problems</h2> */}
+        <p className="text-[11px] uppercase">
         <h2 className="text-sm font-bold text-gray-900">Problems</h2>
+      </p>
         <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
           {(
             ["All", "Submitted", "Not Attempted", "Attempted"] as FilterType[]

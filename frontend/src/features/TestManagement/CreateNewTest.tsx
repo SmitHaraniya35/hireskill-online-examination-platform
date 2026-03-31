@@ -55,7 +55,6 @@ const CreateNewTest: React.FC = () => {
     new Set(),
   );
   const [searchTerm, setSearchTerm] = useState("");
-  // const [topicFilter, setTopicFilter] = useState("");
   const [topicFilters, setTopicFilters] = useState<string[]>([]);
   const [difficultyFilter, setDifficultyFilter] = useState("");
   const [uniqueTopics, setUniqueTopics] = useState<string[]>([]);
@@ -205,8 +204,6 @@ const CreateNewTest: React.FC = () => {
       filtered = filtered.filter(
         (p) => p.difficulty.toLowerCase() === difficultyFilter.toLowerCase(),
       );
-    // if (topicFilter)
-    //   filtered = filtered.filter((p) => p.topic.includes(topicFilter));
     if (topicFilters.length > 0)
       filtered = filtered.filter((p) =>
         topicFilters.every((t) => p.topic.includes(t)),
@@ -667,18 +664,6 @@ const CreateNewTest: React.FC = () => {
                       className="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:border-green-500 transition"
                     />
                   </div>
-                  {/* <select
-                    value={topicFilter}
-                    onChange={(e) => setTopicFilter(e.target.value)}
-                    className="px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-green-500 transition"
-                  >
-                    <option value="">Select topic</option>
-                    {uniqueTopics.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select> */}
                   <div className="relative" ref={topicDropdownRef}>
                     <button
                       type="button"
@@ -986,7 +971,7 @@ const CreateNewTest: React.FC = () => {
               disabled={
                 loading || !isValidDistribution || totalSelected < totalProblems
               }
-              className="cursor-pointer px-8 py-2.5 rounded-lg text-white text-sm font-semibold bg-gray-900 hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-pointer px-8 py-2.5 rounded-lg text-white text-sm font-semibold bg-[#1DA077] hover:bg-[#1A8C6A] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading
                 ? isEditMode

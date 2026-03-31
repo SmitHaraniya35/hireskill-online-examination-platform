@@ -118,7 +118,7 @@ export const useProctoring = (onAutoFinish: () => void, enabled: boolean) => {
 
       // Block Copy, Paste, Cut, Save, Inspect, and Print
       const forbidden = ["c", "v", "x", "s", "r", "p"];
-      const isSystemKey = e.key === "Meta" || (e.altKey && e.key === "Tab");
+      const isSystemKey = e.key === "Meta" || (e.altKey && e.key === "Tab" || (e.ctrlKey && e.shiftKey && e.key === "I")); 
 
       if ((e.ctrlKey && forbidden.includes(key)) || isSystemKey) {
         e.preventDefault();
