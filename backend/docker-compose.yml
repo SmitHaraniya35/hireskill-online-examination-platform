@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  # ─── Express API Server ───
+  api:
+    build: .
+    container_name: hireskill-api
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+    volumes:
+      # Expose host docker daemon to container (CRITICAL FOR EXECUTOR)
+      - /var/run/docker.sock:/var/run/docker.sock
+      - submissions:/app/submissions
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: ["npm", "run", "start"]
+
+  # ─── BullMQ Background Worker ───
+  worker:
+    build: .
+    container_name: hireskill-worker
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - NODE_ENV=production
+      - REDIS_HOST=redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - submissions:/app/submissions
+    depends_on:
+      redis:
+        condition: service_healthy
+    command: ["npm", "run", "start:worker"]
+
+  # ─── Redis (Queue Broker) ───
+  redis:
+    image: redis:7-alpine
+    container_name: hireskill-redis
+    restart: unless-stopped
+    # We DO NOT expose "6379:6379" here so it doesn't conflict with your local Windows Redis!
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  redis-data:
+  submissions:
