@@ -1,34 +1,33 @@
 @import "tailwindcss";
 
-/* * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box; 
-    font-family: 'Inter', serif;
+/* html {
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 } */
+ /* html {
+  font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+} */
+ html {
+  font-family: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
-/* Thin, modern scrollbar for modal panels */
-/* width of scrollbar */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 3px;
 }
 
-/* track (background) */
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 
-/* scrollbar thumb */
 ::-webkit-scrollbar-thumb {
-  background: #1DA077;   /* red color like image */
+  background: #1DA077;
   border-radius: 10px;
 }
 
-/* hover effect */
 ::-webkit-scrollbar-thumb:hover {
   background: #148562;
 }
-
-/* body {
-  font-family: monospace;
-} */

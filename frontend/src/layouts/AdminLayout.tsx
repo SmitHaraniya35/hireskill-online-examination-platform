@@ -7,7 +7,7 @@ const AdminLayout: React.FC = () => {
       <Navbar />
       <Outlet />
     </>
-  );
+  )
 };
 
 export default AdminLayout;

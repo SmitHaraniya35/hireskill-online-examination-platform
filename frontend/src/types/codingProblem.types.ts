@@ -1,17 +1,22 @@
+import type { SupportedLanguage } from "../constants/languages";
+
 export interface CodingProblemData {
     id?: string;
     title: string;
     difficulty: string;
     topic: string[];
     problem_description: string;
-    problem_description_image: string;
     constraint: string;
     input_format: string;
     output_format: string;
-    sample_input?: string;
-    sample_output?: string;
-    basic_code_layout: string;
     testCases?: TestCaseData[];
+    templateCodes?: TemplateCodes[];
+}
+
+export interface TemplateCodes {
+    id?: string;
+    language: SupportedLanguage;
+    basic_code_layout: string;
 }
 
 export interface CodingProblemResponse {
@@ -24,17 +29,15 @@ export interface GetAllCodingProblemsResponse{
 
 export interface TestCaseData {
     id?: string;
-    problem_id?: string;
     input: string;
     expected_output: string;
     is_hidden: boolean;
+    image_url?: string;
 }
 
 export interface GelAllCodingProblemWithTestCases {
     codingProblemWithTestCases: CodingProblemData;
 }
-
-// ==========================================================
 
 export interface GetCodingProblemResponse {
     codingProblem: CodingProblemData;
@@ -44,3 +47,13 @@ export interface GetCodingProblemWithTestCases {
     codingProblemWithTestCases: CodingProblemData;
 }
 
+export interface LANGUAGES {
+    Languages: Languages;
+}
+
+export interface Languages {
+    CPP: string;
+    C: string;
+    PYTHON: string;
+    JAVASCRIPT: string;
+}

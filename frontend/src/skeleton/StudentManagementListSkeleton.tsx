@@ -1,27 +1,34 @@
 const StudentManagementListSkeleton = () => {
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-5 gap-4 items-center justify-center p-4 border-b border-gray-200 animate-pulse bg-white">
-        {/* Name */}
-        <div className="col-span-1 justify-center">
-          <div className="h-4 bg-gray-300 rounded w-30" />
-        </div>
+    <div className="grid grid-cols-[14%_14%_1fr_10%_7%_10%_1fr_80px] gap-x-3 items-center px-4 py-3 rounded-xl bg-white border border-gray-100 animate-pulse">
 
-        {/* Email */}
-        <div className="col-span-1 justify-center">
-          <div className="h-4 bg-gray-200 rounded w-30" />
-        </div>
+      {/* Name */}
+      <div className="h-3.5 bg-gray-200 rounded w-4/5" />
 
-        {/* Phone */}
-        <div className="col-span-1 justify-center">
-          <div className="h-4 bg-gray-200 rounded w-25" />
-        </div>
+      {/* Email */}
+      <div className="h-3 bg-gray-100 rounded w-full" />
 
-        {/* College */}
-        <div className="col-span-2 justify-center">
-          <div className="h-4 bg-gray-300 rounded w-55" />
-        </div>
+      {/* Phone */}
+      <div className="h-3 bg-gray-100 rounded w-3/4" />
+
+      {/* College */}
+      <div className="h-3 bg-gray-200 rounded w-4/5" />
+
+      {/* Branch */}
+      <div className="h-3 bg-gray-100 rounded w-full" />
+
+      {/* Degree */}
+      <div className="h-3 bg-gray-100 rounded w-3/4" />
+
+      {/* Graduation Year */}
+      <div className="h-3 bg-gray-100 rounded w-12" />
+
+      {/* Actions — two icon buttons */}
+      <div className="flex items-center gap-1.5">
+        <div className="w-7 h-7 rounded-lg bg-gray-100 border border-gray-100 flex-shrink-0" />
+        <div className="w-7 h-7 rounded-lg bg-gray-100 border border-gray-100 flex-shrink-0" />
       </div>
+
     </div>
   );
 };

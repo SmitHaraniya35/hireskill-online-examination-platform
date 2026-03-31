@@ -1,12 +1,14 @@
-import axios from 'axios';
+// import axios from 'axios';
 import {
     type TestList,
     type TestDetails,
     type Test
 } from "../types/test.types";
 import type{ axiosResponse } from '../types/index.types';
+import api from './api';
 
-const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/test`;
+// const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/test`;
+const API_URL = api.defaults.baseURL + "/test";
 
 const testLinkService = {
     getHeaders: () => {
@@ -21,33 +23,39 @@ const testLinkService = {
     },
 
     createTest: async (examData: Test) => {
-        const response = await axios.post<axiosResponse<TestDetails>>(`${API_URL}/create-test`, examData, testLinkService.getHeaders());
+        const response = await api.post<axiosResponse<TestDetails>>(`${API_URL}/create-test`, examData, testLinkService.getHeaders());
         return response.data;
     },
 
     getAllTest: async () => {
-        const response = await axios.get<axiosResponse<TestList>>(`${API_URL}/get-all-tests`, testLinkService.getHeaders());
+        const response = await api.get<axiosResponse<TestList>>(`${API_URL}/get-all-tests`, testLinkService.getHeaders());
         return response.data;
     },
 
     getTestDetails: async (id: string) => {
-        const response = await axios.get<axiosResponse<TestDetails>>(`${API_URL}/get-test-details/${id}`, testLinkService.getHeaders());
+        const response = await api.get<axiosResponse<TestDetails>>(`${API_URL}/get-test-details/${id}`, testLinkService.getHeaders());
         return response.data;      
     },
 
     updateTest: async (id: string, updateData: Test) => {
-        const response = await axios.put<axiosResponse>(`${API_URL}/update-test/${id}`, updateData, testLinkService.getHeaders());
+        const response = await api.put<axiosResponse<TestDetails>>(`${API_URL}/update-test/${id}`, updateData, testLinkService.getHeaders());
+        throw new Error("Test error"); // For testing error handling
         return response.data;    
     },
 
     deleteTest: async (id: string) => {
-        const response = await axios.delete<axiosResponse>(`${API_URL}/delete-test/${id}`, testLinkService.getHeaders());
+        const response = await api.delete<axiosResponse>(`${API_URL}/delete-test/${id}`, testLinkService.getHeaders());
         return response.data;
     },
     toggleActivation: async (id: string) => {
-        const response = await axios.put<axiosResponse<TestDetails>>(`${API_URL}/toggle-activation/${id}`,{}, testLinkService.getHeaders());
+        const response = await api.put<axiosResponse<TestDetails>>(`${API_URL}/toggle-activation/${id}`,{}, testLinkService.getHeaders());
         return response.data;
     },
+    togglePublicStatus: async (id: string) => {
+        const response = await api.put<axiosResponse<TestDetails>>(`${API_URL}/toggle-public-status/${id}`,{}, testLinkService.getHeaders());
+        return response.data;
+    },
+
 };
 
 export default testLinkService;

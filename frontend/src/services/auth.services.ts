@@ -1,4 +1,4 @@
-import axios from "axios";
+// import axios from "axios";
 import type {
   ForgotPassword,
   ForgotPasswordResponse,
@@ -9,14 +9,18 @@ import type {
   VerifyOtp,
 } from "../types/auth.types";
 import type { axiosResponse } from "../types/index.types";
+import api from "./api";
 
-const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/auth`;
+// const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/auth`;
+const API_URL = api.defaults.baseURL + "/auth";
 
 // ✅ Only attach token if exists
 const getAuthHeaders = () => {
   const token = localStorage.getItem("admin_token");
 
-  if (!token) return {};
+  if (!token) return {
+    withCredentials: true
+  };
 
   return {
     headers: {
@@ -29,7 +33,7 @@ const getAuthHeaders = () => {
 
 const authService = {
   login: async (data: LoginData) => {
-    const response = await axios.post<axiosResponse<LoginResponse>>(
+    const response = await api.post<axiosResponse<LoginResponse>>(
       `${API_URL}/login`,
       data,
       { withCredentials: true },
@@ -39,7 +43,7 @@ const authService = {
   },
 
   logout: async () => {
-    const response = await axios.post<axiosResponse>(
+    const response = await api.post<axiosResponse>(
       `${API_URL}/logout`,
       {},
       getAuthHeaders(),
@@ -49,7 +53,7 @@ const authService = {
   },
 
   forgotPassword: async (data: ForgotPassword) => {
-    const response = await axios.post<axiosResponse<ForgotPasswordResponse>>(
+    const response = await api.post<axiosResponse<ForgotPasswordResponse>>(
       `${API_URL}/forgot-password`,
       data,
       { withCredentials: true },
@@ -59,7 +63,7 @@ const authService = {
   },
 
   verifyOtp: async (data: VerifyOtp) => {
-    const response = await axios.post<axiosResponse>(
+    const response = await api.post<axiosResponse>(
       `${API_URL}/verify-otp`,
       data,
     );
@@ -68,7 +72,7 @@ const authService = {
   },
 
   resetPassword: async (data: ResetPassword) => {
-    const response = await axios.post<axiosResponse>(
+    const response = await api.post<axiosResponse>(
       `${API_URL}/reset-password`,
       data,
     );
@@ -76,13 +80,24 @@ const authService = {
   },
 
   getMe: async () => {
-    const response = await axios.get<axiosResponse<GetMeResponse>>(
+    const response = await api.get<axiosResponse<GetMeResponse>>(
       `${API_URL}/me`,
       getAuthHeaders(),
     );
 
     return response.data;
   },
+
+  refreshToken: async () => {
+    const response = await api.post<axiosResponse<any>>(
+      `${API_URL}/refresh-token`,
+      getAuthHeaders(),
+    );
+
+    return response.data;
+  }
 };
 
 export default authService;
+
+

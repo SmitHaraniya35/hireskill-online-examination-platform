@@ -15,7 +15,7 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
+  const [isError] = useState(false);
 
   // ✅ Check authentication on app load
   useEffect(() => {
@@ -29,7 +29,6 @@ export const AdminAuthProvider: React.FC<{ children: ReactNode }> = ({
           setAdmin(null);
         }
       } catch (error) {
-        // If 401 or error → just clear admin
         setAdmin(null);
       } finally {
         setIsLoading(false);

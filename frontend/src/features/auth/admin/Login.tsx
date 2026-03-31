@@ -35,7 +35,7 @@ const Login: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,#f0fdf4,#ffffff)] font-mono">
+        <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top_left,#f0fdf4,#ffffff)]">
             <div className="bg-white p-8 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.04)] w-full max-w-105">
                 
                 <div className="w-12.5 h-12.5 bg-[#1DA077] text-white rounded-xl flex items-center justify-center text-2xl font-bold mx-auto mb-6">
@@ -86,11 +86,7 @@ const Login: React.FC = () => {
                         {errors.password && <p className="text-red-500 text-xs mt-1 ml-1">{errors.password.message}</p>}
                     </div>
 
-                    <div className="flex justify-between items-center text-sm my-6">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" className="accent-[#1DA077] w-4 h-4 cursor-pointer" /> 
-                            <span className="text-gray-600">Remember me</span>
-                        </label>
+                    <div className="flex justify-end items-center text-sm my-6">
                         <Link to="/admin/forgot-password" virtual-link="true" className="text-[#1DA077] font-semibold hover:underline">
                             Forgot Password?
                         </Link>

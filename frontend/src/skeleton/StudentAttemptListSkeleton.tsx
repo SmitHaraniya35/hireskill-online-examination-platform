@@ -1,60 +1,55 @@
 const StudentAttemptListSkeleton = () => {
   return (
-    <div className="w-full">
-        <div 
-          className="grid grid-cols-10 gap-4 items-center justify-between p-4 border-b border-gray-200 animate-pulse bg-white"
-        >
-          {/* Name */}
-          <div className="col-span-1">
-            <div className="h-4 bg-gray-300 rounded w-16" />
-          </div>
+    <div className="grid grid-cols-[4%_12%_12%_9%_8%_8%_9%_10%_10%_8%_7%] gap-x-3 items-center px-4 py-3 rounded-xl bg-white border border-gray-100 animate-pulse">
 
-          {/* Email */}
-          <div className="col-span-1">
-            <div className="h-3 bg-gray-200 rounded w-20" />
-          </div>
+      {/* # — small circle */}
+      <div className="w-5 h-5 rounded-full bg-gray-100 mx-auto" />
 
-          {/* Phone */}
-          <div className="col-span-1">
-            <div className="h-3 bg-gray-200 rounded w-18" />
-          </div>
+      {/* Name */}
+      <div className="h-3.5 bg-gray-200 rounded w-4/5" />
 
-          {/* Problem - More space */}
-          <div className="col-span-2">
-            <div className="h-4 bg-gray-300 rounded w-42" />
-          </div>
+      {/* Email */}
+      <div className="h-3 bg-gray-100 rounded w-full" />
 
-          {/* Difficulty */}
-          <div className="col-span-1">
-            <div className="h-3 bg-gray-200 rounded w-14" />
-          </div>
+      {/* Phone */}
+      <div className="h-3 bg-gray-100 rounded w-3/4" />
 
-          {/* Started */}
-          <div className="col-span-1">
-            <div className="flex flex-col gap-1">
-              <div className="h-3 bg-gray-200 rounded w-12" />
-              <div className="h-3 bg-gray-200 rounded w-14" />
-            </div>
-          </div>
+      {/* Started — two-line date cell */}
+      <div className="flex flex-col gap-1">
+        <div className="h-3 bg-gray-200 rounded w-14" />
+        <div className="h-2.5 bg-gray-100 rounded w-10" />
+      </div>
 
-          {/* Expires */}
-          <div className="col-span-1">
-            <div className="flex flex-col gap-1">
-              <div className="h-3 bg-gray-200 rounded w-12" />
-              <div className="h-3 bg-gray-200 rounded w-14" />
-            </div>
-          </div>
+      {/* Expiry — two-line date cell */}
+      <div className="flex flex-col gap-1">
+        <div className="h-3 bg-gray-200 rounded w-14" />
+        <div className="h-2.5 bg-gray-100 rounded w-10" />
+      </div>
 
-          {/* Status */}
-          <div className="col-span-1">
-            <div className="h-4 bg-gray-200 rounded w-14" />
-          </div>
+      {/* Finished — two-line date cell */}
+      <div className="flex flex-col gap-1">
+        <div className="h-3 bg-gray-200 rounded w-14" />
+        <div className="h-2.5 bg-gray-100 rounded w-10" />
+      </div>
 
-          {/* Submitted Badge */}
-          <div className="col-span-1">
-            <div className="h-7 bg-green-100 rounded-md w-16 border border-green-200" />
-          </div>
-        </div>
+      {/* Status — pill */}
+      <div className="h-5 w-20 bg-gray-100 rounded-full" />
+
+      {/* Result — two-line center */}
+      <div className="flex flex-col items-center gap-1">
+        <div className="h-3.5 bg-gray-200 rounded w-10" />
+        <div className="h-2.5 bg-gray-100 rounded w-8" />
+      </div>
+
+      {/* Time Taken */}
+      <div className="h-3 bg-gray-100 rounded w-10 mx-auto" />
+
+      {/* Actions — two icon buttons */}
+      <div className="flex items-center justify-center gap-1.5">
+        <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
+        <div className="w-7 h-7 rounded-[7px] bg-gray-100 border border-gray-100" />
+      </div>
+
     </div>
   );
 };
