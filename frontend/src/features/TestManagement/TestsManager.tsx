@@ -266,7 +266,7 @@ const TestManager: React.FC = () => {
                     >
                       <IconDelete />
                     </button>
-                    <CopyToken token={link.unique_token} />
+                    {link.unique_token && <CopyToken token={link.unique_token} />}
                   </div>
 
                   {/* Row 2 — Toggle buttons */}
