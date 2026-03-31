@@ -16,8 +16,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
     currentAssignedProblemId,
     currentCode,
     currentLanguage,
-    setCurrentAssignedProblemId,
-    setCurrentProblemId,
     loadProblemDetails,
     saveDraft,
     isDashboardView,
@@ -69,16 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle }) => {
         setIsSwitching(false);
       }
     },
-    [
-      currentAssignedProblemId,
-      currentCode,
-      currentLanguage,
-      saveDraft,
-      loadProblemDetails,
-      setCurrentProblemId,
-      setCurrentAssignedProblemId,
-      isSwitching,
-    ],
+    [currentAssignedProblemId, currentCode, currentLanguage, saveDraft, loadProblemDetails, isSwitching],
   );
 
   const completedCount = assignedProblems.filter(

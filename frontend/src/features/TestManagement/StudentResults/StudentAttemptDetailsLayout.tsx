@@ -132,7 +132,7 @@ const StudentAttemptDetails: React.FC = () => {
   );
 
 return (
-    <div className="min-h-screen bg-gray-100 px-6 py-6 flex flex-col gap-5 font-sans">
+    <div className="min-h-screen bg-gray-100 px-6 py-6 flex flex-col gap-5">
       {/* Header */}
       <Header
         student={student}

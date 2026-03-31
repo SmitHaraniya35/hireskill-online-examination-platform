@@ -18,6 +18,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
+import CopyToken from "./CopyToken";
 
 const TestManager: React.FC = () => {
   const navigate = useNavigate();
@@ -104,11 +105,15 @@ const TestManager: React.FC = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6 font-mono flex items-center justify-center">
-        <div className="bg-white p-6 rounded-2xl shadow text-red-500">
-          ⚠️ {errorMsg}
+        <div className="bg-[#fff1f2] border-b border-[#fecdd3] px-5 py-2.5 flex items-center gap-2 text-[#dc2626] text-xs">
+          <span>⚠</span> { errorMsg }
+          <button
+            onClick={() => setErrorMsg("")}
+            className="ml-auto bg-transparent border-none text-[#dc2626] text-xs underline p-0 cursor-pointer"
+          >
+            Dismiss
+          </button>
         </div>
-      </div>
     );
   }
   return (
@@ -261,6 +266,7 @@ const TestManager: React.FC = () => {
                     >
                       <IconDelete />
                     </button>
+                    <CopyToken token={link.unique_token} />
                   </div>
 
                   {/* Row 2 — Toggle buttons */}

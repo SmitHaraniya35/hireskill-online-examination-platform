@@ -71,8 +71,8 @@ const StudentAttemptListView: React.FC = () => {
         const res =
           await studentAttemptService.getStudentAttemptsDetails(testId);
         setStudentAttempts(applyDefaultSorting(res.payload!.students));
-      } catch (err) {
-        console.error("Failed to fetch", err);
+      } catch (err: any) {
+        toast.error(err.response.data.message || "Failed to fetch student attempts");
       } finally {
         setAttemptLoading(false);
         setIsRefreshing(false);

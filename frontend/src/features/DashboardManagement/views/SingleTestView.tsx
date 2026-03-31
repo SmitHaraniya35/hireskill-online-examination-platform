@@ -255,7 +255,7 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
               subtitle="Detailed performance metrics for each problem"
               className="lg:col-span-2"
             >
-              <div className="min-w-[600px]">
+              <div className="min-w-150">
                 <table className="w-full">
                   <thead className="bg-gray-50/50">
                     <tr>

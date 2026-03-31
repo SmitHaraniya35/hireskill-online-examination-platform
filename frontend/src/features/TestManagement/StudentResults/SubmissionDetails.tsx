@@ -1,6 +1,7 @@
 import React from "react";
+import Editor from "@monaco-editor/react";
 import type { GetSubmissionResponse } from "../../../types/submission.types";
-import { ChevronRight } from "lucide-react";
+import { CheckCircle2, XCircle, Clock, Cpu } from "lucide-react";
 
 interface ProblemDetailsProps {
   data: GetSubmissionResponse | null;
@@ -9,36 +10,40 @@ interface ProblemDetailsProps {
 }
 
 const difficultyStyles: Record<string, string> = {
-  Easy: "bg-green-50 text-green-700",
-  Medium: "bg-amber-50 text-amber-700",
-  Hard: "bg-red-50 text-red-600",
+  Easy:   "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
+  Medium: "bg-amber-50  text-amber-700  ring-1 ring-amber-200",
+  Hard:   "bg-red-50    text-red-600    ring-1 ring-red-200",
 };
 
-  const renderHTML = (htmlString: string) => (
-    <div dangerouslySetInnerHTML={{ __html: htmlString }} />
-  );
+const renderHTML = (html: string) => (
+  <div dangerouslySetInnerHTML={{ __html: html }} />
+);
 
 const ProblemDetails: React.FC<ProblemDetailsProps> = ({ data, loading, error }) => {
+
+  /* ── Loading ── */
   if (loading) {
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm flex flex-col items-center justify-center min-h-56 gap-3">
-        <div className="w-7 h-7 border-2 border-gray-200 border-t-indigo-500 rounded-full animate-spin" />
-        <p className="text-sm text-gray-400">Loading problem details…</p>
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-xs flex flex-col items-center justify-center min-h-56 gap-3">
+        <div className="w-6 h-6 border-2 border-gray-200 border-t-indigo-500 rounded-full animate-spin" />
+        <p className="text-sm text-gray-400 tracking-wide">Loading details…</p>
       </div>
     );
   }
 
+  /* ── Error ── */
   if (error) {
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center justify-center min-h-56">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-xs flex items-center justify-center min-h-56">
         <p className="text-sm text-red-500">{error}</p>
       </div>
     );
   }
 
+  /* ── Empty ── */
   if (!data) {
     return (
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm flex items-center justify-center min-h-56">
+      <div className="bg-white border border-gray-100 rounded-2xl shadow-xs flex items-center justify-center min-h-56">
         <p className="text-sm text-gray-400">Select a problem to view its details.</p>
       </div>
     );
@@ -46,139 +51,200 @@ const ProblemDetails: React.FC<ProblemDetailsProps> = ({ data, loading, error })
 
   const { problem, submission } = data;
 
+  const failed = submission.total_test_cases - submission.passed_test_cases;
+
   const isPassed =
     submission.status?.toLowerCase() === "passed" ||
     submission.passed_test_cases === submission.total_test_cases;
   const isPartial =
-    !isPassed &&
-    submission.passed_test_cases > 0 &&
-    submission.passed_test_cases < submission.total_test_cases;
+    !isPassed && submission.passed_test_cases > 0 && submission.passed_test_cases < submission.total_test_cases;
 
-  const submissionStatusStyle = isPassed
-    ? "bg-green-50 text-green-700"
+  const statusStyle = isPassed
+    ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
     : isPartial
-    ? "bg-amber-50 text-amber-700"
-    : "bg-red-50 text-red-600";
+    ? "bg-amber-50 text-amber-700 ring-1 ring-amber-200"
+    : "bg-red-50 text-red-600 ring-1 ring-red-200";
 
-  const submissionStatusLabel = submission.status;
+  const monacoLang = (lang: string) => {
+    const map: Record<string, string> = {
+      javascript: "javascript",
+      typescript: "typescript",
+      python: "python",
+      java: "java",
+      cpp: "cpp",
+      c: "c",
+      go: "go",
+      rust: "rust",
+    };
+    return map[lang?.toLowerCase()] ?? "plaintext";
+  };
 
-  const codeLines = (submission.source_code || "").split("\n");
-  
   return (
-    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5 flex flex-col gap-4 overflow-y-auto max-h-[120vh]">
-      {/* Section heading */}
-      <h2 className="text-xl font-bold text-gray-900">Submissions Details</h2>
+    <div className="bg-white border border-gray-100 rounded-2xl shadow-sm p-6 flex flex-col gap-6 overflow-y-auto max-h-[100vh]">
 
-      {/* Problem title + difficulty */}
-      <div className="flex items-start justify-between gap-2">
-        <span className="text-sm font-bold text-gray-900 leading-snug">{problem.title}</span>
-        <span
-          className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex-shrink-0 ${
-            difficultyStyles[problem.difficulty] || difficultyStyles.Easy
-          }`}
-        >
-          {problem.difficulty}
-        </span>
+      {/* ── Header ── */}
+      <div>
+        <p className="text-[11px] uppercase">
+        <h2 className="text-sm font-bold text-gray-900">Submission Details</h2>
+      </p>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="mt-4 text-base leading-snug">
+            {problem.title}
+          </h1>
+          <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full flex-shrink-0 ${difficultyStyles[problem.difficulty] || difficultyStyles.Easy}`}>
+            {problem.difficulty}
+          </span>
+        </div>
+        {problem.topic?.length > 0 && (
+          <p className="mt-1 text-xs text-gray-400">
+            {problem.topic.join(" · ")}
+          </p>
+        )}
       </div>
 
-      {/* Topic */}
-      {problem.topic?.length > 0 && (
-        <p className="text-xs text-gray-500 -mt-2">Topic: {problem.topic.join(", ")}</p>
-      )}
+      {/* ── Divider ── */}
+      <hr className="border-gray-100" />
 
-      {/* Description */}
+      {/* ── Description ── */}
       <div>
-        <h3 className="text-xl font-semibold text-gray-800 mb-1.5">Description</h3>
-        <p className="text-[16px] text-gray-500 leading-relaxed">{renderHTML(problem.problem_description)}</p>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-2">
+          Problem Description
+        </p>
+        <div className="text-sm text-gray-600 leading-relaxed prose prose-sm max-w-none">
+          {renderHTML(problem.problem_description)}
+        </div>
       </div>
 
-      {/* Submitted Code */}
+      {/* ── Divider ── */}
+      <hr className="border-gray-100" />
+
+      {/* ── Code ── */}
       <div>
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="text-xs font-semibold text-gray-800">Submitted Code</h3>
-          <button className="flex items-center gap-0.5 text-[11px] font-medium text-gray-600 bg-gray-100 border border-gray-200 rounded-md px-2.5 py-1 hover:bg-gray-200 transition-colors">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400">
+            Submitted Code
+          </p>
+          <span className="text-[11px] font-medium text-gray-500 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1">
             {submission.language || "JavaScript"}
-            <ChevronRight size={13} />
-          </button>
+          </span>
         </div>
 
-        <div className="bg-[#1e1e2e] rounded-xl overflow-auto max-h-64 font-mono text-xs leading-6 scrollbar-thin">
-          {codeLines.map((line, i) => (
-            <div key={i} className="flex items-start hover:bg-white/5 px-0">
-              <span className="w-9 flex-shrink-0 text-right text-[#4b5278] select-none pr-3 pl-2 py-0">
-                {i + 1}
-              </span>
-              <span className="text-[#cdd6f4] whitespace-pre py-0 pr-3">{line || "\u00A0"}</span>
-            </div>
-          ))}
+        <div className="rounded-xl overflow-hidden border border-gray-800" style={{ height: 260 }}>
+          <Editor
+            height="100%"
+            width="100%"
+            language={monacoLang(submission.language)}
+            value={submission.source_code}
+            theme="vs-dark"
+            options={{
+              readOnly: true,
+              domReadOnly: true,
+              readOnlyMessage: { value: "" },
+              minimap: { enabled: false },
+              fontSize: 12.5,
+              scrollBeyondLastLine: false,
+              automaticLayout: true,
+              tabSize: 2,
+              wordWrap: "on",
+              lineNumbers: "on",
+              glyphMargin: false,
+              folding: true,
+              renderValidationDecorations: "off",
+              scrollbar: { vertical: "visible", horizontal: "visible" },
+              cursorStyle: "line",
+              contextmenu: false,
+              renderLineHighlight: "none",
+              lineDecorationsWidth: 0,
+              overviewRulerBorder: false,
+            }}
+            loading={
+              <div className="flex items-center justify-center h-full bg-[#1e1e1e] text-gray-500 text-xs">
+                Loading editor…
+              </div>
+            }
+          />
         </div>
       </div>
 
-      {/* Submission Info */}
-      <div>
-        <h3 className="text-xs font-semibold text-gray-800 mb-2.5">Submission Info</h3>
+      {/* ── Divider ── */}
+      <hr className="border-gray-100" />
 
-        {/* 4-col grid */}
-        <div className="grid grid-cols-4 gap-2 mb-2">
-          <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">
-              Total Test Cases
-            </span>
-            <span className="text-lg font-bold text-gray-900 leading-none mt-1">
-              {submission.total_test_cases}
-            </span>
-          </div>
-          <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-green-500 uppercase tracking-wide leading-none">
-              Passed
-            </span>
-            <span className="text-lg font-bold text-green-600 leading-none mt-1">
-              {submission.passed_test_cases}
-            </span>
-          </div>
-          <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-red-400 uppercase tracking-wide leading-none">
-              Failed
-            </span>
-            <span className="text-lg font-bold text-red-500 leading-none mt-1">
-              {submission.total_test_cases - submission.passed_test_cases}
-            </span>
-          </div>
-          <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">
+      {/* ── Submission Info ── */}
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-widest text-gray-400 mb-3">
+          Submission Info
+        </p>
+
+        {/* Test case row */}
+        <div className="grid grid-cols-3 gap-2 mb-2">
+          <StatCard
+            label="Total Cases"
+            value={submission.total_test_cases}
+            valueClass="text-gray-800"
+          />
+          <StatCard
+            label="Passed"
+            value={submission.passed_test_cases}
+            valueClass="text-emerald-600"
+            icon={<CheckCircle2 size={13} className="text-emerald-500" />}
+          />
+          <StatCard
+            label="Failed"
+            value={failed}
+            valueClass={failed > 0 ? "text-red-500" : "text-gray-400"}
+            icon={failed > 0 ? <XCircle size={13} className="text-red-400" /> : undefined}
+          />
+        </div>
+
+        {/* Status + perf row */}
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1.5">
+            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">
               Status
             </span>
-            <span
-              className={`text-[11px] font-semibold mt-1.5 px-2 py-0.5 rounded-md inline-block w-fit ${submissionStatusStyle}`}
-            >
-              {submissionStatusLabel}
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md inline-block w-fit mt-0.5 ${statusStyle}`}>
+              {submission.status}
             </span>
           </div>
-        </div>
-
-        {/* Exec + Memory */}
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">
-              Execution Time
-            </span>
-            <span className="text-lg font-bold text-gray-900 leading-none mt-1">
-              {submission.execution_time}
-            </span>
-          </div>
-          <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1">
-            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">
-              Memory Used
-            </span>
-            <span className="text-lg font-bold text-gray-900 leading-none mt-1">
-              {submission.memory_used} MB
-            </span>
-          </div>
+          <StatCard
+            label="Exec Time"
+            value={submission.execution_time}
+            valueClass="text-gray-800"
+            icon={<Clock size={13} className="text-gray-400" />}
+          />
+          <StatCard
+            label="Memory"
+            value={`${submission.memory_used} MB`}
+            valueClass="text-gray-800"
+            icon={<Cpu size={13} className="text-gray-400" />}
+          />
         </div>
       </div>
+
     </div>
   );
-
 };
+
+/* ── Small reusable stat card ── */
+interface StatCardProps {
+  label: string;
+  value: string | number;
+  valueClass?: string;
+  icon?: React.ReactNode;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ label, value, valueClass = "", icon }) => (
+  <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-1">
+    <div className="flex items-center gap-1">
+      {icon}
+      <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide leading-none">
+        {label}
+      </span>
+    </div>
+    <span className={`text-base font-bold leading-none mt-1 ${valueClass}`}>
+      {value}
+    </span>
+  </div>
+);
 
 export default ProblemDetails;

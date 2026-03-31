@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const testSchema = z.object({
   title: z
     .string()
-    .min(3, 'Title must be at least 3 characters'),
+    .min(1, 'Title is required'),
 
   duration: z
     .string()
