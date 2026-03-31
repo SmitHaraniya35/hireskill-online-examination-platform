@@ -11,7 +11,6 @@ import {
   verifyOtpService,
   createClientService,
 } from "../services/auth.service.ts";
-import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
 import type { Admin, LoginResponse } from "../types/controller/authData.types.ts";
 import { generateApiKey } from "../utils/helper.utils.ts";
@@ -34,15 +33,8 @@ export const login = async (
       id: user.id
     }
 
-    res.cookie("accessToken", accessToken, {
-      maxAge: 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      sameSite: "none",
-      secure: true,
-    });
-
     res.cookie("refreshToken", refreshToken, {
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "none",
       secure: true,
@@ -116,14 +108,9 @@ export const refreshToken = async (
       return res.unauthorized(ERROR_MESSAGES.REFRESH_TOKEN_REQUIRED);
     }
 
-    const { userId, refreshTokenId } = verifyRefreshToken(refreshToken);
-    if (!userId || !refreshTokenId) {
-      return res.unauthorized(ERROR_MESSAGES.INVALID_REFRESH_TOKEN);
-    }
+    const data = await refreshTokenService(refreshToken);
 
-    const data = await refreshTokenService(userId, refreshTokenId);
-
-    res.cookie("accessToken", data.accessToken, {
+    res.cookie("refreshToken", data.refreshToken, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
       sameSite: "none",

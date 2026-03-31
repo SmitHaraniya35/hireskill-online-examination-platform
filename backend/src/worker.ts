@@ -7,12 +7,19 @@
 //   async (job) => {
 //     console.log("Processing job:", job.id);
 
-//     await processSubmission(
-//       job.id as string,
-//       job.data.language,
-//       job.data.code,
-//       job.data.testCases
-//     );
+//     // await processSubmission(
+//     //   job.id as string,
+//     //   job.data.language,
+//     //   job.data.code,
+//     //   job.data.testCases
+//     // );
+
+//     await processSubmission({
+//       jobId: job.id as string,
+//       language: job.data.language,
+//       code: job.data.code,
+//       testCases: job.data.testCases
+//     });
 
 //     console.log("Finished job:", job.id);
 //   },

@@ -8,6 +8,7 @@ const TestCaseSchema = generateSchema<TestCaseDocument>({
     input: { type: String },
     expected_output: { type: String },
     is_hidden: { type: Boolean },
+    image_url: { type: String, default: null },
 });
 
 TestCaseSchema.virtual('coding_problem', {

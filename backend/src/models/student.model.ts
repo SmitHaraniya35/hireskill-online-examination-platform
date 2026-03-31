@@ -4,9 +4,9 @@ import { BaseClass } from "./baseModel/BaseClass.ts";
 import { generateSchema } from "./baseModel/Index.ts";
 
 const StudentSchema = generateSchema<StudentDocument>({
-    name: { type: String },
     email: { type: String },
-    phone: { type: Number },
+    name: { type: String, default: null },
+    phone: { type: Number, default: null },
     college: {type: String, default: null },
     degree: {type: String, default: null},
     branch: {type: String, default: null},
@@ -15,6 +15,7 @@ const StudentSchema = generateSchema<StudentDocument>({
     resume_url: {type: String, default: null},
     linkedin_url: {type: String, default: null},
     github_url: {type: String, default: null},
+    complete_profile: { type: Boolean, default: false }
 });
 
 export class StudentClass extends BaseClass<StudentDocument> {}

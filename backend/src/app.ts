@@ -10,17 +10,19 @@ import testCaseRoutes from "./routes/testCase.routes.ts";
 import studentRoutes from "./routes/student.routes.ts";
 import submissionRoutes from "./routes/submission.routes.ts";
 import studentAttemptRoutes from "./routes/studentAttempt.routes.ts";
+import codingProblemTemplateRoutes from "./routes/codingProblemTemplate.routes.ts";
+import studentAssignedProblemRoutes from "./routes/studentAssignedProblem.routes.ts";
+import executorRoutes from "./routes/executor.routes.ts";
+import dashboardRoutes from "./routes/dashboard.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
 // import { validateApiKey } from "./middlewares/apikey.middleware.ts";
-// import { submissionQueue } from "./queue/submission.queue.ts";
-// import { redis } from "./store/redis.store.ts";
-// import { processSubmission } from "./services/executor.service.ts";
 
 const app = express();
 
 // Security & core
 app.use(cors({
-    origin: "http://192.168.0.108:5173",
+    origin: "https://unsnouted-unescapably-mira.ngrok-free.dev",
+    // origin: "http://192.168.0.107:5173",
     credentials: true
 }));
 
@@ -44,40 +46,10 @@ app.use("/api/test-case", testCaseRoutes);
 app.use("/api/student", studentRoutes);
 app.use("/api/submission", submissionRoutes);
 app.use("/api/student-attempt", studentAttemptRoutes);
-
-// app.post("/api/submit", async (req, res) => {
-//   try {
-//     const { language, code, testCases } = req.body;
-
-//     // const { testCases } = await getAllTestCasesByProblemIdService(problemId);
-
-//     const job = await submissionQueue.add("submission", {
-//       language,
-//       code,
-//       testCases,
-//     });
-
-//     await redis.set(
-//       `job:${job.id}`,
-//       JSON.stringify({
-//         status: "pending",
-//         results: [],
-//       }),
-//     );
-
-//     res.json({ jobId: job.id });
-//   } catch (err: any) {
-//     console.log(err);
-//     res.status(500).json({ msg: "Internal server error" });
-//   }
-// });
-
-// app.get("/api/result/:jobId", async (req, res) => {
-//   const data = await redis.get(`job:${req.params.jobId}`);
-//   if (!data) return res.status(404).json({ message: "Not found" });
-
-//   res.json(JSON.parse(data));
-// });
+app.use("/api/coding-problem-template", codingProblemTemplateRoutes);
+app.use("/api/student-assigned-problem", studentAssignedProblemRoutes);
+app.use("/api/executor", executorRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Custom Error Middleware
 app.use(errorHandlerMiddleware);

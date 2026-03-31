@@ -10,10 +10,10 @@ const router = express();
 router.post("/create-student-attempt", validateRequest(CreateStudentAttemptSchema), StudentAttemptController.createStudentAttempt);
 router.get("/get-student-attempt/:id", validateRequest(IdSchema), StudentAttemptController.getStudentAttemptById);
 router.get("/get-student-attempts-details/:testId", authMiddleware, validateRequest(), StudentAttemptController.getStudentAttemptsDetailsByTestId);
-router.put("/submit-student-attempt/:id", validateRequest(IdSchema), StudentAttemptController.submitStudentAttempt);
 router.delete("/delete-student-attempt/:id", authMiddleware, validateRequest(IdSchema), StudentAttemptController.deleteStudentAttempt);
+router.get("/get-student-attempt-submission-details-and-result/:id", validateRequest(IdSchema), StudentAttemptController.getStudentAttemptSubmissionDetailsAndResultById);
 
-router.get("/:id/get-problem-id", validateRequest(IdSchema), StudentAttemptController.validateStudentAttemptAndGetCodingProblemId);
-router.post("/validate-student-attempt", validateRequest(ValidateStudentAttemptSchema), StudentAttemptController.validateStudentAttemptByEmail);
+router.get("/validate-student-attempt/:id", validateRequest(IdSchema), StudentAttemptController.validateStudentAttemptById);
+router.post("/validate-student-attempt-by-email-and-test-id", validateRequest(ValidateStudentAttemptSchema), StudentAttemptController.validateStudentAttemptByEmailAndTestId);
 
 export default router;

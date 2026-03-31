@@ -5,21 +5,23 @@ import { generateSchema } from "./baseModel/Index.ts";
 
 const CodingProblemSchema = generateSchema<CodingProblemDocument>({
     title: { type: String },
-    difficulty: { type: String },
+    difficulty: { type: String, enum: ['Easy', 'Medium', 'Hard'] },
     topic: { type: [String] },
     problem_description: { type: String },
-    problem_description_image: { type: String },
     constraint: { type: String },
     input_format: { type: String },
     output_format: { type: String },
-    sample_input: { type: String },
-    sample_output: { type: String },
-    basic_code_layout: { type: String },
     created_by: { type: String },
 });
 
-CodingProblemSchema.virtual('testcases', {
+CodingProblemSchema.virtual('testCases', {
     ref: 'TestCase',
+    localField: 'id',
+    foreignField: 'problem_id',
+});
+
+CodingProblemSchema.virtual('templateCodes', {
+    ref: 'CodingProblemTemplate',
     localField: 'id',
     foreignField: 'problem_id',
 });

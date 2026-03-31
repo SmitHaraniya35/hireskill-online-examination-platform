@@ -4,8 +4,7 @@ import { BaseClass } from "./baseModel/BaseClass.ts";
 import { generateSchema } from "./baseModel/Index.ts";
 
 const SubmissionSchema = generateSchema<SubmissionDocument>({
-    student_attempt_id: { type: String },
-    problem_id: { type: String },
+    assigned_problem_id: { type: String },
     language: { type: String },
     source_code: { type: String },
     submitted_at: { type: Date, default: Date.now },
@@ -16,18 +15,15 @@ const SubmissionSchema = generateSchema<SubmissionDocument>({
     memory_used: { type: String },
 });
 
-SubmissionSchema.virtual('problem', {
-    ref: 'CodingProblem',
-    localField: 'problem_id',
-    foreignField: 'id',
+SubmissionSchema.virtual("studentAssignedProblem", {
+    ref: "StudentAssignedProblem",
+    localField: "assigned_problem_id",
+    foreignField: "id",
     justOne: true
 });
 
-SubmissionSchema.virtual('student_attempt', {
-    ref: 'StudentAttempt',
-    localField: 'student_attempt_id',
-    foreignField: 'id'
-});
+SubmissionSchema.set("toJSON", { virtuals: true });
+SubmissionSchema.set("toObject", { virtuals: true });
 
 export class SubmissionClass extends BaseClass<SubmissionDocument> {}
 

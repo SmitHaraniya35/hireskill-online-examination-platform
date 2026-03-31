@@ -5,12 +5,13 @@ import {
   generateAccessToken,
   generateRefreshToken,
   generateRefreshTokenId,
+  verifyRefreshToken,
 } from "../utils/jwt.utils.ts";
 import { generateApiKey, generateResetPasswordOTP } from "../utils/helper.utils.ts";
 import type { UserDocument } from "../types/model/user.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 import { Client } from "../models/client.model.ts";
-import sendEmail from "./email.service.ts";
+import { sendEmail } from "./email.service.ts";
 
 export const loginService = async (email: string, password: string) => {
   const user: UserDocument | null = await User.findOneActive({ email });
@@ -31,10 +32,10 @@ export const loginService = async (email: string, password: string) => {
 
   const accessToken = generateAccessToken(user.id, user.email);
 
-  user.refreshTokenId = (await generateRefreshTokenId()).toString();
+  user.refresh_token_id = (await generateRefreshTokenId()).toString();
   await user.save();
 
-  const refreshToken = generateRefreshToken(user.id, user.refreshTokenId);
+  const refreshToken = generateRefreshToken(user.id, user.refresh_token_id);
 
   return { user, accessToken, refreshToken };
 };
@@ -75,10 +76,15 @@ export const createAdminService = async (email: string, password: string) => {
   return { user };
 };
 
-export const refreshTokenService = async (
-  userId: string,
-  refreshTokenId: string,
-) => {
+export const refreshTokenService = async (refreshToken: string) => {
+  const { userId, refresh_token_id } = verifyRefreshToken(refreshToken);
+  if (!userId || !refresh_token_id) {
+    throw new HttpError(
+      ERROR_MESSAGES.INVALID_REFRESH_TOKEN, 
+      HttpStatusCode.UNAUTHORIZED
+    );
+  }
+
   const user: UserDocument | null = await User.findOneActive({ id: userId });
   if (!user) {
     throw new HttpError(
@@ -87,7 +93,7 @@ export const refreshTokenService = async (
     );
   }
 
-  if (user.refreshTokenId !== refreshTokenId) {
+  if (user.refresh_token_id !== refresh_token_id) {
     throw new HttpError(
       ERROR_MESSAGES.INVALID_REFRESH_TOKEN,
       HttpStatusCode.UNAUTHORIZED,
@@ -95,7 +101,12 @@ export const refreshTokenService = async (
   }
 
   const accessToken: string = generateAccessToken(user.id, user.email);
-  return { accessToken };
+  const newRefreshTokenId: string = (await generateRefreshTokenId()).toString();
+  user.refresh_token_id = newRefreshTokenId;
+  const newRefreshToken: string = generateRefreshToken(user.id, newRefreshTokenId);
+  await user.save();
+  
+  return { accessToken, refreshToken: newRefreshToken };
 };
 
 export const forgetPasswordService = async (email: string) => {
@@ -114,7 +125,7 @@ export const forgetPasswordService = async (email: string) => {
   await user.save();
 
   // Logic: Send otp to admin's email...
-  // sendEmail({
+  // await sendEmail({
   //   to: user.email,
   //   subject: "Password Reset OTP",
   //   text: `Your OTP for password reset is: ${otp}. It will expire in 2 minutes.`,
@@ -195,7 +206,7 @@ export const logoutService = async (userId: string) => {
     );
   }
 
-  user.refreshTokenId = null;
+  user.refresh_token_id = null;
   await user.save();
   return;
 };

@@ -7,7 +7,7 @@ const UserSchema = generateSchema<UserDocument>({
     email: { type: String },
     password: { type: String },
     role: { type: String },
-    refreshTokenId: { type: String, default: null },
+    refresh_token_id: { type: String, default: null },
     password_reset_otp: { type: String, default: null },
     password_reset_otp_expires: { type: Number , default: null },
     is_otp_verified: { type: Boolean, default: false }
