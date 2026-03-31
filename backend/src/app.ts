@@ -21,8 +21,7 @@ const app = express();
 
 // Security & core
 app.use(cors({
-    // origin: "https://unsnouted-unescapably-mira.ngrok-free.dev",
-    origin: "http://192.168.0.105:5173",
+    origin: "https://hireskill-online-examination-platfo-seven.vercel.app",
     credentials: true,
 }));
 
