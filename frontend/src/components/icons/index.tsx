@@ -53,3 +53,16 @@ export const IconView = ({ className = "w-4 h-4" }: IconProps) => (
     <circle cx="12" cy="12" r="3" />
   </svg>
 );
+
+export const IconCopy = ({ className = "w-4 h-4" }: IconProps) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth={1.5}
+    className={className}
+  >
+    <rect x="9" y="9" width="13" height="13" rx="2" strokeLinecap="round" strokeLinejoin="round" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+  </svg>
+);

@@ -25,43 +25,41 @@ const AssessmentContent: React.FC = () => {
   const [hasStarted, setHasStarted] = useState(false);
 
   const handleAutoFinish = useCallback(async () => {
-  // console.log(currentAssignedProblemId, currentCode, currentLanguage); 
+    if (currentAssignedProblemId && currentCode.trim() !== "") {
+      try {
+        await saveDraft(currentAssignedProblemId, {
+          last_saved_code: currentCode,
+          last_language: currentLanguage,
+        });
+      } catch (err) {
+        console.error("Draft save failed during auto-submit:", err);
+      }
+    }
 
-  if (currentAssignedProblemId && currentCode.trim() !== "") {
     try {
-      await saveDraft(currentAssignedProblemId, {
-        last_saved_code: currentCode,
-        last_language: currentLanguage,
+      await testFlowService.finishTestService(slug!, {
+        student_attempt_id: studentAttemptId,
+        status: STUDENT_ATTEMPT_STATUS.AUTO_SUBMITTED,
       });
     } catch (err) {
-      console.error("Draft save failed during auto-submit:", err);
+      console.error("Final submission failed:", err);
     }
-  }
 
-  try {
-    await testFlowService.finishTestService(slug!, {
-      student_attempt_id: studentAttemptId,
-      status: STUDENT_ATTEMPT_STATUS.AUTO_SUBMITTED,
-    });
-  } catch (err) {
-    console.error("Final submission failed:", err);
-  }
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    }
 
-  if (document.fullscreenElement) {
-    await document.exitFullscreen().catch(() => {});
-  }
+    navigate("/test/complete", { replace: true });
+  }, [
+    currentAssignedProblemId,
+    currentCode,
+    currentLanguage,
+    studentAttemptId,
+    slug,
+    saveDraft,
+    navigate,
+  ]);
 
-  navigate("/test/complete", { replace: true });
-}, [
-  currentAssignedProblemId,
-  currentCode,
-  currentLanguage,
-  studentAttemptId,
-  slug,
-  saveDraft,
-  navigate,
-]);
-  
   const { isViolation, countdown, enterFullscreen } = useProctoring(
     handleAutoFinish,
     hasStarted,
@@ -147,9 +145,7 @@ const AssessmentContent: React.FC = () => {
             </p>
             <p className="text-lg text-gray-400 mb-6">
               Test will auto-submit in:{" "}
-              <span className="text-red-500  text-3xl ml-2">
-                {countdown}s
-              </span>
+              <span className="text-red-500  text-3xl ml-2">{countdown}s</span>
             </p>
             <button
               onClick={enterFullscreen}

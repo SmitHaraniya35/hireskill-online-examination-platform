@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import StatusBadge from "../Shared/StatusBadge";
 import { useAssessment } from "../../context/AssessmentContext";
 
@@ -9,12 +9,9 @@ const DescriptionPanel: React.FC = () => {
     loadProblemDetails,
     currentAssignedProblemId,
   } = useAssessment();
-  const [, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
     loadProblemDetails(currentProblemId!, currentAssignedProblemId!);
-    setLoading(false);
   }, [currentAssignedProblemId, currentProblemId]);
 
   if (!currentProblem) {

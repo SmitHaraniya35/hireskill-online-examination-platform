@@ -30,7 +30,6 @@ const ExamTimer: React.FC<ExamTimerProps> = ({
   useEffect(() => {
     if (!expiryTimeRef.current) return;
 
-    // useCallback moved INSIDE useEffect to avoid hook order issues
     const updateTimer = () => {
       const now = Date.now();
       const remaining = Math.max(
