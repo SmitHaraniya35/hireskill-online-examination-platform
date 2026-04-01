@@ -29,10 +29,10 @@ interface SelectedCounts {
 const parseISOToFields = (iso: string) => {
   const date = new Date(iso);
   return {
-    day: String(date.getUTCDate()).padStart(2, "0"),
-    month: String(date.getUTCMonth() + 1).padStart(2, "0"),
-    year: String(date.getUTCFullYear()),
-    time: `${String(date.getUTCHours()).padStart(2, "0")}:${String(date.getUTCMinutes()).padStart(2, "0")}`,
+    day: String(date.getDate()).padStart(2, "0"),
+    month: String(date.getMonth() + 1).padStart(2, "0"),
+    year: String(date.getFullYear()),
+    time: `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`,
   };
 };
 
@@ -55,7 +55,6 @@ const CreateNewTest: React.FC = () => {
     new Set(),
   );
   const [searchTerm, setSearchTerm] = useState("");
-  // const [topicFilter, setTopicFilter] = useState("");
   const [topicFilters, setTopicFilters] = useState<string[]>([]);
   const [difficultyFilter, setDifficultyFilter] = useState("");
   const [uniqueTopics, setUniqueTopics] = useState<string[]>([]);
@@ -205,8 +204,6 @@ const CreateNewTest: React.FC = () => {
       filtered = filtered.filter(
         (p) => p.difficulty.toLowerCase() === difficultyFilter.toLowerCase(),
       );
-    // if (topicFilter)
-    //   filtered = filtered.filter((p) => p.topic.includes(topicFilter));
     if (topicFilters.length > 0)
       filtered = filtered.filter((p) =>
         topicFilters.every((t) => p.topic.includes(t)),
@@ -266,26 +263,28 @@ const CreateNewTest: React.FC = () => {
 
     // Format start_at
     const [startHh, startMm] = data.start_time.split(":").map(Number);
-    const formattedStart = `${data.start_year}-${String(Number(data.start_month)).padStart(2, "0")}-${String(Number(data.start_day)).padStart(2, "0")}T${String(startHh).padStart(2, "0")}:${String(startMm).padStart(2, "0")}:00Z`;
+    const startDate = new Date(+data.start_year, +data.start_month - 1, +data.start_day, startHh, startMm);
 
     // Format expiration_at
     const [hh, mm] = data.expiry_time.split(":").map(Number);
-    const formattedExpiration = `${data.year}-${String(Number(data.month)).padStart(2, "0")}-${String(Number(data.day)).padStart(2, "0")}T${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:00Z`;
+    const expiryDate = new Date(+data.year, +data.month - 1, +data.day, hh, mm);
 
     const testData: Partial<Test> = {
       title: data.title.trim(),
       duration_minutes: Number(data.duration),
-      start_at: formattedStart,
-      expiration_at: formattedExpiration,
+      start_at: startDate.toISOString(),
+      expiration_at: expiryDate.toISOString(),
       count_of_total_problem: totalProblems,
       count_of_easy_problem: easyCount,
       count_of_medium_problem: mediumCount,
       count_of_hard_problem: hardCount,
       coding_problem_ids: Array.from(selectedProblems),
     };
+    console.log(testData)
 
     try {
       if (isEditMode && editId) {
+        console.log(testData);
         await testLinkService.updateTest(editId, testData as Test);
         toast.success("Test Updated Successfully!");
       } else {
@@ -294,6 +293,7 @@ const CreateNewTest: React.FC = () => {
       }
       navigate("/admin/create-exam");
     } catch (err: any) {
+      console.log(err);
       setIsError(true);
       setErrorMsg(err.response?.data?.message || "An error occurred");
       toast.error(err.response?.data?.message || "An error occurred");
@@ -667,18 +667,6 @@ const CreateNewTest: React.FC = () => {
                       className="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:border-green-500 transition"
                     />
                   </div>
-                  {/* <select
-                    value={topicFilter}
-                    onChange={(e) => setTopicFilter(e.target.value)}
-                    className="px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-green-500 transition"
-                  >
-                    <option value="">Select topic</option>
-                    {uniqueTopics.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select> */}
                   <div className="relative" ref={topicDropdownRef}>
                     <button
                       type="button"
@@ -986,7 +974,7 @@ const CreateNewTest: React.FC = () => {
               disabled={
                 loading || !isValidDistribution || totalSelected < totalProblems
               }
-              className="cursor-pointer px-8 py-2.5 rounded-lg text-white text-sm font-semibold bg-gray-900 hover:bg-gray-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-pointer px-8 py-2.5 rounded-lg text-white text-sm font-semibold bg-[#1DA077] hover:bg-[#1A8C6A] transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading
                 ? isEditMode

@@ -87,7 +87,7 @@ export default function Dashboard() {
           </button>
 
           {sidebarOpen && (
-            <p className="text-[10px] uppercase tracking-widest text-gray-300 px-3 pt-4 pb-2 font-semibold">
+            <p className="text-[11px] uppercase tracking-widest text-gray-500 px-3 pt-4 pb-2">
               Recent Tests
             </p>
           )}
