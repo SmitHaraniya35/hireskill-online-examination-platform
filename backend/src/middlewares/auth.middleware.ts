@@ -15,6 +15,6 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     req.user = data;
     next();
   } catch {
-    return res.unauthorized(ERROR_MESSAGES.INVALID_ACCESS_TOKEN);
+    return res.unauthorized(ERROR_MESSAGES.INVALID_ACCESS_TOKEN, "TOKEN_EXPIRED");
   }
 };
