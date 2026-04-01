@@ -6,10 +6,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Connect DB once when the worker script starts
+connectDB();
+
 export const attemptWorker = new Worker(
   "attempt-queue",
   async (job) => {
-    await connectDB();
     const { student_attempt_id, status } = job.data;
 
     console.log("Processing attempt started:", job.id, student_attempt_id);
@@ -29,7 +31,16 @@ export const attemptWorker = new Worker(
 );
 
 attemptWorker.on("failed", (job, err) => {
-    console.log(`Processing attempt failed: ${job!.id}`, err);
-})
+    console.log(`Processing attempt failed: ${job?.id}`, err);
+});
 
 console.log("Attempt Worker Started...");
+
+const shutdown = async () => {
+  console.log("Worker shutting down...");
+  await attemptWorker.close();
+  process.exit(0);
+};
+
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);

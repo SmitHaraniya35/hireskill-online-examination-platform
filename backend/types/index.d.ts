@@ -11,7 +11,7 @@ declare global {
             created<T>(data?: T, message?: string): this;
             
             badRequest(message?: string, errors?: string[] | null): this;
-            unauthorized(message?: string): this;
+            unauthorized(message?: string, errorCode?: string): this;
             notFound(message?: string): this;
             internalServerError(message?: string): this;
             forbidden(message?: string): this;

@@ -328,7 +328,7 @@ export const processSubmission = async ({
   };
 
   const submissionId = uuid();
-  const submissionsPath = path.join("submissions", submissionId);
+  const submissionsPath = path.join("/app/submissions", submissionId);
 
   fs.mkdirSync(submissionsPath, { recursive: true });
 
@@ -346,7 +346,7 @@ export const processSubmission = async ({
         results,
     }
 
-    await startContainer(containerName, submissionsPath, config.image);
+    await startContainer(containerName, submissionId, config.image);
 
     // 🔧 Compile if needed
     if (config.compile) {
@@ -449,7 +449,7 @@ export const processSubmission = async ({
 
 const startContainer = (
   containerName: string,
-  submissionsPath: string,
+  submissionId: string,
   image: string
 ): Promise<void> => {
 
@@ -477,10 +477,10 @@ const startContainer = (
       "--read-only",
 
       "-v",
-      `${path.resolve(submissionsPath)}:/app`,
+      `backend_submissions:/data`,
 
       "-w",
-      "/app",
+      `/data/${submissionId}`,
 
       image,
 

@@ -101,7 +101,7 @@ export const submittedStudentAssignedProblemService = async (id: string) => {
 
   if(studentAssignedProblem.matchedCount === 0) {
     throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ASSIGNED_PROBLEMS_NOT_FOUND,
+      ERROR_MESSAGES.STUDENT_ASSIGNED_PROBLEM_NOT_FOUND,
       HttpStatusCode.NOT_FOUND
     );
   }
@@ -116,7 +116,7 @@ export const attemptedStudentAssignedProblemService = async (id: string) => {
   );
   if(studentAssignedProblem.matchedCount === 0) {
     throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ASSIGNED_PROBLEMS_NOT_FOUND,
+      ERROR_MESSAGES.STUDENT_ASSIGNED_PROBLEM_NOT_FOUND,
       HttpStatusCode.NOT_FOUND
     );
   }

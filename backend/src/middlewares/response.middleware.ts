@@ -16,11 +16,12 @@ export default function responseMiddleware(
       });
 
   const failure = (status: number) => 
-    (message: string, errors?: string[] | null) => 
+    (message: string, errors?: string[] | null, errorCode?: string) => 
       res.status(status).json({
         success: false,
         message,
-        errors
+        errors,
+        errorCode
       });
     
 
@@ -40,8 +41,9 @@ export default function responseMiddleware(
   ) => failure(HttpStatusCode.BAD_REQUEST)(message, errors);
 
   res.unauthorized = (
-    message = ERROR_MESSAGES.UNAUTHORIZED
-  ) => failure(HttpStatusCode.UNAUTHORIZED)(message);
+    message = ERROR_MESSAGES.UNAUTHORIZED,
+    errorCode?: string
+  ) => failure(HttpStatusCode.UNAUTHORIZED)(message, null, errorCode);
 
   res.notFound = (
     message = ERROR_MESSAGES.NOT_FOUND

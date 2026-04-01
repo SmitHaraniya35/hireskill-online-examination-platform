@@ -57,7 +57,7 @@ export const getStudentById = async (
   try {
     const { id } = req.allParams;
     if (!id) {
-      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+      return res.badRequest(ERROR_MESSAGES.STUDENT_ID_REQUIRED);
     }
 
     const data = await getStudentByIdService(id);
@@ -75,7 +75,7 @@ export const getAllStudent = async (
   try {
     const admin = req.user;
     if (!admin) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const data = await getAllStudentService();
@@ -92,11 +92,11 @@ export const updateStudentProfile = async (
 ) => {
   try {
     const input = req.allParams as StudentProfileData;
-    if (input && !input.id) {
-      return res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+    if (!input || !input.id) {
+      return res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
-    const data = await updateStudentProfileService(input!.id!, input);
+    const data = await updateStudentProfileService(input.id, input);
     res.ok(data, SUCCESS_MESSAGES.STUDENT_PROFILE_UPDATED);
   } catch (err: any) {
     next(err);
@@ -111,7 +111,7 @@ export const deleteStudent = async (
   try {
     const { id } = req.allParams;
     if (!id) {
-      res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+      res.badRequest(ERROR_MESSAGES.STUDENT_ID_REQUIRED);
     }
 
     const data = await deleteStudentService(id);
@@ -129,7 +129,7 @@ export const deleteManyStudent = async (
   try {
     const { ids } = req.allParams;
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
-      res.badRequest(ERROR_MESSAGES.STUDENT_ATTEMPT_ID_REQUIRED);
+      res.badRequest(ERROR_MESSAGES.REQUIRED_FIELDS_MISSING);
     }
 
     const data = await deleteManyStudentsService(ids);

@@ -163,7 +163,7 @@ export const deleteTestService = async (id: string) => {
 
   if (!test) {
     throw new HttpError(
-      ERROR_MESSAGES.TEST_CASE_DELETION_FAILED,
+      ERROR_MESSAGES.TEST_DELETION_FAILED,
       HttpStatusCode.INTERNAL_SERVER_ERROR,
     );
   }

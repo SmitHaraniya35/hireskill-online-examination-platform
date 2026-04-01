@@ -239,7 +239,7 @@ export const validateStudentAttemptByIdService = async (id: string) => {
   const studentAttempt = await StudentAttempt.findOneActive({ id });
   if(!studentAttempt) {
     throw new HttpError(
-      ERROR_MESSAGES.STUDENT_ATTEMPTS_NOT_FOUND,
+      ERROR_MESSAGES.STUDENT_ATTEMPT_NOT_FOUND,
       HttpStatusCode.NOT_FOUND
     )
   }

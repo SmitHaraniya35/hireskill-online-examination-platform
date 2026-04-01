@@ -60,7 +60,7 @@ export const getMe = async (
   try {
     const user: AuthJwtPayload | undefined = req.user;
     if (!user) {
-      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_USER);
+      return res.unauthorized(ERROR_MESSAGES.UNAUTHORIZED_ADMIN);
     }
 
     const { user: admin } = await getMeService(user.userId, user.email);
