@@ -21,12 +21,15 @@ const app = express();
 
 // Security & core
 app.use(cors({
-    origin: "https://hireskill-online-examination-platfo-seven.vercel.app",
+    origin: [
+        process.env.FRONTEND_PRODUCTION_URL as string,
+        process.env.FRONTEND_DEVELOPMENT_URL as string,
+    ],
     credentials: true,
 }));
 
 // we will see this later...
-// app.use(helmet());
+app.use(helmet());
 // app.use(validateApiKey);
 
 // Parsers
