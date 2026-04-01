@@ -46,13 +46,13 @@ const fetchAssignedProblems = async (
   const data: AssignedProblemData[] = await StudentAssignedProblem.findActive()
     .populate({
       path: "studentAttempt",
-      match: testId ? { test_id: testId } : {},
+      match: testId ? { test_id: testId, isDeleted: false } : { isDeleted: false },
     })
     .populate("codingProblem")
     .populate("submission");
 
   return data.filter(
-    (ap: AssignedProblemData) => ap.studentAttempt || !testId
+    (ap: AssignedProblemData) => !!ap.studentAttempt
   );
 };
 
