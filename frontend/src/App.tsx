@@ -119,9 +119,7 @@ const App: React.FC = () => {
         <Route
           path="/test/complete"
           element={
-            <StudentProtectedRoute>
               <CompletionPage />
-            </StudentProtectedRoute>
           }
         />
 

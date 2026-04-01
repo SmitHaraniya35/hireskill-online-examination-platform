@@ -24,7 +24,7 @@ const StudentProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
 
         if (attempt!.is_submitted) {
-          navigate("/test-submitted");
+          navigate("/test/complete");
           return;
         }
         setIsAllowed(true);

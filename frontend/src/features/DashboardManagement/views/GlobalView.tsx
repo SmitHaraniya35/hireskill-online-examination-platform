@@ -199,7 +199,7 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart
                 data={topProblems}
-                margin={{ top: 10, right: 20, left: -20, bottom: 5 }}
+                margin={{ top: 10, right: 0, left: 0, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis

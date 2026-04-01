@@ -51,7 +51,7 @@ const Problems: React.FC<ProblemsProps> = ({
   };
 
   return (
-    <div className="bg-white border max-h-[50vh] border-gray-200 rounded-2xl shadow-sm overflow-y-auto flex flex-col">
+    <div className="bg-white border max-h-svh border-gray-200 rounded-2xl shadow-sm overflow-y-auto flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-4 flex-wrap gap-3 flex-shrink-0">
         {/* <h2 className="text-sm font-bold text-gray-900">Problems</h2> */}
