@@ -33,7 +33,6 @@ const dashboardService = {
     return response.data.payload;
   },
 
-  // ✅ FIX: was hardcoded `/test/:id` — now correctly interpolates the id param
   fetchSingleTestAnalytics: async (id: string) => {
     const url = `${API_URL}/test/${id}`;
     const response = await api.get<axiosResponse<ISingleTestResponse>>(url, getAuthHeaders());
