@@ -1,6 +1,7 @@
 import { ERROR_MESSAGES, HttpStatusCode } from "../constants/index.ts";
 import { Test } from "../models/test.model.ts";
 import { User } from "../models/user.model.ts";
+import { CodingProblem } from "../models/coding_problem.model.ts";
 import type { FinishTestData, SubmissionData } from "../types/controller/submissionData.types.ts";
 import type { TestData } from "../types/controller/testData.types.ts";
 import type { CodingProblemDocument } from "../types/model/coding_problem.document.ts";
@@ -45,7 +46,9 @@ export const createTestService = async (input: TestData, adminId: string) => {
 
   await test.save();
   
-  const { testAndProblems } = await createTestAndProblemsByTestIdService(input.coding_problem_ids, test.id);
+  if(!test.use_all_available_problems && input.coding_problem_ids) {
+    await createTestAndProblemsByTestIdService(input.coding_problem_ids, test.id);
+  }
 
   const data = await getTestByIdService(test.id);
   
@@ -83,6 +86,7 @@ export const getTestByIdService = async (testId: string) => {
     count_of_easy_problem : test.count_of_easy_problem,
     count_of_medium_problem : test.count_of_medium_problem,
     count_of_hard_problem : test.count_of_hard_problem,
+    use_all_available_problems: test.use_all_available_problems,
     codingProblem: test.testAndProblems.map((tp: any) => tp.codingProblem)
   };
 
@@ -139,18 +143,20 @@ export const updateTestService = async (
     );
   }
 
-  const { codingProblems } = await getCodingProblemsByTestIdService(id);
-  const existingCodingProblemIds = codingProblems.map((cp: any) => cp.coding_problem_id);
+  if(!updatedInput.use_all_available_problems && coding_problem_ids) {
+      const { codingProblems } = await getCodingProblemsByTestIdService(id);
+      const existingCodingProblemIds = codingProblems.map((cp: any) => cp.coding_problem_id);
 
-  const codingProblemIdsToAdd = coding_problem_ids.filter((id) => !existingCodingProblemIds.includes(id));
-  const codingProblemIdsToRemove = existingCodingProblemIds.filter((id: string) => !coding_problem_ids.includes(id));
+      const codingProblemIdsToAdd = coding_problem_ids.filter((id) => !existingCodingProblemIds.includes(id));
+      const codingProblemIdsToRemove = existingCodingProblemIds.filter((id: string) => !coding_problem_ids.includes(id));
 
-  if(codingProblemIdsToAdd.length > 0) {
-    await createTestAndProblemsByTestIdService(codingProblemIdsToAdd, id);
-  }
+      if(codingProblemIdsToAdd.length > 0) {
+        await createTestAndProblemsByTestIdService(codingProblemIdsToAdd, id);
+      }
 
-  if(codingProblemIdsToRemove.length > 0) {
-    await deleteTestAndProblemsByTestIdService(codingProblemIdsToRemove, id);
+      if(codingProblemIdsToRemove.length > 0) {
+        await deleteTestAndProblemsByTestIdService(codingProblemIdsToRemove, id);
+      }
   }
 
   const { test } = await getTestByIdService(id);
@@ -173,10 +179,17 @@ export const deleteTestService = async (id: string) => {
 
 export const selectRandomProblemByTestDetailsService = async (test_id: string) => {
   const { test } = await getTestByIdService(test_id);
+  
+  let problemPool: any[];
+  if (test.use_all_available_problems) {
+      problemPool = await CodingProblem.findActive();
+  } else {
+      problemPool = test.codingProblem;
+  }
 
-  const easyProblems = test.codingProblem.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "easy");
-  const mediumProblems = test.codingProblem.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "medium");
-  const hardProblems = test.codingProblem.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "hard");
+  const easyProblems = problemPool.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "easy");
+  const mediumProblems = problemPool.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "medium");
+  const hardProblems = problemPool.filter((problem: CodingProblemDocument) => problem.difficulty.toLowerCase() === "hard");
 
   const codingProblemIdList: string[] = [];
 

@@ -16,6 +16,7 @@ const TestSchema = generateSchema<TestDocument>({
     count_of_easy_problem : { type: Number },
     count_of_medium_problem : { type: Number },
     count_of_hard_problem : { type: Number },
+    use_all_available_problems: { type: Boolean, default: false },
 });
 
 TestSchema.virtual('testAndProblems', {
