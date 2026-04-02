@@ -14,6 +14,7 @@ import codingProblemTemplateRoutes from "./routes/codingProblemTemplate.routes.t
 import studentAssignedProblemRoutes from "./routes/studentAssignedProblem.routes.ts";
 import executorRoutes from "./routes/executor.routes.ts";
 import dashboardRoutes from "./routes/dashboard.routes.ts";
+import uploadRoutes from "./routes/upload.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
 // import { validateApiKey } from "./middlewares/apikey.middleware.ts";
 
@@ -52,6 +53,7 @@ app.use("/api/coding-problem-template", codingProblemTemplateRoutes);
 app.use("/api/student-assigned-problem", studentAssignedProblemRoutes);
 app.use("/api/executor", executorRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // Custom Error Middleware
 app.use(errorHandlerMiddleware);

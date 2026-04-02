@@ -10,4 +10,5 @@ export interface AuthRequest extends Request {
   user?: AuthJwtPayload;
   validateData: any;
   allParams: Record<string, any>;
+  file?: any;
 }

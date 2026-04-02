@@ -4,6 +4,7 @@ import type { TestCaseData } from "../types/controller/testCaseData.types.ts";
 import type { TestCaseDocument } from "../types/model/test_case.document.ts";
 import { HttpError } from "../utils/httpError.utils.ts";
 import { getCodingProblemByIdService } from "./codingProblem.service.ts";
+import { deleteFromCloudinary } from "../utils/cloudinary.utils.ts";
 
 export const createTestCaseService = async (input: TestCaseData) => {
   const testCase: TestCaseDocument = await TestCase.create({ ...input });
@@ -58,6 +59,13 @@ export const updateTestCaseService = async (
 };
 
 export const deleteTestCaseService = async (id: string) => {
+  // 1. Check if test case has an image and delete it from Cloudinary
+  const testCaseData = await TestCase.findOneActive({ id });
+  if (testCaseData?.image_url) {
+    await deleteFromCloudinary(testCaseData.image_url);
+  }
+
+  // 2. Soft delete the record
   const testCase = await TestCase.softDelete({ id });
 
   if (!testCase.matchedCount) {
@@ -69,6 +77,7 @@ export const deleteTestCaseService = async (id: string) => {
 
   return { testCase };
 };
+
 
 export const createManyTestCasesService = async (input: TestCaseData[]) => {
   const testCases = await TestCase.insertMany(input);
