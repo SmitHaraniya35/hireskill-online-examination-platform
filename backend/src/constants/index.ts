@@ -218,4 +218,5 @@ export const STUDENT_ATTEMPT_STATUS = {
     SUBMITTED: "Submitted",
     PROCESSING: "Processing",
     AUTO_SUBMITTED: "Auto Submitted",
+    VIOLATION_DETECTED: "Violation Detected",
 } as const;
