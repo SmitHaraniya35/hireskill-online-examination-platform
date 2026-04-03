@@ -42,6 +42,9 @@ const Header: React.FC = () => {
       student_attempt_id: studentAttemptId,
       status: STUDENT_ATTEMPT_STATUS.SUBMITTED,
     });
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    }
     navigate("/test/complete", { replace: true });
   };
 
@@ -56,6 +59,9 @@ const Header: React.FC = () => {
       student_attempt_id: studentAttemptId,
       status: STUDENT_ATTEMPT_STATUS.AUTO_SUBMITTED,
     });
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    }
     navigate("/test/complete", { replace: true });
   };
 
