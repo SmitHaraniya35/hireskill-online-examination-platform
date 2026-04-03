@@ -81,7 +81,6 @@ const EditorPanel: React.FC = () => {
             last_language: currentLanguage,
             last_saved_code: template.basic_code_layout
           })
-          console.log("editor:", currentCode, currentLanguage)
         }
       }
     }

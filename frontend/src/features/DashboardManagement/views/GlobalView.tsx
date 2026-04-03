@@ -115,12 +115,22 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
               >
                 <defs>
-                  <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    id="scoreGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2} />
                     <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#f1f5f9"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="name"
                   tick={{ fill: "#94a3b8", fontSize: 11 }}
@@ -147,12 +157,16 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
           </div>
           <div className="mt-2 text-center">
             <p className="text-[10px] text-gray-400">
-              Score trend across tests | Higher scores indicate better performance
+              Score trend across tests | Higher scores indicate better
+              performance
             </p>
           </div>
         </Card>
 
-        <Card title="Difficulty Analysis" subtitle="Performance by difficulty level">
+        <Card
+          title="Difficulty Analysis"
+          subtitle="Performance by difficulty level"
+        >
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData}>
@@ -175,14 +189,17 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                   strokeWidth={2}
                 />
                 <Tooltip
-                  content={<EnhancedTooltip formatter={(v: number) => `${fmt(v)}%`} />}
+                  content={
+                    <EnhancedTooltip formatter={(v: number) => `${fmt(v)}%`} />
+                  }
                 />
               </RadarChart>
             </ResponsiveContainer>
           </div>
           <div className="mt-2 text-center">
             <p className="text-[10px] text-gray-400">
-              Students perform best on Easy questions | Hard questions need attention
+              Students perform best on Easy questions | Hard questions need
+              attention
             </p>
           </div>
         </Card>
@@ -201,15 +218,53 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                 data={topProblems}
                 margin={{ top: 10, right: 0, left: 0, bottom: 5 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                <XAxis
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#f1f5f9"
+                  vertical={false}
+                />
+                {/* <XAxis
                   dataKey="name"
                   tick={{ fill: "#94a3b8", fontSize: 11 }}
                   axisLine={false}
                   tickLine={false}
                   angle={-15}
                   textAnchor="end"
-                  height={60}
+                  height={50}
+                /> */}
+                <XAxis
+                  dataKey="name"
+                  interval={0}
+                  height={80}
+                  axisLine={false}
+                  tickLine={false}
+                  tick={(props) => {
+                    const { x, y, payload } = props;
+                    const label = payload.value;
+                    const isLong = label.length > 12;
+                    const displayLabel = isLong
+                      ? `${label.slice(0,12)}...`
+                      : label;
+
+                    return (
+                      <g transform={`translate(${x},${y})`}>
+                        {/* The title tag provides the hover tooltip */}
+                        <title>{label}</title>
+                        <text
+                          x={0}
+                          y={0}
+                          dy={16}
+                          textAnchor="end"
+                          fill="#94a3b8"
+                          fontSize={11}
+                          transform="rotate(-30)"
+                          className="hover:fill-indigo-500 hover:font-medium transition-all cursor-default"
+                        >
+                          {displayLabel}
+                        </text>
+                      </g>
+                    );
+                  }}
                 />
                 <YAxis
                   yAxisId="left"
@@ -239,7 +294,12 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                 />
                 <Tooltip content={<EnhancedTooltip />} />
                 <Legend wrapperStyle={{ fontSize: 11, paddingTop: 10 }} />
-                <Bar yAxisId="left" dataKey="attempts" name="Attempts" radius={[4, 4, 0, 0]}>
+                <Bar
+                  yAxisId="left"
+                  dataKey="attempts"
+                  name="Attempts"
+                  radius={[4, 4, 0, 0]}
+                >
                   {topProblems.map((e, i) => (
                     <Cell
                       key={i}
@@ -262,12 +322,16 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
           </div>
           <div className="mt-2 text-center">
             <p className="text-[10px] text-gray-400">
-              Bar height shows attempts | Line shows performance percentage | Color indicates difficulty
+              Bar height shows attempts | Line shows performance percentage |
+              Color indicates difficulty
             </p>
           </div>
         </Card>
 
-        <Card title="Top Performers" subtitle="Highest scoring students across all tests">
+        <Card
+          title="Top Performers"
+          subtitle="Highest scoring students across all tests"
+        >
           <div className="max-h-80 overflow-y-auto p-5">
             {topPerformers.slice(0, 8).map((p, i) => (
               <GlobalLBRow key={i} rank={i + 1} p={p} />
@@ -277,7 +341,10 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
       </div>
 
       {/* Test-Wise Table */}
-      <Card title="Test-Wise Breakdown" subtitle="Detailed analytics for each test">
+      <Card
+        title="Test-Wise Breakdown"
+        subtitle="Detailed analytics for each test"
+      >
         <table className="w-full">
           <thead>
             <tr>
@@ -338,7 +405,14 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                   <TD align="center">
                     <span className="inline-flex items-center gap-1 text-indigo-500 text-xs hover:text-indigo-700 font-medium">
                       View Details
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                      >
                         <polyline points="9 18 15 12 9 6" />
                       </svg>
                     </span>

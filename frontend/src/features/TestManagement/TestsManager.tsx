@@ -105,15 +105,15 @@ const TestManager: React.FC = () => {
 
   if (isError) {
     return (
-        <div className="bg-[#fff1f2] border-b border-[#fecdd3] px-5 py-2.5 flex items-center gap-2 text-[#dc2626] text-xs">
-          <span>⚠</span> { errorMsg }
-          <button
-            onClick={() => setErrorMsg("")}
-            className="ml-auto bg-transparent border-none text-[#dc2626] text-xs underline p-0 cursor-pointer"
-          >
-            Dismiss
-          </button>
-        </div>
+      <div className="bg-[#fff1f2] border-b border-[#fecdd3] px-5 py-2.5 flex items-center gap-2 text-[#dc2626] text-xs">
+        <span>⚠</span> {errorMsg}
+        <button
+          onClick={() => setErrorMsg("")}
+          className="ml-auto bg-transparent border-none text-[#dc2626] text-xs underline p-0 cursor-pointer"
+        >
+          Dismiss
+        </button>
+      </div>
     );
   }
   return (
@@ -169,94 +169,114 @@ const TestManager: React.FC = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {testList!.map((link) => (
-              <div
-                key={link.id}
-                className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-200 p-5 flex items-center justify-between gap-4"
-              >
-                {/* ── LEFT: Title + meta ───────────────────── */}
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 truncate">
-                    {link.title || "Untitled"}
-                  </h3>
+            {testList!.map((link) => {
+              const now = new Date();
+              const startTime = new Date(link.start_at || ""); // Assuming start_at is always provided, otherwise handle accordingly
+              const expiryTime = new Date(link.expiration_at);
 
-                  <div className="flex items-center gap-4 mt-2 flex-wrap">
-                    {/* Expiry date */}
-                    <span className="inline-flex items-center gap-1.5 text-[14px] text-gray-500">
-                      <svg
-                        className="w-3.5 h-3.5 shrink-0 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                      >
-                        <rect
-                          x="3"
-                          y="4"
-                          width="18"
-                          height="18"
-                          rx="2"
-                          ry="2"
-                        />
-                        <line x1="16" y1="2" x2="16" y2="6" />
-                        <line x1="8" y1="2" x2="8" y2="6" />
-                        <line x1="3" y1="10" x2="21" y2="10" />
-                      </svg>
-                      {new Date(link.expiration_at).toLocaleDateString(
-                        "en-GB",
-                        {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        },
-                      )}
-                    </span>
+              // Check if current time is within the test window
+              const isLive = now >= startTime && now <= expiryTime;
+              return (
+                <div
+                  key={link.id}
+                  className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-200 p-5 flex items-center justify-between gap-4"
+                >
+                  {/* ── LEFT: Title + meta ───────────────────── */}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-xl font-semibold text-gray-900 truncate">
+                      {link.title || "Untitled"}
+                    </h3>
 
-                    {/* Divider dot */}
-                    <span className="w-1 h-1 rounded-full bg-gray-200 shrink-0" />
+                    <div className="flex items-center gap-4 mt-2 flex-wrap">
+                      {/* Expiry date */}
+                      <span className="inline-flex items-center gap-1.5 text-[14px] text-gray-500">
+                        <svg
+                          className="w-3.5 h-3.5 shrink-0 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                        >
+                          <rect
+                            x="3"
+                            y="4"
+                            width="18"
+                            height="18"
+                            rx="2"
+                            ry="2"
+                          />
+                          <line x1="16" y1="2" x2="16" y2="6" />
+                          <line x1="8" y1="2" x2="8" y2="6" />
+                          <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                        {new Date(link.expiration_at).toLocaleDateString(
+                          "en-GB",
+                          {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          },
+                        )}
+                      </span>
 
-                    {/* Duration */}
-                    <span className="inline-flex items-center gap-1.5 text-[14px] text-gray-500">
-                      <svg
-                        className="w-3.5 h-3.5 shrink-0 text-gray-500"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                        viewBox="0 0 24 24"
-                      >
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                      </svg>
-                      {link.duration_minutes} mins
-                    </span>
+                      {/* Divider dot */}
+                      <span className="w-1 h-1 rounded-full bg-gray-200 shrink-0" />
+
+                      {/* Duration */}
+                      <span className="inline-flex items-center gap-1.5 text-[14px] text-gray-500">
+                        <svg
+                          className="w-3.5 h-3.5 shrink-0 text-gray-500"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                          viewBox="0 0 24 24"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        {link.duration_minutes} mins
+                      </span>
+                      
+                    </div>
                   </div>
-                </div>
 
-                {/* ── RIGHT: Icons row + Toggles row ───────── */}
-                <div className="flex flex-col items-end gap-2.5 shrink-0">
-                  {/* Row 1 — Action icons */}
-                  <div className="flex items-center gap-0.5">
-                    <button
-                      onClick={() =>
-                        navigate(`/admin/tests/${link.id}/attempts`)
-                      }
-                      title="View student attempts"
-                      className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] transition-all duration-150"
-                    >
-                      <IconView />
-                    </button>
+                  {/* ── RIGHT: Icons row + Toggles row ───────── */}
+                  <div className="flex flex-col items-end gap-2.5 shrink-0">
+                    {/* Row 1 — Action icons */}
+                    <div className="flex items-center gap-0.5">
+                      <button
+                        onClick={() =>
+                          navigate(`/admin/tests/${link.id}/attempts`)
+                        }
+                        title="View student attempts"
+                        className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a] transition-all duration-150"
+                      >
+                        <IconView />
+                      </button>
 
-                    {/* Edit Button */}
-                    <button
+                      {/* Edit Button */}
+                      {/* <button
                       onClick={() => handleEdit(link.id!)}
                       title="Edit test"
                       className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#eff6ff] hover:border-[#bfdbfe] hover:text-blue-600 transition-all duration-150"
                     >
                       <IconEdit />
-                    </button>
+                    </button> */}
+                      <button
+                        disabled={isLive}
+                        onClick={() => !isLive && handleEdit(link.id!)}
+                        title={isLive ? "Cannot edit live test" : "Edit test"}
+                        className={`w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 transition-all duration-150 ${
+                          isLive
+                            ? "opacity-40 cursor-not-allowed grayscale"
+                            : "cursor-pointer hover:bg-[#eff6ff] hover:border-[#bfdbfe] hover:text-blue-600"
+                        }`}
+                      >
+                        <IconEdit />
+                      </button>
 
-                    {/* Delete Button */}
-                    <button
+                      {/* Delete Button */}
+                      {/* <button
                       onClick={() => {
                         setSelectedTestId(link.id!);
                         setOpenDeleteDialog(true);
@@ -265,67 +285,93 @@ const TestManager: React.FC = () => {
                       className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#fff1f2] hover:border-[#fecdd3] hover:text-[#dc2626] transition-all duration-150"
                     >
                       <IconDelete />
-                    </button>
-                    {link.unique_token && <CopyToken token={link.unique_token} />}
-                  </div>
+                    </button> */}
+                      <button
+                        disabled={isLive}
+                        onClick={() => {
+                          if (!isLive) {
+                            setSelectedTestId(link.id!);
+                            setOpenDeleteDialog(true);
+                          }
+                        }}
+                        title={
+                          isLive ? "Cannot delete live test" : "Delete test"
+                        }
+                        className={`w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 transition-all duration-150 ${
+                          isLive
+                            ? "opacity-40 cursor-not-allowed grayscale"
+                            : "cursor-pointer hover:bg-[#fff1f2] hover:border-[#fecdd3] hover:text-[#dc2626]"
+                        }`}
+                      >
+                        <IconDelete />
+                      </button>
+                      {link.unique_token && (
+                        <CopyToken token={link.unique_token} />
+                      )}
+                    </div>
 
-                  {/* Row 2 — Toggle buttons */}
-                  <div className="flex items-center gap-2">
-                    {/* Toggle: Active */}
-                    <button
-                      type="button"
-                      title={
-                        link.is_active ? "Deactivate Test" : "Activate Test"
-                      }
-                      onClick={() => handleToggleActivation(link.id!)}
-                      className={`cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all duration-200 ${
-                        link.is_active
-                          ? "bg-emerald-50 border-emerald-100 text-emerald-700"
-                          : "bg-gray-50 border-gray-100 text-gray-400"
-                      }`}
-                    >
-                      <span
-                        className={`relative inline-flex w-6 h-3.5 rounded-full transition-colors duration-200 shrink-0 ${
-                          link.is_active ? "bg-emerald-400" : "bg-gray-200"
+                    {/* Row 2 — Toggle buttons */}
+                    <div className="flex items-center gap-2">
+                      {/* Toggle: Active */}
+                      <button
+                        type="button"
+                        title={
+                          link.is_active ? "Deactivate Test" : "Activate Test"
+                        }
+                        onClick={() => handleToggleActivation(link.id!)}
+                        className={`cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all duration-200 ${
+                          link.is_active
+                            ? "bg-emerald-50 border-emerald-100 text-emerald-700"
+                            : "bg-gray-50 border-gray-100 text-gray-400"
                         }`}
                       >
                         <span
-                          className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-                            link.is_active ? "translate-x-2.5" : "translate-x-0"
+                          className={`relative inline-flex w-6 h-3.5 rounded-full transition-colors duration-200 shrink-0 ${
+                            link.is_active ? "bg-emerald-400" : "bg-gray-200"
                           }`}
-                        />
-                      </span>
-                      Active
-                    </button>
+                        >
+                          <span
+                            className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                              link.is_active
+                                ? "translate-x-2.5"
+                                : "translate-x-0"
+                            }`}
+                          />
+                        </span>
+                        Active
+                      </button>
 
-                    {/* Toggle: Public */}
-                    <button
-                      type="button"
-                      title={link.is_public ? "Make Private" : "Make Public"}
-                      onClick={() => handleTogglePublicStatus(link.id!)}
-                      className={`cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all duration-200 ${
-                        link.is_public
-                          ? "bg-sky-50 border-sky-100 text-sky-700"
-                          : "bg-gray-50 border-gray-100 text-gray-400"
-                      }`}
-                    >
-                      <span
-                        className={`relative inline-flex w-6 h-3.5 rounded-full transition-colors duration-200 shrink-0 ${
-                          link.is_public ? "bg-sky-400" : "bg-gray-200"
+                      {/* Toggle: Public */}
+                      <button
+                        type="button"
+                        title={link.is_public ? "Make Private" : "Make Public"}
+                        onClick={() => handleTogglePublicStatus(link.id!)}
+                        className={`cursor-pointer flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold border transition-all duration-200 ${
+                          link.is_public
+                            ? "bg-sky-50 border-sky-100 text-sky-700"
+                            : "bg-gray-50 border-gray-100 text-gray-400"
                         }`}
                       >
                         <span
-                          className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
-                            link.is_public ? "translate-x-2.5" : "translate-x-0"
+                          className={`relative inline-flex w-6 h-3.5 rounded-full transition-colors duration-200 shrink-0 ${
+                            link.is_public ? "bg-sky-400" : "bg-gray-200"
                           }`}
-                        />
-                      </span>
-                      Public
-                    </button>
+                        >
+                          <span
+                            className={`absolute top-0.5 left-0.5 w-2.5 h-2.5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                              link.is_public
+                                ? "translate-x-2.5"
+                                : "translate-x-0"
+                            }`}
+                          />
+                        </span>
+                        Public
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

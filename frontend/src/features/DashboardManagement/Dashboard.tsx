@@ -81,7 +81,7 @@ export default function Dashboard() {
             </span>
             {sidebarOpen && (
               <span className="text-[14px] font-medium truncate">
-                Global Overview
+                Dashboard
               </span>
             )}
           </button>
@@ -92,7 +92,7 @@ export default function Dashboard() {
             </p>
           )}
 
-          {tests.map((t) => (
+          {/* {tests.map((t) => (
             <button
               key={t.id}
               onClick={() => handleSelect(t.id)}
@@ -117,7 +117,38 @@ export default function Dashboard() {
                 </span>
               )}
             </button>
-          ))}
+          ))} */}
+          {[...tests]
+            .sort(
+              (a, b) =>
+                new Date(b.start_at).getTime() - new Date(a.start_at).getTime(),
+            )
+            .map((t) => (
+              <button
+                key={t.id}
+                onClick={() => handleSelect(t.id)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl w-full text-left transition-all duration-200 ${
+                  selectedId === t.id && view === "single"
+                    ? "bg-gradient-to-r from-indigo-50 to-indigo-100/50 text-[#1DA077] shadow-sm"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
+                }`}
+                title={t.title}
+              >
+                <span className="shrink-0">
+                  <Icons.Test />
+                </span>
+                {sidebarOpen && (
+                  <span className="flex flex-col min-w-0 flex-1">
+                    <span className="text-[14px] font-medium truncate leading-tight">
+                      {t.title}
+                    </span>
+                    <span className="text-[12px] mt-1 text-gray-600 leading-tight tabular-nums">
+                      {relDate(t.start_at)}
+                    </span>
+                  </span>
+                )}
+              </button>
+            ))}
         </nav>
       </aside>
 
@@ -125,7 +156,9 @@ export default function Dashboard() {
       <div className="flex-1 flex flex-col min-w-0">
         <header className="sticky top-0 z-10 bg-[#f5f6f8] backdrop-blur-sm border-b border-gray-200 flex items-center justify-between px-6 py-4 shrink-0">
           <div className="flex flex-col gap-0.5">
-            <h1 className="text-lg font-semibold text-gray-900">{currentTitle}</h1>
+            <h1 className="text-lg font-semibold text-gray-900">
+              {currentTitle}
+            </h1>
             {currentSub && (
               <span className="text-[11px] text-gray-400 tabular-nums">
                 {currentSub}
