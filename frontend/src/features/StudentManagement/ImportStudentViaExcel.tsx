@@ -17,6 +17,26 @@ const ImportStudentViaExcel: React.FC<ImportStudentViaExcelProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const downloadSampleTemplate = () => {
+    // 1. Define the headers as an array of objects
+    const sampleData = [
+      {
+        "Full Name": "John Doe",
+        "Email Address": "john.doe@ddu.ac.in",
+        "Mobile Number": "9876543210",
+        "College Name": "Dharmsinh Desai University",
+      },
+    ];
+
+    // 2. Create a new workbook and worksheet
+    const worksheet = XLSX.utils.json_to_sheet(sampleData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Students");
+
+    // 3. Generate buffer and trigger download
+    XLSX.writeFile(workbook, "student_import_template.xlsx");
+  };
+
   const handleFileSelect = (file: File) => {
     setSelectedFile(file);
     setIsError(false);
@@ -115,6 +135,19 @@ const ImportStudentViaExcel: React.FC<ImportStudentViaExcelProps> = ({
           </p>
         </div>
       </div>
+
+      {/* --- NEW DOWNLOAD BUTTON --- */}
+        <button
+          onClick={downloadSampleTemplate}
+          className="flex mb-5 items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-100 bg-emerald-50/50 text-emerald-700 text-xs font-medium hover:bg-emerald-50 transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Download Template
+        </button>
 
       {/* Error */}
       {isError && (
@@ -234,7 +267,7 @@ const ImportStudentViaExcel: React.FC<ImportStudentViaExcelProps> = ({
       <p className="text-xs text-gray-400 mt-3 text-center">
         Columns needed:{" "}
         <span className="font-medium text-gray-500">
-          Full Name, DDU Email Address, Mobile Number, College Name
+          Full Name, Email Address, Mobile Number, College Name
         </span>
       </p>
 

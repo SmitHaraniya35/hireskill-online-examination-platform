@@ -223,7 +223,7 @@ const StudentAttemptListView: React.FC = () => {
       // ── Status ───────────────────────
       {
         header: "Status",
-        width: "10%",
+        width: "12%",
         align: "left" as const,
         accessor: (row: GetStudentAttempts) => {
           const statusMap: Record<
@@ -250,6 +250,11 @@ const StudentAttemptListView: React.FC = () => {
               text: "text-sky-700",
               dot: "bg-sky-500",
             },
+            "Violation Detected": {
+              bg: "bg-rose-50",
+              text: "text-rose-700",
+              dot: "bg-rose-500",
+            }
           };
           const style = statusMap[row.status] ?? {
             bg: "bg-gray-100",

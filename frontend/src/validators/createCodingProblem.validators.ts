@@ -6,6 +6,7 @@ const testCaseSchema = z.object({
   input: z.string().min(1, "Input is required"),
   expected_output: z.string().min(1, "Expected output is required"),
   is_hidden: z.boolean(),
+  image_url: z.string().optional(),
 });
 
 export const problemSchema = z.object({

@@ -69,6 +69,8 @@ export const testSchema = z.object({
   expiry_time: z
     .string()
     .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, 'Invalid time format'),
+
+  use_all_available_problems: z.boolean().optional(),
 })
   .refine(
     (data) => {

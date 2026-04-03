@@ -39,7 +39,7 @@ const AssessmentContent: React.FC = () => {
     try {
       await testFlowService.finishTestService(slug!, {
         student_attempt_id: studentAttemptId,
-        status: STUDENT_ATTEMPT_STATUS.AUTO_SUBMITTED,
+        status: STUDENT_ATTEMPT_STATUS.VIOLATION_DETECTED,
       });
     } catch (err) {
       console.error("Final submission failed:", err);
@@ -64,11 +64,33 @@ const AssessmentContent: React.FC = () => {
     handleAutoFinish,
     hasStarted,
   );
+  
 
-  const handleStart = () => {
+  // const handleStart = () => {
+  //   enterFullscreen();
+  //   setHasStarted(true);
+  // };
+
+  const handleStart = async () => {
+  try {
+    // 1. Request Camera and Microphone access
+    // This creates the "Allow/Block" browser popup
+    await navigator.mediaDevices.getUserMedia({ 
+      video: true, 
+      audio: true 
+    });
+
+    // 2. If successful, proceed to Fullscreen and start Proctoring
     enterFullscreen();
     setHasStarted(true);
-  };
+  } catch (err) {
+    // 3. If user denies or hardware is missing, show an alert
+    console.error("Permissions denied or hardware missing:", err);
+    alert(
+      "Camera and Microphone access are required to start this assessment. Please allow permissions in your browser settings and try again."
+    );
+  }
+};
 
   if (!hasStarted) {
     return (
