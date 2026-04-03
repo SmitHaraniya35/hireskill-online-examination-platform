@@ -58,7 +58,6 @@ export const useProctoring = (onAutoFinish: () => void, enabled: boolean) => {
     }
   };
 
-  // --- TAB & FULLSCREEN DETECTION ---
   // --- TAB, BLUR & FULLSCREEN DETECTION ---
   useEffect(() => {
     if (!enabled) return;
