@@ -12,6 +12,7 @@ export interface TestDocument extends BaseDocument{
     count_of_easy_problem : number;
     count_of_medium_problem : number;
     count_of_hard_problem : number;
+    use_all_available_problems: boolean;
     created_by: string;
 }
 

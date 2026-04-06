@@ -22,7 +22,8 @@ export const TestSchema = Joi.object({
     count_of_easy_problem: Joi.number().required(),
     count_of_medium_problem: Joi.number().required(),
     count_of_hard_problem: Joi.number().required(),
-    coding_problem_ids: Joi.array().items(Joi.string().uuid())
+    coding_problem_ids: Joi.array().items(Joi.string().uuid()).optional(),
+    use_all_available_problems: Joi.boolean().required(),
 }).custom((value, helpers) => {
   const sum =
         value.count_of_easy_problem +

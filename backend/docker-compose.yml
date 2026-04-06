@@ -4,6 +4,7 @@ services:
   # ─── Express API Server ───
   api:
     build: .
+    image: hireskill-backend:latest
     container_name: hireskill-api
     restart: unless-stopped
     ports:
@@ -23,7 +24,8 @@ services:
 
   # ─── BullMQ Background Worker ───
   worker:
-    build: .
+    # No build instruction here! It just reuses the image built by the api.
+    image: hireskill-backend:latest
     container_name: hireskill-worker
     restart: unless-stopped
     env_file: .env

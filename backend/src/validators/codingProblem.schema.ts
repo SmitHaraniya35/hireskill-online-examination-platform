@@ -36,7 +36,7 @@ export const CodingProblemWithTestCasesAndTemplateCodesSchema = Joi.object({
             id: uuidv4Rule.optional(),
             input: Joi.string().required(),
             expected_output: Joi.string().required(),
-            image_url: Joi.string().optional(),
+            image_url: Joi.string().allow("", null).optional(),
             is_hidden: Joi.boolean().required()
         })
     ),

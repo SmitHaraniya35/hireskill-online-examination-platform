@@ -9,4 +9,5 @@ export interface TestData {
     count_of_medium_problem : number;
     count_of_hard_problem : number;
     coding_problem_ids: string[];
+    use_all_available_problems: boolean;
 }
