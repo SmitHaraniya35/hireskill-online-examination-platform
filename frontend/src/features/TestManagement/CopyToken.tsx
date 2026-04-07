@@ -21,7 +21,7 @@ const CopyToken: React.FC<{ token: string }> = ({ token }) => {
       document.body.removeChild(el);
       return Promise.resolve();
     };
-    copy(token)
+    copy(`${import.meta.env.VITE_FRONTEND_URL}/test/${token}`)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
