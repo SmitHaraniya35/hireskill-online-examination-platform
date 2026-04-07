@@ -51,7 +51,7 @@ const Problems: React.FC<ProblemsProps> = ({
   };
 
   return (
-    <div className="bg-white border max-h-svh border-gray-200 rounded-2xl shadow-sm overflow-y-auto flex flex-col">
+    <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-y-auto flex flex-col h-[400px]">
       {/* Header */}
       <div className="flex items-center justify-between px-5 pt-5 pb-4 flex-wrap gap-3 flex-shrink-0">
         {/* <h2 className="text-sm font-bold text-gray-900">Problems</h2> */}
@@ -78,11 +78,11 @@ const Problems: React.FC<ProblemsProps> = ({
       </div>
 
       {/* Scrollable List */}
-      <div className="flex flex-col divide-y divide-gray-100 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-gray-100 custom-scrollbar">
         {filtered.map((problem, idx) => {
           const difficulty = problem.codingProblem?.difficulty || "Easy";
           const hasNotAttempted = problem.status === "Not Attempted";
-          const isSelected = hasNotAttempted && problem.submission?.id === selectedSubmissionId;
+          const isSelected = !hasNotAttempted && problem.submission?.id === selectedSubmissionId;
 
           return (
             <div
@@ -149,4 +149,4 @@ const Problems: React.FC<ProblemsProps> = ({
   );
 };
 
-export default Problems;
+export default React.memo(Problems);
