@@ -7,7 +7,6 @@ import AdminLayout from "./layouts/AdminLayout.tsx";
 import AdminRoutes from "./routes/AdminRoutes.tsx";
 import StudentProtectedRoute from "./routes/StudentProtectedRoute.tsx";
 import AdminAuthProviderWrapper from "./routes/AdminAuthProviderWrapper.tsx";
-import CreateStudent from "./features/StudentManagement/CreateStudent.tsx";
 
 // Lazy imports
 const AdminLogin = lazy(() => import("./features/auth/admin/Login.tsx"));

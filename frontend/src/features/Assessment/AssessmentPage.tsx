@@ -248,31 +248,31 @@ const AssessmentContent: React.FC = () => {
 
   // ── Auto-finish (triggered by proctoring violation) ────────────────────────
   const handleAutoFinish = useCallback(async () => {
-    // if (currentAssignedProblemId && currentCode.trim()) {
-    //   try {
-    //     await saveDraft(currentAssignedProblemId, {
-    //       last_saved_code: currentCode,
-    //       last_language: currentLanguage,
-    //     });
-    //   } catch (err) {
-    //     console.error("Draft save failed during auto-submit:", err);
-    //   }
-    // }
+    if (currentAssignedProblemId && currentCode.trim()) {
+      try {
+        await saveDraft(currentAssignedProblemId, {
+          last_saved_code: currentCode,
+          last_language: currentLanguage,
+        });
+      } catch (err) {
+        console.error("Draft save failed during auto-submit:", err);
+      }
+    }
 
-    // try {
-    //   await testFlowService.finishTestService(slug!, {
-    //     student_attempt_id: studentAttemptId,
-    //     status: STUDENT_ATTEMPT_STATUS.VIOLATION_DETECTED,
-    //   });
-    // } catch (err) {
-    //   console.error("Final submission failed:", err);
-    // }
+    try {
+      await testFlowService.finishTestService(slug!, {
+        student_attempt_id: studentAttemptId,
+        status: STUDENT_ATTEMPT_STATUS.VIOLATION_DETECTED,
+      });
+    } catch (err) {
+      console.error("Final submission failed:", err);
+    }
 
-    // if (document.fullscreenElement) {
-    //   await document.exitFullscreen().catch(() => {});
-    // }
+    if (document.fullscreenElement) {
+      await document.exitFullscreen().catch(() => {});
+    }
 
-    // navigate("/test/complete", { replace: true });
+    navigate("/test/complete", { replace: true });
   }, [currentAssignedProblemId, currentCode, currentLanguage, studentAttemptId, slug, saveDraft, navigate]);
 
   const { isViolation, countdown, enterFullscreen } = useProctoring(handleAutoFinish, hasStarted);

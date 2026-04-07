@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, User, Mail, Phone, School, Loader2 } from "lucide-react";
+import { X, Mail, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import  z from "zod";

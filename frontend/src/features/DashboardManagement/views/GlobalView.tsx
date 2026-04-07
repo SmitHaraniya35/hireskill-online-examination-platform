@@ -20,7 +20,6 @@ import {
 import {
   EnhancedTooltip,
   StatCard,
-  ProgressBar,
   Card,
   TH,
   TD,

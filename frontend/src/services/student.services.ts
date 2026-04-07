@@ -1,7 +1,6 @@
 // import axios from "axios";
 import type {
   GetAllStudentsListData,
-  Student,
   StudentInfo,
   StudentInfoData,
   StudentListData,

@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState } from "react";
 import { RefreshCcw } from "lucide-react";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { LoadingSkeleton, Icons } from "./components/dashboard.components";
