@@ -160,4 +160,4 @@ const StatCard: React.FC<StatCardProps> = ({ icon, label, value, bar }) => (
   </div>
 );
 
-export default ResultSummary;
+export default React.memo(ResultSummary);

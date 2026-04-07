@@ -1,23 +1,10 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import dashboardService from "../../../services/dashboard.services";
 import type { IGlobalResponse, ISingleTestResponse } from "@/types/dashboard.types";
 
 type View = "global" | "single";
 
-export interface DashboardState {
-  view: View;
-  tests: { id: string; title: string; start_at: string }[];
-  selectedId: string;
-  globalData: IGlobalResponse | null;
-  singleData: ISingleTestResponse | null;
-  loading: boolean;
-  error: string | null;
-  handleSelect: (id: string) => void;
-  handleGlobal: () => void;
-  refresh: () => void;
-}
-
-export function useDashboardData(): DashboardState {
+export function useDashboardData() {
   const [view, setView] = useState<View>("global");
   const [tests, setTests] = useState<{ id: string; title: string; start_at: string }[]>([]);
   const [selectedId, setSelectedId] = useState("");
@@ -26,11 +13,28 @@ export function useDashboardData(): DashboardState {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadGlobal = useCallback(async () => {
+  // ── Cache refs (survive re-renders, don't trigger them) ──────────────────
+  const globalCache = useRef<IGlobalResponse | null>(null);
+  const singleCache = useRef<Map<string, ISingleTestResponse>>(new Map());
+  const activeRequest = useRef<AbortController | null>(null);
+
+  const loadGlobal = useCallback(async (force = false) => {
+    // Return cached data immediately — no spinner
+    if (!force && globalCache.current) {
+      setGlobalData(globalCache.current);
+      setView("global");
+      return;
+    }
+
+    // Cancel any in-flight request
+    activeRequest.current?.abort();
+    activeRequest.current = new AbortController();
+
     setLoading(true);
     setError(null);
     try {
       const data = await dashboardService.fetchAllTestsAnalytics();
+      globalCache.current = data!;
       setGlobalData(data!);
       setTests(
         (data!.testWiseAnalytics ?? []).map((t) => ({
@@ -40,20 +44,38 @@ export function useDashboardData(): DashboardState {
         }))
       );
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load analytics.");
+      if (e?.name !== "AbortError") {
+        setError(e?.message ?? "Failed to load analytics.");
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const loadSingle = useCallback(async (id: string) => {
+  const loadSingle = useCallback(async (id: string, force = false) => {
+    // Return cached data immediately — no spinner
+    if (!force && singleCache.current.has(id)) {
+      setSingleData(singleCache.current.get(id)!);
+      setView("single");
+      setSelectedId(id);
+      return;
+    }
+
+    // Cancel any in-flight request
+    activeRequest.current?.abort();
+    activeRequest.current = new AbortController();
+
     setLoading(true);
     setError(null);
+    setSingleData(null);
     try {
       const data = await dashboardService.fetchSingleTestAnalytics(id);
+      singleCache.current.set(id, data!);
       setSingleData(data!);
     } catch (e: any) {
-      setError(e?.message ?? "Failed to load test analytics.");
+      if (e?.name !== "AbortError") {
+        setError(e?.message ?? "Failed to load test analytics.");
+      }
     } finally {
       setLoading(false);
     }
@@ -61,34 +83,27 @@ export function useDashboardData(): DashboardState {
 
   useEffect(() => {
     loadGlobal();
-  }, [loadGlobal]);
+  }, []); // ← remove loadGlobal from deps, run once only
 
   const handleSelect = (id: string) => {
     setSelectedId(id);
     setView("single");
-    loadSingle(id);
+    loadSingle(id); // uses cache if available — instant switch
   };
 
   const handleGlobal = () => {
     setView("global");
     setSelectedId("");
+    loadGlobal(); // uses cache — instant switch
   };
 
   const refresh = () => {
-    if (view === "global") loadGlobal();
-    else loadSingle(selectedId);
+    if (view === "global") loadGlobal(true);   // force = true bypasses cache
+    else loadSingle(selectedId, true);
   };
 
   return {
-    view,
-    tests,
-    selectedId,
-    globalData,
-    singleData,
-    loading,
-    error,
-    handleSelect,
-    handleGlobal,
-    refresh,
+    view, tests, selectedId, globalData, singleData,
+    loading, error, handleSelect, handleGlobal, refresh,
   };
 }

@@ -123,10 +123,10 @@ const TestManager: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-              Test Management
+              Test management
             </h1>
             <p className="text-sm text-gray-400 mt-0.5">
-              Manage access links and settings for all assessments
+              Manage test links and settings for all assessments
             </p>
           </div>
 
@@ -183,8 +183,17 @@ const TestManager: React.FC = () => {
                 >
                   {/* ── LEFT: Title + meta ───────────────────── */}
                   <div className="min-w-0 flex-1">
-                    <h3 className="text-xl font-semibold text-gray-900 truncate">
-                      {link.title || "Untitled"}
+                    <h3 className="flex items-center gap-2 text-xl font-semibold text-gray-900 overflow-hidden">
+                      <span className="truncate">
+                        {link.title || "Untitled"}
+                      </span>
+
+                      {isLive && (
+                        <span className="inline-flex items-center gap-1.5 text-sm font-bold text-rose-600 flex-shrink-0">
+                          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                          Live
+                        </span>
+                      )}
                     </h3>
 
                     <div className="flex items-center gap-4 mt-2 flex-wrap">
@@ -236,7 +245,6 @@ const TestManager: React.FC = () => {
                         </svg>
                         {link.duration_minutes} mins
                       </span>
-                      
                     </div>
                   </div>
 
@@ -263,11 +271,11 @@ const TestManager: React.FC = () => {
                       <IconEdit />
                     </button> */}
                       <button
-                        disabled={isLive}
-                        onClick={() => !isLive && handleEdit(link.id!)}
+                        disabled={ link.is_active && isLive}
+                        onClick={() => !isLive || !link.is_active && handleEdit(link.id!)}
                         title={isLive ? "Cannot edit live test" : "Edit test"}
                         className={`w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 transition-all duration-150 ${
-                          isLive
+                          isLive && link.is_active
                             ? "opacity-40 cursor-not-allowed grayscale"
                             : "cursor-pointer hover:bg-[#eff6ff] hover:border-[#bfdbfe] hover:text-blue-600"
                         }`}
@@ -287,9 +295,9 @@ const TestManager: React.FC = () => {
                       <IconDelete />
                     </button> */}
                       <button
-                        disabled={isLive}
+                        disabled={isLive && link.is_active}
                         onClick={() => {
-                          if (!isLive) {
+                          if (!isLive || !link.is_active) {
                             setSelectedTestId(link.id!);
                             setOpenDeleteDialog(true);
                           }
@@ -298,7 +306,7 @@ const TestManager: React.FC = () => {
                           isLive ? "Cannot delete live test" : "Delete test"
                         }
                         className={`w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 transition-all duration-150 ${
-                          isLive
+                          isLive && link.is_active
                             ? "opacity-40 cursor-not-allowed grayscale"
                             : "cursor-pointer hover:bg-[#fff1f2] hover:border-[#fecdd3] hover:text-[#dc2626]"
                         }`}

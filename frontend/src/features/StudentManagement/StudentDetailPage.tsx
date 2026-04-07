@@ -67,35 +67,34 @@ const StudentDetailPage: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  useEffect(() => {
-    const fetchStudent = async () => {
-      try {
-        const response = await StudentService.getStudentById(id!);
-        const data = response.payload!.student;
-        
-        // Filter out any fields that might cause validation errors
-        const cleanData = {
-          name: data.name,
-          email: data.email,
-          phone: String(data.phone),
-          college: data.college,
-          degree: data.degree,
-          graduation_year: data.graduation_year,
-          skills: data.skills,
-          branch: data.branch,
-        };
-        
-        setStudent(cleanData);
-        setFormData({ ...cleanData });
-      } catch (err: any) {
-        setIsError(true);
-        setErrorMsg(err.response?.data?.message || "Failed to fetch student");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchStudent();
-  }, [id]);
+useEffect(() => {
+  const fetchStudent = async () => {
+    try {
+      const response = await StudentService.getStudentById(id!);
+      const data = response.payload!.student;
+      
+      const cleanData = {
+        name: data.name || "",
+        email: data.email || "",
+        phone: data.phone ? String(data.phone) : "",
+        college: data.college || "",
+        degree: data.degree || "",
+        graduation_year: data.graduation_year || "",
+        skills: data.skills || "",
+        branch: data.branch || "",
+      };
+      
+      setStudent(cleanData);
+      setFormData({ ...cleanData });
+    } catch (err: any) {
+      setIsError(true);
+      setErrorMsg(err.response?.data?.message || "Failed to fetch student");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  fetchStudent();
+}, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -165,13 +164,19 @@ const StudentDetailPage: React.FC = () => {
 
   if (!student || !formData) return null;
 
-  const displayName = isEditMode ? formData.name : student.name;
-  const initials = displayName
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+// Safely get a name or fallback to "Student" or the Email
+const displayName = (isEditMode ? formData?.name : student?.name) || student?.email || "Student";
+
+// Safe initials calculation
+const initials = displayName
+  ? displayName
+      .split(" ")
+      .filter(Boolean) // Remove empty strings from double spaces
+      .map((n) => n[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase()
+  : "??";
 
   // ─── Render ────────────────────────────────────────────────────────────────
   return (

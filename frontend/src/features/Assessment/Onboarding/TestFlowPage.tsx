@@ -23,6 +23,7 @@ type Step = 1 | 2 | 3;
 interface FlowState {
   studentId?: string;
   testId?: string;
+  email?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -56,6 +57,7 @@ const Step1EmailVerification = ({ testData, onSuccess }: Step1Props) => {
       onSuccess({
         studentId: response.payload!.studentId,
         testId: testData.id,
+        email: data.email,
       });
     } catch (error: any) {
       setServerError(error.response?.data?.message || "Validation failed");
@@ -273,195 +275,221 @@ const Step2StudentDetails = ({ flowState, onSuccess }: Step2Props) => {
     );
   }
 
-return (
-  <div className="bg-white border border-gray-100 rounded-[2rem] p-10 w-full max-w-2xl mt-10">
-
-    {/* Header */}
-    <div className="mb-8">
-      <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-5">
+  return (
+    <div className="bg-white border border-gray-100 rounded-[2rem] p-10 w-full max-w-2xl mt-10">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-5">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           <span className="text-[11px] font-medium text-gray-500 tracking-wide">
             Step 2 of 3
           </span>
         </div>
-      <h1 className="text-[1.4rem] font-medium text-gray-900 leading-snug tracking-tight mb-1">
-        Complete your profile
-      </h1>
-      <p className="text-[14px] text-gray-400 font-normal">
-        {isPublicTest ? "Fill in your details to continue" : "Verify and update your details"}
-      </p>
-    </div>
-
-    <div className="h-px bg-gray-100 mb-8" />
-
-    <form onSubmit={handleSubmit(onFormSubmit)}>
-
-      {/* Section 1 — Personal Information */}
-      <div className="mb-8 space-y-5">
-        <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
-          Personal information
+        <h1 className="text-[1.4rem] font-medium text-gray-900 leading-snug tracking-tight mb-1">
+          Complete your profile
+        </h1>
+        <p className="text-[14px] text-gray-400 font-normal">
+          {isPublicTest
+            ? "Fill in your details to continue"
+            : "Verify and update your details"}
         </p>
+      </div>
 
-        <div>
-          <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
-            Full name <span className="text-red-400">*</span>
-          </label>
-          <input
-            {...register("name")}
-            placeholder="Enter your full name"
-            className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+      <div className="h-px bg-gray-100 mb-8" />
+
+      <form onSubmit={handleSubmit(onFormSubmit)}>
+        {/* Section 1 — Personal Information */}
+        <div className="mb-8 space-y-5">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+            Personal information
+          </p>
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              Email address
+            </label>
+            <input
+              type="text"
+              value={flowState.email}
+              disabled
+              className="w-full px-4 py-[11px] text-[14px] border border-gray-200 rounded-xl bg-gray-50 text-gray-500 font-normal cursor-not-allowed"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              Full name <span className="text-red-400">*</span>
+            </label>
+            <input
+              {...register("name")}
+              placeholder="Enter your full name"
+              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
               placeholder:text-gray-300 font-normal
               focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
               ${errors.name ? "border-red-300" : "border-gray-200"}`}
-          />
-          {errors.name && (
-            <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.name.message}</p>
-          )}
-        </div>
+            />
+            {errors.name && (
+              <p className="text-red-400 text-xs mt-1.5 font-normal">
+                {errors.name.message}
+              </p>
+            )}
+          </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
-              Contact phone <span className="text-red-400">*</span>
-            </label>
-            <input
-              {...register("phone")}
-              placeholder="e.g. 9876543210"
-              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+                Contact phone <span className="text-red-400">*</span>
+              </label>
+              <input
+                {...register("phone")}
+                placeholder="e.g. 9876543210"
+                className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
                 placeholder:text-gray-300 font-normal
                 focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
                 ${errors.phone ? "border-red-300" : "border-gray-200"}`}
-            />
-            {errors.phone && (
-              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.phone.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
-              Branch <span className="text-red-400">*</span>
-            </label>
-            <input
-              {...register("branch")}
-              placeholder="e.g. Computer Science"
-              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+              />
+              {errors.phone && (
+                <p className="text-red-400 text-xs mt-1.5 font-normal">
+                  {errors.phone.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+                Branch <span className="text-red-400">*</span>
+              </label>
+              <input
+                {...register("branch")}
+                placeholder="e.g. Computer Science"
+                className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
                 placeholder:text-gray-300 font-normal
                 focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
                 ${errors.branch ? "border-red-300" : "border-gray-200"}`}
-            />
-            {errors.branch && (
-              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.branch.message}</p>
-            )}
+              />
+              {errors.branch && (
+                <p className="text-red-400 text-xs mt-1.5 font-normal">
+                  {errors.branch.message}
+                </p>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="h-px bg-gray-100 mb-8" />
+        <div className="h-px bg-gray-100 mb-8" />
 
-      {/* Section 2 — Educational Background */}
-      <div className="mb-8 space-y-5">
-        <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
-          Educational background
-        </p>
+        {/* Section 2 — Educational Background */}
+        <div className="mb-8 space-y-5">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+            Educational background
+          </p>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
-              College <span className="text-red-400">*</span>
-            </label>
-            <input
-              {...register("college")}
-              placeholder="College name"
-              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+                College <span className="text-red-400">*</span>
+              </label>
+              <input
+                {...register("college")}
+                placeholder="College name"
+                className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
                 placeholder:text-gray-300 font-normal
                 focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
                 ${errors.college ? "border-red-300" : "border-gray-200"}`}
-            />
-            {errors.college && (
-              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.college.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
-              Degree <span className="text-red-400">*</span>
-            </label>
-            <input
-              {...register("degree")}
-              placeholder="e.g. B.Tech"
-              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+              />
+              {errors.college && (
+                <p className="text-red-400 text-xs mt-1.5 font-normal">
+                  {errors.college.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+                Degree <span className="text-red-400">*</span>
+              </label>
+              <input
+                {...register("degree")}
+                placeholder="e.g. B.Tech"
+                className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
                 placeholder:text-gray-300 font-normal
                 focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
                 ${errors.degree ? "border-red-300" : "border-gray-200"}`}
-            />
-            {errors.degree && (
-              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.degree.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
-              Graduation year <span className="text-red-400">*</span>
-            </label>
-            <input
-              {...register("graduation_year")}
-              placeholder="e.g. 2026"
-              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+              />
+              {errors.degree && (
+                <p className="text-red-400 text-xs mt-1.5 font-normal">
+                  {errors.degree.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+                Graduation year <span className="text-red-400">*</span>
+              </label>
+              <input
+                {...register("graduation_year")}
+                placeholder="e.g. 2026"
+                className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
                 placeholder:text-gray-300 font-normal
                 focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
                 ${errors.graduation_year ? "border-red-300" : "border-gray-200"}`}
-            />
-            {errors.graduation_year && (
-              <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.graduation_year.message}</p>
-            )}
+              />
+              {errors.graduation_year && (
+                <p className="text-red-400 text-xs mt-1.5 font-normal">
+                  {errors.graduation_year.message}
+                </p>
+              )}
+            </div>
           </div>
+          <p className="text-[11px] text-gray-400 italic font-normal">
+            Ensure details match your academic records.
+          </p>
         </div>
-        <p className="text-[11px] text-gray-400 italic font-normal">
-          Ensure details match your academic records.
-        </p>
-      </div>
 
-      <div className="h-px bg-gray-100 mb-8" />
+        <div className="h-px bg-gray-100 mb-8" />
 
-      {/* Section 3 — Technical Skills */}
-      <div className="mb-8 space-y-5">
-        <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
-          Technical skills
-        </p>
+        {/* Section 3 — Technical Skills */}
+        <div className="mb-8 space-y-5">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+            Technical skills
+          </p>
 
-        <div>
-          <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
-            Skills <span className="text-red-400">*</span>
-          </label>
-          <input
-            {...register("skills")}
-            placeholder="e.g. C++, Java, Python"
-            className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
+          <div>
+            <label className="block text-[12px] font-medium text-gray-600 mb-1.5">
+              Skills <span className="text-red-400">*</span>
+            </label>
+            <input
+              {...register("skills")}
+              placeholder="e.g. C++, Java, Python"
+              className={`w-full px-4 py-[11px] text-[14px] border rounded-xl outline-none transition-all bg-white text-gray-800
               placeholder:text-gray-300 font-normal
               focus:ring-2 focus:ring-[#1D9E75]/15 focus:border-[#1D9E75]
               ${errors.skills ? "border-red-300" : "border-gray-200"}`}
-          />
-          {errors.skills && (
-            <p className="text-red-400 text-xs mt-1.5 font-normal">{errors.skills.message}</p>
-          )}
-          <p className="text-[11px] text-gray-400 mt-2 font-normal">
-            Separate each skill with a comma.
-          </p>
+            />
+            {errors.skills && (
+              <p className="text-red-400 text-xs mt-1.5 font-normal">
+                {errors.skills.message}
+              </p>
+            )}
+            <p className="text-[11px] text-gray-400 mt-2 font-normal">
+              Separate each skill with a comma.
+            </p>
+          </div>
         </div>
-      </div>
 
-      {serverError && (
-        <p className="text-red-400 text-sm mb-6 text-center font-normal">{serverError}</p>
-      )}
+        {serverError && (
+          <p className="text-red-400 text-sm mb-6 text-center font-normal">
+            {serverError}
+          </p>
+        )}
 
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full bg-[#1D9E75] text-white font-medium py-3.5 rounded-xl hover:bg-[#188c67] active:scale-[0.99] transition-all text-[14px] tracking-wide disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {isSubmitting ? "Saving…" : "Save & continue"}
-      </button>
-
-    </form>
-  </div>
-);
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full bg-[#1D9E75] text-white font-medium py-3.5 rounded-xl hover:bg-[#188c67] active:scale-[0.99] transition-all text-[14px] tracking-wide disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          {isSubmitting ? "Saving…" : "Save & continue"}
+        </button>
+      </form>
+    </div>
+  );
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -479,16 +507,23 @@ const Step3Instructions = ({ flowState, slug, onBegin }: Step3Props) => {
   const [rulesAccepted, setRulesAccepted] = useState(false);
 
   const handleBeginTest = async () => {
-    if (!slug || !testId || !studentId || !rulesAccepted) return; 
+    if (!slug || !testId || !studentId || !rulesAccepted) return;
     setLoading(true);
     try {
+      // await navigator.mediaDevices.getUserMedia({
+      //   video: true,
+      //   audio: true,
+      // });
       const response = await testFlowService.startTest(slug, testId, studentId);
       if (response.success && response.payload) {
         onBegin(response.payload.studentAttemptId);
       }
     } catch (error) {
       console.error("Failed to start test:", error);
-      alert("Something went wrong. Please try again.");
+      // alert("Something went wrong. Please try again.");
+      alert(
+        "Camera and Microphone access are required to start the test. Please allow permissions in your browser settings and try again.",
+      );
     } finally {
       setLoading(false);
     }
@@ -501,7 +536,7 @@ const Step3Instructions = ({ flowState, slug, onBegin }: Step3Props) => {
       </h1>
       <p className="text-gray-500 font-bold mb-8">Test Instructions</p>
 
-      <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-8">
+      {/* <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-8">
         <h2 className="text-xl font-bold mb-4">
           Assessment: Software Engineer
         </h2>
@@ -519,7 +554,7 @@ const Step3Instructions = ({ flowState, slug, onBegin }: Step3Props) => {
             <p className="text-lg font-bold">120 Minutes</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="space-y-4 mb-8">
         <p className="font-bold text-gray-800">Key Instructions:</p>

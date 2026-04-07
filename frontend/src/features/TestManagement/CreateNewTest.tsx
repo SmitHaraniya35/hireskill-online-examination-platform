@@ -90,6 +90,8 @@ const CreateNewTest: React.FC = () => {
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(undefined);
   const [startPickerOpen, setStartPickerOpen] = useState(false);
   const [expiryPickerOpen, setExpiryPickerOpen] = useState(false);
+  const difficultyDropdownRef = useRef<HTMLDivElement>(null);
+  const [difficultyDropdownOpen, setDifficultyDropdownOpen] = useState(false);
 
   const {
     register,
@@ -140,6 +142,19 @@ const CreateNewTest: React.FC = () => {
       }
     };
     fetchProblems();
+  }, []);
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (
+        difficultyDropdownRef.current &&
+        !difficultyDropdownRef.current.contains(e.target as Node)
+      ) {
+        setDifficultyDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   useEffect(() => {
@@ -462,7 +477,7 @@ const CreateNewTest: React.FC = () => {
                           <button
                             type="button"
                             className={cn(
-                              "w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg border bg-gray-50 hover:bg-white hover:border-gray-400 transition-all text-left",
+                              "cursor-pointer w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg border bg-gray-50 hover:bg-white hover:border-gray-400 transition-all text-left",
                               startDate
                                 ? "border-green-300 text-gray-800"
                                 : "border-gray-300 text-gray-400",
@@ -504,6 +519,9 @@ const CreateNewTest: React.FC = () => {
                               setStartDate(d);
                               setStartPickerOpen(false);
                             }}
+                            disabled={(date) =>
+                              date < new Date(new Date().setHours(0, 0, 0, 0))
+                            }
                             initialFocus
                             className="p-3"
                             classNames={{
@@ -528,7 +546,7 @@ const CreateNewTest: React.FC = () => {
                         <input
                           type="time"
                           {...register("start_time")}
-                          className="w-full pl-8 pr-2 py-2 text-xs border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-green-500 transition"
+                          className="cursor-pointer w-full pl-8 pr-2 py-2 text-xs border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-green-500 transition"
                         />
                       </div>
                     </div>
@@ -557,7 +575,7 @@ const CreateNewTest: React.FC = () => {
                           <button
                             type="button"
                             className={cn(
-                              "w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg border bg-gray-50 hover:bg-white hover:border-gray-400 transition-all text-left",
+                              "cursor-pointer w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg border bg-gray-50 hover:bg-white hover:border-gray-400 transition-all text-left",
                               expiryDate
                                 ? "border-blue-300 text-gray-800"
                                 : "border-gray-300 text-gray-400",
@@ -597,6 +615,15 @@ const CreateNewTest: React.FC = () => {
                               setExpiryDate(d);
                               setExpiryPickerOpen(false);
                             }}
+                            disabled={(date) => {
+                              const today = new Date(
+                                new Date().setHours(0, 0, 0, 0),
+                              );
+                              if (startDate) {
+                                return date < startDate; 
+                              }
+                              return date < today;
+                            }}
                             initialFocus
                             className="p-3"
                             classNames={{
@@ -621,7 +648,7 @@ const CreateNewTest: React.FC = () => {
                         <input
                           type="time"
                           {...register("expiry_time")}
-                          className="w-full pl-8 pr-2 py-2 text-xs border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-400 transition"
+                          className="cursor-pointer w-full pl-8 pr-2 py-2 text-xs border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-blue-400 transition"
                         />
                       </div>
                     </div>
@@ -775,7 +802,7 @@ const CreateNewTest: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setTopicDropdownOpen((o) => !o)}
-                      className="flex items-center justify-between gap-2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 transition min-w-[140px]"
+                      className="cursor-pointer flex items-center justify-between gap-2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 transition min-w-[140px]"
                     >
                       <span
                         className={
@@ -888,16 +915,74 @@ const CreateNewTest: React.FC = () => {
                       </div>
                     )}
                   </div>
-                  <select
+                  {/* <select
                     value={difficultyFilter}
                     onChange={(e) => setDifficultyFilter(e.target.value)}
-                    className="px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:border-green-500 transition"
+                    className="bg-white text-gray-400 cursor-pointer px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 focus:outline-none transition"
                   >
                     <option value="">Difficulty</option>
                     <option value="easy">Easy</option>
                     <option value="medium">Medium</option>
                     <option value="hard">Hard</option>
-                  </select>
+                  </select> */}
+                  <div className="relative" ref={difficultyDropdownRef}>
+                    <button
+                      type="button"
+                      onClick={() => setDifficultyDropdownOpen((o) => !o)}
+                      className="cursor-pointer flex items-center justify-between gap-2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg bg-gray-50 transition min-w-[140px]"
+                    >
+                      <span
+                        className={
+                          difficultyFilter ? "text-gray-800" : "text-gray-400"
+                        }
+                      >
+                        {difficultyFilter
+                          ? difficultyFilter.charAt(0).toUpperCase() +
+                            difficultyFilter.slice(1)
+                          : "Difficulty"}
+                      </span>
+                      <svg
+                        className={`w-4 h-4 text-gray-400 flex-shrink-0 transition-transform ${difficultyDropdownOpen ? "rotate-180" : ""}`}
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+
+                    {difficultyDropdownOpen && (
+                      <div className="absolute z-30 top-full mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+                        {[
+                          { label: "Difficulty", value: "" },
+                          { label: "Easy", value: "easy" },
+                          { label: "Medium", value: "medium" },
+                          { label: "Hard", value: "hard" },
+                        ].map((opt) => (
+                          <button
+                            key={opt.value}
+                            type="button"
+                            onClick={() => {
+                              setDifficultyFilter(opt.value);
+                              setDifficultyDropdownOpen(false);
+                            }}
+                            className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                              difficultyFilter === opt.value
+                                ? "bg-gray-50 text-gray-700"
+                                : opt.value === ""
+                                  ? "text-gray-400 hover:bg-gray-50"
+                                  : "text-gray-700 hover:bg-gray-50"
+                            }`}
+                          >
+                            {opt.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
               <p className="text-sm font-bold text-gray-900 mb-2">
@@ -1107,7 +1192,7 @@ const CreateNewTest: React.FC = () => {
                   : "Creating..."
                 : isEditMode
                   ? "Update Test"
-                  : "Create Test & Publish"}
+                  : "Create Test"}
             </button>
           </div>
         </form>

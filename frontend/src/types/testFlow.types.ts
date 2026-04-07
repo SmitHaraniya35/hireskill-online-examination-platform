@@ -11,16 +11,6 @@ export interface TestDataResponse {
     test: TestData;
 }
 
-export interface CreateStudentData{
-    name: string;
-    email: string;
-    phone: string;
-}
-
-export interface CreateStudentResponse{
-    studentId: string;
-    studentToken: string;
-}
 
 export interface ValidateStudentAttemptResponse{
     problem_id: string;

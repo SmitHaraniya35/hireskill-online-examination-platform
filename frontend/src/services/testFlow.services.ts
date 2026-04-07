@@ -1,8 +1,6 @@
 // import axios from "axios";
 import {
   type StartResponse,
-  type CreateStudentData,
-  type CreateStudentResponse,
   type FinishData,
   type TestDataResponse,
   type ValidateStudentAttemptResponse,
@@ -71,15 +69,6 @@ const testFlowService = {
       axiosResponse<ValidateStudentAttemptResponse>
     >(
       `${API_BASE_URL}/student-attempt/${id}/get-problem-id`,
-      getCommonHeaders(),
-    );
-    return response.data;
-  },
-
-  createStudent: async (data: CreateStudentData) => {
-    const response = await api.post<axiosResponse<CreateStudentResponse>>(
-      `${API_BASE_URL}/student/create-student`,
-      data,
       getCommonHeaders(),
     );
     return response.data;

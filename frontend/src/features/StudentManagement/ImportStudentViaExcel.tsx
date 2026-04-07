@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import * as XLSX from "xlsx";
 import StudentService from "../../services/student.services";
 import { toast } from "react-toastify";
+import useLockBodyScroll from "@/hooks/useLockBodyScroll";
 
 interface ImportStudentViaExcelProps {
   onSuccess?: () => void;
@@ -10,6 +11,7 @@ interface ImportStudentViaExcelProps {
 const ImportStudentViaExcel: React.FC<ImportStudentViaExcelProps> = ({
   onSuccess,
 }) => {
+  useLockBodyScroll();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -84,8 +86,8 @@ const ImportStudentViaExcel: React.FC<ImportStudentViaExcelProps> = ({
 
         const formattedData = rawData.map((row: any) => ({
           name: String(row["Full Name"]),
-          email: String(row["DDU Email Address"]),
-          phone: row["Mobile Number"],
+          email: String(row["Email Address"]),
+          phone: String(row["Mobile Number"]),
           college: String(row["College Name"]),
         }));
 

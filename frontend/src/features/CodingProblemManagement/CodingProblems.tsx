@@ -224,13 +224,10 @@ const CodingProblem: React.FC = () => {
         {/* ── header ── */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <p className="text-[10px] font-semibold tracking-[0.12em] text-[#b0b8c4] uppercase mb-1.5">
-              Admin · Code management
-            </p>
-            <h1 className="text-[22px] font-bold text-gray-900 tracking-tight leading-tight">
+            <h1 className="font-bold text-2xl text-gray-900 tracking-tight leading-tight">
               Code management
             </h1>
-            <p className="text-[13px] text-gray-400 mt-1">
+            <p className="text-sm text-gray-400 mt-1">
               Manage technical problems for assessments.
             </p>
           </div>
