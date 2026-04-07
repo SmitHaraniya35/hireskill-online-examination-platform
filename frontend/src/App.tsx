@@ -7,6 +7,7 @@ import AdminLayout from "./layouts/AdminLayout.tsx";
 import AdminRoutes from "./routes/AdminRoutes.tsx";
 import StudentProtectedRoute from "./routes/StudentProtectedRoute.tsx";
 import AdminAuthProviderWrapper from "./routes/AdminAuthProviderWrapper.tsx";
+import CreateStudent from "./features/StudentManagement/CreateStudent.tsx";
 
 // Lazy imports
 const AdminLogin = lazy(() => import("./features/auth/admin/Login.tsx"));
@@ -49,7 +50,7 @@ const AssessmentPage = lazy(
   () => import("./features/Assessment/AssessmentPage.tsx"),
 );
 const CompletionPage = lazy(
-  () => import("./features/Assessment/ComplitionPage.tsx"),
+  () => import("./features/Assessment/CompletionPage.tsx"),
 );
 const Dashboard = lazy(() => import("./features/DashboardManagement/Dashboard.tsx"));
 const NotFound = lazy(() => import("./components/shared/NotFound.tsx"));
@@ -122,7 +123,8 @@ const App: React.FC = () => {
               <CompletionPage />
           }
         />
-
+        {/* <Route path="/admin/student-management/create-student" element={<CreateStudent />} */}
+  
         {/* FIXED: No auth wrapper */}
         <Route path="/*" element={<NotFound />} />
       </Routes>
