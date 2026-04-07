@@ -16,7 +16,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { Trash2 } from "lucide-react";
+import { RefreshCcw, Trash2 } from "lucide-react";
 
 const StudentsListView: React.FC = () => {
   const [studentsList, setStudentsList] = useState<Student[]>([]);
@@ -68,15 +68,15 @@ const StudentsListView: React.FC = () => {
 
   const columns = [
     {
-      header: "Name",
-      width: "14%",
-      accessor: "name" as keyof Student,
-      sortable: true,
-    },
-    {
       header: "Email",
       width: "14%",
       accessor: "email" as keyof Student,
+      sortable: true,
+    },
+    {
+      header: "Name",
+      width: "14%",
+      accessor: "name" as keyof Student,
       sortable: true,
     },
     { header: "Phone", accessor: "phone" as keyof Student, sortable: false },
@@ -132,7 +132,7 @@ const StudentsListView: React.FC = () => {
   ];
 
   return (
-    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden">
+    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl overflow-hidden max-w-full">
       {/* Error Banner */}
       {isError && (
         <div className="mx-6 mt-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100 flex items-center gap-2">
@@ -182,6 +182,16 @@ const StudentsListView: React.FC = () => {
             )}
           </div>
         </div>
+        <button
+          onClick={() => fetchStudentsList()}
+          disabled={isLoading}
+          className="cursor-pointer group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-gray-500 hover:text-[#1DA077] hover:bg-[#1DA077]/8 border border-transparent hover:border-[#1DA077]/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <RefreshCcw
+            className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#1DA077]" : ""}`}
+          />
+          {isLoading ? "Refreshing…" : "Refresh"}
+        </button>
 
         {/* Bulk Delete — only visible when rows selected */}
         {selectedIds.size > 0 && (
