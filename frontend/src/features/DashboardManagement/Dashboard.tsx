@@ -3,9 +3,11 @@ import { RefreshCcw } from "lucide-react";
 import { useDashboardData } from "./hooks/useDashboardData";
 import { LoadingSkeleton, Icons } from "./components/dashboard.components";
 import { relDate } from "./utils/dashboard.utils";
+import GlobalView from "./views/GlobalView";
+import SingleTestView from "./views/SingleTestView";
 
-const GlobalView = lazy(() => import("./views/GlobalView"));
-const SingleTestView = lazy(() => import("./views/SingleTestView"));
+// const GlobalView = lazy(() => import("./views/GlobalView"));
+// const SingleTestView = lazy(() => import("./views/SingleTestView"));
 
 export default function Dashboard() {
   const {
@@ -165,16 +167,26 @@ export default function Dashboard() {
               </span>
             )}
           </div>
-          <button
+          {/* <button
             onClick={refresh}
             className="cursor-pointer group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-gray-500 hover:text-[#1DA077] hover:bg-[#1DA077]/8 border border-transparent hover:border-[#1DA077]/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RefreshCcw className="w-3.5 h-3.5" />
             Refresh
+          </button> */}
+          <button
+            onClick={refresh}
+            disabled={loading}
+            className="cursor-pointer group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-gray-500 hover:text-[#1DA077] hover:bg-[#1DA077]/8 border border-transparent hover:border-[#1DA077]/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RefreshCcw
+              className={`w-3.5 h-3.5 ${loading ? "animate-spin text-[#1DA077]" : ""}`}
+            />
+            {loading ? "Refreshing…" : "Refresh"}
           </button>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 min-h-0 overflow-y-auto p-6 w-full">
           {error && (
             <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl mb-6 text-sm">
               <svg
@@ -196,13 +208,13 @@ export default function Dashboard() {
           {loading ? (
             <LoadingSkeleton />
           ) : (
-            <Suspense fallback={<LoadingSkeleton />}>
+            <>
               {view === "global" && globalData ? (
                 <GlobalView data={globalData} onTestClick={handleSelect} />
               ) : view === "single" && singleData ? (
                 <SingleTestView data={singleData} />
               ) : null}
-            </Suspense>
+            </>
           )}
         </main>
       </div>

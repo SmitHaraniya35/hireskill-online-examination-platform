@@ -105,7 +105,7 @@ export const StatCard = ({ label, value, sub, icon, color }: StatCardProps) => (
         {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
       </div>
       <div
-        className={`p-3 rounded-xl ${color} bg-opacity-10 group-hover:scale-110 transition-transform duration-200`}
+        className={`rounded-xl ${color} bg-opacity-10 group-hover:scale-110 transition-transform duration-200`}
       >
         <div className={`${color}`}>{icon}</div>
       </div>
@@ -181,13 +181,15 @@ export const Card = ({
   className?: string;
 }) => (
   <div
-    className={`bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 ${className}`}
+    className={`bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200 flex flex-col ${className}`}
   >
     <div className="mb-4">
       <h2 className="text-base font-semibold text-gray-800">{title}</h2>
       {subtitle && <p className="text-xs text-gray-400 mt-1">{subtitle}</p>}
     </div>
-    {children}
+    <div className="flex-1 min-h-0 w-full">
+      {children}
+    </div>
   </div>
 );
 

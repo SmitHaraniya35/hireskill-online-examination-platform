@@ -108,7 +108,7 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
           subtitle="Average performance across tests"
           className="lg:col-span-2"
         >
-          <div className="h-80">
+          <div className="h-80 w-full min-h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart
                 data={trendData}
@@ -151,6 +151,13 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                   strokeWidth={2.5}
                   fill="url(#scoreGradient)"
                   name="Average Score"
+                  dot={{ fill: "#ffffff", stroke: "#6366f1", strokeWidth: 2, r: 4 }}
+                  activeDot={{
+                    fill: "#6366f1",
+                    stroke: "#fff",
+                    strokeWidth: 2,
+                    r: 6,
+                  }}
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -167,7 +174,7 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
           title="Difficulty Analysis"
           subtitle="Performance by difficulty level"
         >
-          <div className="h-80">
+          <div className="h-80 ">
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData}>
                 <PolarGrid stroke="#e2e8f0" />
@@ -243,7 +250,7 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                     const label = payload.value;
                     const isLong = label.length > 12;
                     const displayLabel = isLong
-                      ? `${label.slice(0,12)}...`
+                      ? `${label.slice(0, 12)}...`
                       : label;
 
                     return (
@@ -351,7 +358,6 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
               <TH>Test</TH>
               <TH>Date</TH>
               <TH>Students</TH>
-              <TH>Completion</TH>
               <TH>Avg Score</TH>
               <TH align="center">Action</TH>
             </tr>
@@ -380,20 +386,6 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                   </TD>
                   <TD>
                     <span className="tabular-nums">{t.totalStudents}</span>
-                  </TD>
-                  <TD>
-                    <div className="min-w-[140px]">
-                      <ProgressBar
-                        value={t.completionRate}
-                        color={
-                          t.completionRate >= 75
-                            ? "#10b981"
-                            : t.completionRate >= 40
-                              ? "#f59e0b"
-                              : "#ef4444"
-                        }
-                      />
-                    </div>
                   </TD>
                   <TD>
                     <span
