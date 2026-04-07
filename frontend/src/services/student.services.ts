@@ -24,10 +24,10 @@ const getAuthHeaders = () => {
 };
 
 const StudentService = {
-  createStudent: async (data: Student) => {
+  createStudent: async (email: string) => {
     const response = await api.post<axiosResponse>(
       `${API_URL}/create-student`,
-      data,
+      { email },
       getAuthHeaders(),
     );
     return response.data;
