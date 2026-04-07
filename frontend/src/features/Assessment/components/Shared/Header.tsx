@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useAssessment } from "../../context/AssessmentContext";
 import { useNavigate, useParams } from "react-router-dom";
 import ExamTimer from "../../../../components/ExamTimer";
@@ -48,7 +48,7 @@ const Header: React.FC = () => {
     navigate("/test/complete", { replace: true });
   };
 
-  const handleTimeUp = async () => {
+  const handleTimeUp = useCallback(async () => {
     if (currentAssignedProblemId && currentCode && currentLanguage) {
       await saveDraft(currentAssignedProblemId!, {
         last_saved_code: currentCode,
@@ -63,7 +63,7 @@ const Header: React.FC = () => {
       await document.exitFullscreen().catch(() => {});
     }
     navigate("/test/complete", { replace: true });
-  };
+  }, [currentAssignedProblemId, currentCode, currentLanguage, studentAttemptId, slug, saveDraft]);
 
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">

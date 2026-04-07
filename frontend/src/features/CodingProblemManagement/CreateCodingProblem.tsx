@@ -20,10 +20,8 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { lazy } from "react";
 
-
 const Editor = lazy(() => import("@monaco-editor/react"));
 const TiptapEditor = lazy(() => import("../../components/TipTapEditor"));
-
 
 // ─── Static Topics List ───────────────────────────────────────────────────────
 const ALL_TOPICS = [
@@ -63,7 +61,6 @@ const ALL_TOPICS = [
   "Topological Sort",
 ];
 
-
 // ─── Topic Dropdown Input ─────────────────────────────────────────────────────
 const TopicTagInput: React.FC<{
   value: string;
@@ -74,7 +71,6 @@ const TopicTagInput: React.FC<{
   const [search, setSearch] = useState("");
   const ref = useRef<HTMLDivElement>(null);
 
-
   const selected = value
     ? value
         .split(",")
@@ -82,12 +78,10 @@ const TopicTagInput: React.FC<{
         .filter(Boolean)
     : [];
 
-
   const filtered = ALL_TOPICS.filter(
     (t) =>
       t.toLowerCase().includes(search.toLowerCase()) && !selected.includes(t),
   );
-
 
   const toggleTopic = (topic: string) => {
     if (selected.includes(topic)) {
@@ -97,11 +91,9 @@ const TopicTagInput: React.FC<{
     }
   };
 
-
   const removeTopic = (topic: string) => {
     onChange(selected.filter((t) => t !== topic).join(", "));
   };
-
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -113,7 +105,6 @@ const TopicTagInput: React.FC<{
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
 
   return (
     <div ref={ref} className="relative">
@@ -159,7 +150,6 @@ const TopicTagInput: React.FC<{
           />
         </svg>
       </div>
-
 
       {/* Dropdown */}
       {open && (
@@ -218,12 +208,10 @@ const TopicTagInput: React.FC<{
         </div>
       )}
 
-
       {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
     </div>
   );
 };
-
 
 // ─── Main Page Component ──────────────────────────────────────────────────────
 const CreateCodingProblemPage: React.FC = () => {
@@ -232,12 +220,10 @@ const CreateCodingProblemPage: React.FC = () => {
   const editId = searchParams.get("id");
   const isEditMode = searchParams.get("mode") === "edit";
 
-
   const [pageLoading, setPageLoading] = useState(isEditMode);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
 
   const [deletingTemplates, setDeletingTemplates] = useState<
     Record<string, boolean>
@@ -245,7 +231,6 @@ const CreateCodingProblemPage: React.FC = () => {
   const [deletingTestCases, setDeletingTestCases] = useState<
     Record<number, boolean>
   >({});
-
 
   // ── Language Templates state ───────────────────────────────────────────────
   const [allLanguages, setAllLanguages] = useState<string[]>([]);
@@ -258,7 +243,6 @@ const CreateCodingProblemPage: React.FC = () => {
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
 
-
   // ── Image previews ─────────────────────────────────────────────────────────
   const [imagePreviews, setImagePreviews] = useState<{ [key: number]: string }>(
     {},
@@ -269,7 +253,6 @@ const CreateCodingProblemPage: React.FC = () => {
   const [deletingIndices, setDeletingIndices] = useState<Set<number>>(
     new Set(),
   );
-
 
   // ── React Hook Form ────────────────────────────────────────────────────────
   const {
@@ -294,13 +277,11 @@ const CreateCodingProblemPage: React.FC = () => {
     },
   });
 
-
   const { fields, append, remove } = useFieldArray({
     control,
     name: "testCases",
   });
   const testCases = watch("testCases");
-
 
   // ── Init ───────────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -317,7 +298,6 @@ const CreateCodingProblemPage: React.FC = () => {
       if (langs.length === 0) langs = ["C++", "C", "Python", "JavaScript"];
       setAllLanguages(langs);
 
-
       if (isEditMode && editId) {
         setPageLoading(true);
         try {
@@ -327,7 +307,6 @@ const CreateCodingProblemPage: React.FC = () => {
           );
           const editData: CodingProblemData =
             res.payload!.codingProblemWithTestCases!;
-
 
           setValue("title", editData.title);
           setValue(
@@ -344,7 +323,6 @@ const CreateCodingProblemPage: React.FC = () => {
           setValue("constraint", editData.constraint);
           setValue("inputFormat", editData.input_format);
           setValue("outputFormat", editData.output_format);
-
 
           const testCasesList = editData.testCases || [];
           if (testCasesList.length > 0) {
@@ -363,7 +341,6 @@ const CreateCodingProblemPage: React.FC = () => {
             });
             setImagePreviews(previews);
           }
-
 
           if (editData.templateCodes && editData.templateCodes.length > 0) {
             const editLangs = [
@@ -394,11 +371,9 @@ const CreateCodingProblemPage: React.FC = () => {
       }
     };
 
-
     init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   // ── Close lang dropdown on outside click ──────────────────────────────────
   useEffect(() => {
@@ -413,7 +388,6 @@ const CreateCodingProblemPage: React.FC = () => {
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
-
 
   // ── Language template helpers ──────────────────────────────────────────────
   const monacoLang = (lang: string) => {
@@ -430,10 +404,8 @@ const CreateCodingProblemPage: React.FC = () => {
     return map[lang] || "plaintext";
   };
 
-
   const getTemplate = (lang: string) =>
     templateCodes.find((t) => t.language === lang)?.basic_code_layout || "";
-
 
   const handleEditorChange = (lang: string, value: string | undefined) => {
     setTemplateCodes((prev) => {
@@ -457,7 +429,6 @@ const CreateCodingProblemPage: React.FC = () => {
     }
   };
 
-
   const addLanguage = (lang: string) => {
     if (!openLangs.includes(lang)) {
       setOpenLangs((prev) => [...prev, lang]);
@@ -470,7 +441,6 @@ const CreateCodingProblemPage: React.FC = () => {
     setLangDropdownOpen(false);
   };
 
-
   const removeLanguage = async (lang: string) => {
     // Prevent removing if it's the last language
     if (openLangs.length <= 1) {
@@ -478,9 +448,7 @@ const CreateCodingProblemPage: React.FC = () => {
       return;
     }
 
-
     const templateToRemove = templateCodes.find((t) => t.language === lang);
-
 
     if (templateToRemove?.id) {
       setDeletingTemplates((prev) => ({ ...prev, [lang]: true }));
@@ -505,7 +473,6 @@ const CreateCodingProblemPage: React.FC = () => {
       }
     }
 
-
     const remaining = openLangs.filter((l) => l !== lang);
     setOpenLangs(remaining);
     setTemplateCodes((prev) => prev.filter((t) => t.language !== lang));
@@ -518,14 +485,12 @@ const CreateCodingProblemPage: React.FC = () => {
       setActiveLang(remaining[0]);
   };
 
-
   const validateTemplates = (): boolean => {
     // Must have at least 1 language
     if (openLangs.length === 0) {
       toast.error("Please add at least one language template");
       return false;
     }
-
 
     const errs: Record<string, string> = {};
     openLangs.forEach((lang) => {
@@ -535,7 +500,6 @@ const CreateCodingProblemPage: React.FC = () => {
     setTemplateErrors(errs);
     return Object.keys(errs).length === 0;
   };
-
 
   // ── Test case helpers ──────────────────────────────────────────────────────
   const handleImageChange = async (
@@ -547,13 +511,11 @@ const CreateCodingProblemPage: React.FC = () => {
       const formData = new FormData();
       formData.append("image", file);
 
-
       try {
         setUploadingIndices((prev) => new Set(prev).add(index));
         const response = await api.post("/upload/image", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-
 
         if (response.data.success) {
           const cloudUrl = response.data.payload.url;
@@ -573,9 +535,6 @@ const CreateCodingProblemPage: React.FC = () => {
     }
   };
 
-
-
-
   const removeImage = async (index: number) => {
     const imageUrl = imagePreviews[index];
     if (imageUrl) {
@@ -593,7 +552,6 @@ const CreateCodingProblemPage: React.FC = () => {
       }
     }
 
-
     setImagePreviews((prev) => {
       const next = { ...prev };
       delete next[index];
@@ -602,14 +560,8 @@ const CreateCodingProblemPage: React.FC = () => {
     setValue(`testCases.${index}.image_url`, "");
   };
 
-
-
-
-
-
   const handleRemoveTestCase = async (index: number) => {
     const testCaseId = testCases[index]?.id;
-
 
     if (testCaseId) {
       setDeletingTestCases((prev) => ({ ...prev, [index]: true }));
@@ -631,7 +583,6 @@ const CreateCodingProblemPage: React.FC = () => {
       }
     }
 
-
     if (imagePreviews[index]) {
       URL.revokeObjectURL(imagePreviews[index]);
       setImagePreviews((prev) => {
@@ -643,21 +594,17 @@ const CreateCodingProblemPage: React.FC = () => {
     remove(index);
   };
 
-
   const toggleVisibility = (index: number) => {
     setValue(`testCases.${index}.is_hidden`, !testCases[index]?.is_hidden);
   };
-
 
   // ── Submit ─────────────────────────────────────────────────────────────────
   const onSubmit = async (data: ProblemFormInput) => {
     if (!validateTemplates()) return;
 
-
     setSubmitLoading(true);
     setIsError(false);
     setErrorMsg("");
-
 
     const topicArray = data.topic.includes(",")
       ? data.topic
@@ -668,10 +615,8 @@ const CreateCodingProblemPage: React.FC = () => {
         ? [data.topic.trim()]
         : [];
 
-
     const capitalizedDifficulty = (data.difficulty.charAt(0).toUpperCase() +
       data.difficulty.slice(1)) as "Easy" | "Medium" | "Hard";
-
 
     const filteredTemplateCodes = templateCodes
       .filter(
@@ -684,7 +629,6 @@ const CreateCodingProblemPage: React.FC = () => {
         if (id) template.id = id;
         return template;
       });
-
 
     const problemData: CodingProblemData = {
       ...(isEditMode && editId && { id: editId }),
@@ -707,7 +651,6 @@ const CreateCodingProblemPage: React.FC = () => {
       }),
     };
 
-
     try {
       let res;
       if (isEditMode && editId) {
@@ -723,7 +666,6 @@ const CreateCodingProblemPage: React.FC = () => {
           );
         toast.success("Problem Created Successfully!");
       }
-
 
       if (res?.success) {
         navigate("/admin/coding-problem");
@@ -741,7 +683,6 @@ const CreateCodingProblemPage: React.FC = () => {
     }
   };
 
-
   // ── Page loading ───────────────────────────────────────────────────────────
   if (pageLoading) {
     return (
@@ -751,9 +692,7 @@ const CreateCodingProblemPage: React.FC = () => {
     );
   }
 
-
   const availableToAdd = allLanguages.filter((l) => !openLangs.includes(l));
-
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -773,13 +712,11 @@ const CreateCodingProblemPage: React.FC = () => {
           </button>
         </div>
 
-
         {isError && errorMsg && (
           <div className="mb-6 bg-red-50 text-red-500 p-3 rounded-lg text-sm border border-red-100">
             ⚠️ {errorMsg}
           </div>
         )}
-
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* ── Section 1: Problem Metadata ─────────────────────────── */}
@@ -805,7 +742,6 @@ const CreateCodingProblemPage: React.FC = () => {
                 )}
               </div>
 
-
               {/* Difficulty */}
               <div className="col-span-3">
                 <label className="block text-sm font-medium text-gray-600 mb-1.5">
@@ -816,13 +752,13 @@ const CreateCodingProblemPage: React.FC = () => {
                     const selected = watch("difficulty") === d;
                     const colors: Record<string, string> = {
                       easy: selected
-                        ? "bg-green-500 text-white border-green-500"
+                        ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                         : "border-gray-200 text-gray-600 hover:border-green-300",
                       medium: selected
-                        ? "bg-yellow-400 text-white border-yellow-400"
+                        ? "bg-amber-50 text-amber-700 border border-amber-200"
                         : "border-gray-200 text-gray-600 hover:border-yellow-300",
                       hard: selected
-                        ? "bg-red-500 text-white border-red-500"
+                        ? "bg-rose-50 text-rose-700 border border-rose-200"
                         : "border-gray-200 text-gray-600 hover:border-red-300",
                     };
                     return (
@@ -844,7 +780,6 @@ const CreateCodingProblemPage: React.FC = () => {
                 )}
               </div>
 
-
               {/* Topics */}
               <div className="col-span-4">
                 <label className="block text-sm font-medium text-gray-600 mb-1.5">
@@ -860,7 +795,6 @@ const CreateCodingProblemPage: React.FC = () => {
               </div>
             </div>
           </div>
-
 
           {/* ── Section 2: Problem Details + Language Templates ─────── */}
           <div className="grid grid-cols-2 gap-6">
@@ -957,14 +891,12 @@ const CreateCodingProblemPage: React.FC = () => {
               </div>
             </div>
 
-
             {/* Language Templates */}
             <div className="bg-white rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-base font-semibold text-gray-800">
                   Language Templates
                 </h2>
-
 
                 {/* Add language dropdown */}
                 {availableToAdd.length > 0 && (
@@ -1004,7 +936,6 @@ const CreateCodingProblemPage: React.FC = () => {
                   </div>
                 )}
               </div>
-
 
               {/* Language Tabs */}
               <div className="flex items-center gap-1 border-b border-gray-100 mb-4 flex-wrap min-h-[40px]">
@@ -1058,7 +989,6 @@ const CreateCodingProblemPage: React.FC = () => {
                   </div>
                 ))}
               </div>
-
 
               {/* Monaco Editor or Empty State */}
               {openLangs.length === 0 ? (
@@ -1127,7 +1057,6 @@ const CreateCodingProblemPage: React.FC = () => {
                 </div>
               )}
 
-
               {/* Status text & error — only when a lang is active */}
               {openLangs.length > 0 && (
                 <>
@@ -1143,14 +1072,12 @@ const CreateCodingProblemPage: React.FC = () => {
                 </>
               )}
 
-
               {/* No language warning */}
               {openLangs.length === 0 && (
                 <p className="text-xs text-amber-500 mt-2 mb-4">
                   ⚠️ At least one language template is required to publish
                 </p>
               )}
-
 
               {/* Constraint */}
               <div>
@@ -1182,20 +1109,27 @@ const CreateCodingProblemPage: React.FC = () => {
             </div>
           </div>
 
-
           {/* ── Section 3: Test Case Manager ────────────────────────── */}
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             <h2 className="text-base font-semibold text-gray-800 mb-5">
               Test Case Manager
             </h2>
 
-
-            {errors.testCases && (
+            {/* {errors.testCases && (
               <div className="mb-4 bg-red-50 text-red-500 p-2.5 rounded-lg text-sm border border-red-100">
                 ⚠️ {errors.testCases.message}
               </div>
+            )} */}
+            {errors.testCases && (
+              <div className="mb-4 bg-red-50 text-red-500 p-2.5 rounded-lg text-sm border border-red-100 flex items-center gap-2">
+                <span>⚠️</span>
+                <span>
+                  {(errors.testCases as any)?.root?.message ?? // .refine() error
+                    errors.testCases.message ?? // .min(1) error
+                    "Some test cases have errors — please review the fields highlighted below."}
+                </span>
+              </div>
             )}
-
 
             <div className="grid grid-cols-12 gap-3 mb-2 px-1">
               <div className="col-span-1 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -1217,7 +1151,6 @@ const CreateCodingProblemPage: React.FC = () => {
                 Actions
               </div>
             </div>
-
 
             <div className="space-y-2">
               {fields.map((field, index) => (
@@ -1279,12 +1212,16 @@ const CreateCodingProblemPage: React.FC = () => {
                     {uploadingIndices.has(index) ? (
                       <div className="flex flex-col items-center gap-1">
                         <div className="w-5 h-5 border-2 border-gray-300 border-t-[#1DA077] rounded-full animate-spin" />
-                        <span className="text-[10px] text-gray-400">Uploading...</span>
+                        <span className="text-[10px] text-gray-400">
+                          Uploading...
+                        </span>
                       </div>
                     ) : deletingIndices.has(index) ? (
                       <div className="flex flex-col items-center gap-1">
                         <div className="w-5 h-5 border-2 border-gray-300 border-t-red-500 rounded-full animate-spin" />
-                        <span className="text-[10px] text-gray-400">Deleting...</span>
+                        <span className="text-[10px] text-gray-400">
+                          Deleting...
+                        </span>
                       </div>
                     ) : imagePreviews[index] ? (
                       <div className="relative">
@@ -1335,7 +1272,6 @@ const CreateCodingProblemPage: React.FC = () => {
                     )}
                   </div>
 
-
                   <div className="col-span-1 flex items-center justify-center pt-2">
                     {fields.length > 1 && (
                       <button
@@ -1364,7 +1300,6 @@ const CreateCodingProblemPage: React.FC = () => {
               ))}
             </div>
 
-
             <button
               type="button"
               onClick={() =>
@@ -1375,7 +1310,6 @@ const CreateCodingProblemPage: React.FC = () => {
               + Add Test Case
             </button>
           </div>
-
 
           {/* ── Footer ───────────────────────────────────────────────── */}
           <div className="flex justify-end gap-3 pb-8">
@@ -1403,7 +1337,7 @@ const CreateCodingProblemPage: React.FC = () => {
                 ? "Saving..."
                 : isEditMode
                   ? "Update Problem"
-                  : "Publish Problem"}
+                  : "Create Problem"}
             </button>
           </div>
         </form>
@@ -1412,7 +1346,4 @@ const CreateCodingProblemPage: React.FC = () => {
   );
 };
 
-
 export default CreateCodingProblemPage;
-
-
