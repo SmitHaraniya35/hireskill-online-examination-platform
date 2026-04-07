@@ -4,11 +4,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "./Header";
 import ResultSummary from "./ResultSummary";
 import Problems from "./Problems";
-import ProblemDetails from "./SubmissionDetails";
 import type { GetStudentAttemptSubmissionDetailsAndResultResponse } from "../../../types/studentAttempts.types";
 import type { GetSubmissionResponse } from "../../../types/submission.types";
 import StudentAttemptService from "../../../services/studentAttempt.services";
 import submissionService from "../../../services/submission.services";
+import SubmissionDetails from "./SubmissionDetails";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -150,7 +150,7 @@ return (
             totalDurationMinutes={durationMinutes}
           />
           {/* Problems fills remaining height and scrolls internally */}
-          <div className="flex-1 min-h-0  overflow-hidden flex flex-col">
+          <div className="flex-1">
             <Problems
               problems={studentAssignedProblems}
               selectedSubmissionId={selectedSubmissionId}
@@ -161,7 +161,7 @@ return (
 
         {/* Right column — sticky, scrollable internally */}
         <div className="lg:sticky lg:top-6 self-start">
-          <ProblemDetails
+          <SubmissionDetails
             data={submissionData}
             loading={submissionLoading}
             error={submissionError}
