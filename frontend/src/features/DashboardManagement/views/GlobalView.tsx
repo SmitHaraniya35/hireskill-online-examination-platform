@@ -141,6 +141,7 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                   axisLine={false}
                   tickLine={false}
                   domain={[0, 100]}
+                  ticks={[0, 20, 40, 60, 80, 100]}
                 />
                 <Tooltip content={<EnhancedTooltip />} />
                 <Area
