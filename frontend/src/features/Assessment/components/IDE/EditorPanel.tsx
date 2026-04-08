@@ -537,10 +537,6 @@ const EditorPanel: React.FC = () => {
 
   const handleRunCode = async () => {
     if (!currentProblem || !currentCode.trim()) return;
-
-    // Capture this request's ID so we can detect if it becomes stale
-    // const myRequestId = ++requestIdRef.current;
-
     setIsRunning(true);
     setIsSubmission(false);
     setTestCases([]);
@@ -559,16 +555,11 @@ const EditorPanel: React.FC = () => {
         testCases: testCasesData,
       });
 
-      // If the user clicked Run again while this was running, discard this old result
-      // if (requestIdRef.current !== myRequestId) return;
-
       setWorkerResponse(response.payload!);
       if (response.payload?.results) {
         setTestCases(response.payload.results);
       }
     } catch (err: any) {
-      // if (requestIdRef.current !== myRequestId) return;
-
       setWorkerResponse({
         status: "Failed",
         error: err.message || "Failed to run code",
@@ -604,12 +595,7 @@ const EditorPanel: React.FC = () => {
       };
 
       const response = await testFlowService.submitCodeService(submitData);
-
-      // if (requestIdRef.current !== myRequestId) return;
-
-      if (!response.success) {
-        throw new Error(response.message || "Submission failed");
-      }
+      
 
       // Mark this problem as submitted in the sidebar
       updateProblemStatus(currentAssignedProblemId, "Submitted");
