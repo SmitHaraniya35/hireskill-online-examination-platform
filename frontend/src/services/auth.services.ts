@@ -46,7 +46,6 @@ const authService = {
     const response = await api.post<axiosResponse>(
       `${API_URL}/logout`,
       {},
-      getAuthHeaders(),
     );
 
     return response.data;
