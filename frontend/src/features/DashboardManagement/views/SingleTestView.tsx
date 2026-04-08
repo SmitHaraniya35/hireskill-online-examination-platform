@@ -28,7 +28,7 @@ import {
 } from "../components/dashboard.components";
 import type { ISingleTestResponse } from "@/types/dashboard.types";
 import { DIFF_COLOR, PALETTE } from "../constants/dashboard.constants";
-import { fmt, truncate } from "../utils/dashboard.utils";
+import { fmt } from "../utils/dashboard.utils";
 
 interface SingleTestViewProps {
   data: ISingleTestResponse;
@@ -130,10 +130,18 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
                       barGap={2}
                       barCategoryGap={8}
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#f1f5f9"
+                        vertical={false}
+                      />
                       <XAxis
                         dataKey="name"
-                        tick={{ fill: "#475569", fontSize: 12, fontWeight: 500 }}
+                        tick={{
+                          fill: "#475569",
+                          fontSize: 12,
+                          fontWeight: 500,
+                        }}
                         axisLine={{ stroke: "#e2e8f0", strokeWidth: 1 }}
                         tickLine={false}
                         interval={0}
@@ -143,7 +151,11 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
                           value: "Score Ranges (%)",
                           position: "bottom",
                           offset: 5,
-                          style: { fill: "#64748b", fontSize: 11, fontWeight: 500 },
+                          style: {
+                            fill: "#64748b",
+                            fontSize: 11,
+                            fontWeight: 500,
+                          },
                         }}
                       />
                       <YAxis
@@ -169,7 +181,10 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
                         dataKey="count"
                         name="Students"
                         radius={[6, 6, 0, 0]}
-                        barSize={Math.min(80, Math.max(50, 120 - scoreDistData.length * 4))}
+                        barSize={Math.min(
+                          80,
+                          Math.max(50, 120 - scoreDistData.length * 4),
+                        )}
                       >
                         {scoreDistData.map((entry, index) => (
                           <Cell
@@ -230,7 +245,9 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
                     />
                     <Tooltip
                       content={
-                        <EnhancedTooltip formatter={(v: number) => `${fmt(v)}%`} />
+                        <EnhancedTooltip
+                          formatter={(v: number) => `${fmt(v)}%`}
+                        />
                       }
                     />
                   </RadarChart>
@@ -248,58 +265,79 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
 
       {/* ROW 2: Problem Analytics (2/3) + Leaderboard (1/3) */}
       {(safeProblemAnalytics.length > 0 || safeLeaderboard.length > 0) && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+          {/* Problem Analytics Card */}
           {safeProblemAnalytics.length > 0 && (
             <Card
               title="Problem Analytics"
               subtitle="Detailed performance metrics for each problem"
               className="lg:col-span-2"
             >
-              <div className="min-w-150">
-                <table className="w-full">
-                  <thead className="bg-gray-50/50">
-                    <tr>
-                      <TH>#</TH>
-                      <TH>Problem</TH>
-                      <TH>Difficulty</TH>
-                      <TH align="center">Attempts</TH>
-                      <TH align="center">Avg Performance</TH>
-                      <TH align="center">Success Rate</TH>
+              {/* 1. Added overflow-x-hidden to prevent horizontal scroll */}
+              <div className="h-[388px] overflow-y-auto overflow-x-hidden custom-scrollbar">
+                {/* 2. Added table-fixed and removed min-w-[600px] wrapper */}
+                <table className="w-full table-fixed border-collapse">
+                  <thead className="sticky top-0 z-20">
+                    {" "}
+                    {/* Increased z-index */}
+                    <tr className="bg-gray-50">
+                      {" "}
+                      {/* Removed semi-transparency /50 */}
+                      <TH align="center" className="w-[8%] bg-gray-50">
+                        #
+                      </TH>
+                      <TH className="w-[22%] bg-gray-50">Problem</TH>
+                      <TH className="w-[15%] bg-gray-50">Difficulty</TH>
+                      <TH align="center" className="w-[12%] bg-gray-50">
+                        Attempts
+                      </TH>
+                      <TH align="center" className="w-[30%] bg-gray-50">
+                        Avg Performance
+                      </TH>
+                      <TH align="center" className="w-[13%] bg-gray-50">
+                        Success
+                      </TH>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-50">
                     {safeProblemAnalytics.map((p, i) => (
                       <tr
                         key={i}
-                        className="hover:bg-gray-50 transition-colors border-b border-gray-50"
+                        className="hover:bg-gray-50 transition-colors"
                       >
                         <TD align="center">
-                          <span className="text-gray-400 text-xs tabular-nums">{i + 1}</span>
+                          <span className="text-gray-400 text-xs tabular-nums">
+                            {i + 1}
+                          </span>
                         </TD>
-                        <TD>
-                          <div className="flex flex-col">
-                            <span className="font-medium text-gray-800" title={p.title}>
-                              {truncate(p.title, 35)}
-                            </span>
+                        <TD className="overflow-hidden">
+                          {/* 4. Added 'truncate' to the title div */}
+                          <div
+                            className="font-medium text-gray-800 truncate text-xs"
+                            title={p.title}
+                          >
+                            {p.title}
                           </div>
                         </TD>
                         <TD>
                           <DiffBadge d={p.difficulty} />
                         </TD>
                         <TD align="center">
-                          <div className="flex flex-col items-center">
-                            <span className="font-semibold text-gray-700">{p.attempts}</span>
-                            <span className="text-[10px] text-gray-400">attempts</span>
+                          <span className="font-semibold text-gray-700 text-xs">
+                            {p.attempts}
+                          </span>
+                        </TD>
+                        <TD>
+                          {/* 5. Simplified ProgressBar for the tight space */}
+                          <div className="w-full px-2">
+                            <ProgressBar
+                              value={p.avgPerformance}
+                              color={DIFF_COLOR[p.difficulty]}
+                            />
                           </div>
                         </TD>
-                        <TD className="w-48">
-                          <ProgressBar
-                            value={p.avgPerformance}
-                            color={DIFF_COLOR[p.difficulty]}
-                          />
-                        </TD>
                         <TD align="center">
-                          <span className="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg">
+                          <span className="text-xs font-bold text-gray-700">
                             {p.successRate}%
                           </span>
                         </TD>
@@ -311,18 +349,21 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
             </Card>
           )}
 
+          {/* Leaderboard Card */}
           {safeLeaderboard.length > 0 && (
             <Card
-              title="🏆 Leaderboard"
-              subtitle="Top performers in this test"
-              className="lg:col-span-1"
+              title="Leaderboard"
+              subtitle="Top performers"
+              className="lg:col-span-1 overflow-hidden" // Added overflow-hidden
             >
-              <div className="max-h-96">
-                {safeLeaderboard.slice(0, 10).map((p, i) => (
+              {/* 1. Added overflow-x-hidden to the scroll container */}
+              <div className="h-[365px] overflow-y-auto overflow-x-hidden custom-scrollbar px-2">
+                {safeLeaderboard.map((p, i) => (
                   <SingleLBRow key={i} rank={i + 1} p={p} />
                 ))}
               </div>
-              <div className="mt-3 pt-3 border-t border-gray-100 text-center">
+
+              <div className="mt-3 text-center">
                 <p className="text-[10px] text-gray-400">
                   Showing top performers | Time taken to complete
                 </p>

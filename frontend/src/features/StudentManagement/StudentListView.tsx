@@ -79,7 +79,7 @@ const StudentsListView: React.FC = () => {
       accessor: "name" as keyof Student,
       sortable: true,
     },
-    { header: "Phone", accessor: "phone" as keyof Student, sortable: false },
+    { header: "Phone", accessor: "phone" as keyof Student, sortable: true },
     {
       header: "College",
       width: "10%",
@@ -152,88 +152,56 @@ const StudentsListView: React.FC = () => {
           {errorMsg}
         </div>
       )}
-      {/* Card Header */}
-      <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-            <svg
-              className="w-4 h-4 text-emerald-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 20h5v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2h5M12 12a4 4 0 100-8 4 4 0 000 8z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h2 className="text-sm font-semibold text-gray-800">
-              Student Directory
-            </h2>
-            {!isLoading && (
-              <p className="text-xs text-gray-400">
-                {studentsList.length} student
-                {studentsList.length !== 1 ? "s" : ""} total
-              </p>
-            )}
-          </div>
-        </div>
-        <button
-          onClick={() => fetchStudentsList()}
-          disabled={isLoading}
-          className="cursor-pointer group inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-gray-500 hover:text-[#1DA077] hover:bg-[#1DA077]/8 border border-transparent hover:border-[#1DA077]/20 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <RefreshCcw
-            className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#1DA077]" : ""}`}
-          />
-          {isLoading ? "Refreshing…" : "Refresh"}
-        </button>
 
-        {/* Bulk Delete — only visible when rows selected */}
-        {selectedIds.size > 0 && (
-          <button
-            onClick={() => setOpenDeleteDialog(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 text-xs font-medium rounded-lg border border-red-100 hover:bg-red-100 hover:border-red-200 transition-all duration-150"
-          >
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+      {/* Table Section */}
+      <div className="relative">
+        <div className="absolute right-6 top-4 z-10 flex items-center gap-2">
+          {/* Bulk Delete — Left of Refresh */}
+          {selectedIds.size > 0 && (
+            <button
+              onClick={() => setOpenDeleteDialog(true)}
+              className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-rose-50 text-rose-600 text-xs font-medium rounded-lg border border-rose-100 hover:bg-rose-100 transition-all duration-150"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-            Delete ({selectedIds.size})
+              <Trash2 className="w-3.5 h-3.5" />
+              Delete ({selectedIds.size})
+            </button>
+          )}
+
+          {/* Refresh Button — Far Right */}
+          <button
+            onClick={() => fetchStudentsList()}
+            disabled={isLoading}
+            className="cursor-pointer group inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-[#1DA077] hover:bg-[#1DA077]/8 border border-gray-200 hover:border-[#1DA077]/20 transition-all duration-200 disabled:opacity-50"
+          >
+            <RefreshCcw
+              className={`w-3.5 h-3.5 ${isLoading ? "animate-spin text-[#1DA077]" : ""}`}
+            />
+            {isLoading ? "Refreshing…" : "Refresh"}
           </button>
+        </div>
+
+        {/* Table / Skeleton */}
+        {isLoading ? (
+          <div className="p-4 space-y-3 pt-16">
+            {" "}
+            {/* Added padding top to account for buttons */}
+            {[...Array(10)].map((_, i) => (
+              <StudentManagementListSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <CustomTable
+            data={studentsList as (Student & { id: string | number })[]}
+            columns={columns}
+            pageSize={10}
+            selectable={true}
+            selectedIds={selectedIds}
+            onSelectionChange={setSelectedIds}
+          />
         )}
       </div>
 
-      {/* Table / Skeleton */}
-      {isLoading ? (
-        <div className="p-4 space-y-3">
-          {[...Array(10)].map((_, i) => (
-            <StudentManagementListSkeleton key={i} />
-          ))}
-        </div>
-      ) : (
-        <CustomTable
-          data={studentsList as (Student & { id: string | number })[]}
-          columns={columns}
-          pageSize={10}
-          selectable={true}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-        />
-      )}
+      {/* AlertDialog remains the same */}
       <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
         <AlertDialogContent
           size="sm"
