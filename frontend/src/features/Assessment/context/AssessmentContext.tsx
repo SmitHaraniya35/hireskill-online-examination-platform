@@ -200,7 +200,8 @@ export const AssessmentProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   // ── Other actions ──────────────────────────────────────────────────────────
 
-  const updateProblemStatus = (assignedProblemId: string, status: ProblemStatus) => {
+  const updateProblemStatus =  async (assignedProblemId: string, status: ProblemStatus) => {
+    await testFlowService.submitted(assignedProblemId)
     setAssignedProblems((prev) =>
       prev.map((p) => (p.id === assignedProblemId ? { ...p, status } : p))
     );
