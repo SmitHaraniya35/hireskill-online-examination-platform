@@ -99,7 +99,18 @@ const DescriptionPanel: React.FC = () => {
                         Example {index + 1}
                       </p>
                     </div>
-
+                    {tc.image_url && (
+                      <div className="mt-4">
+                        <span className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
+                          Reference Image
+                        </span>
+                        <img
+                          src={tc.image_url}
+                          alt={`Example ${index + 1} reference`}
+                          className="rounded-lg border border-gray-200 max-w-full max-h-64 object-contain"
+                        />
+                      </div>
+                    )}
                     {/* Input */}
                     <div className="mb-5">
                       <span className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
