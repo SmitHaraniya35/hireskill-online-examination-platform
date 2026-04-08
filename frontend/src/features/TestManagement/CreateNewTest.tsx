@@ -314,6 +314,11 @@ const CreateNewTest: React.FC = () => {
     const [hh, mm] = data.expiry_time.split(":").map(Number);
     const expiryDateObj = new Date(expiryDate);
     expiryDateObj.setHours(hh, mm, 0, 0);
+    
+    if (expiryDateObj <= startDateObj) {
+      toast.error("Expiration date & time must be after the start date & time");
+      return;
+    }
 
     const testData: Partial<Test> = {
       title: data.title.trim(),
@@ -615,15 +620,9 @@ const CreateNewTest: React.FC = () => {
                               setExpiryDate(d);
                               setExpiryPickerOpen(false);
                             }}
-                            disabled={(date) => {
-                              const today = new Date(
-                                new Date().setHours(0, 0, 0, 0),
-                              );
-                              if (startDate) {
-                                return date < startDate; 
-                              }
-                              return date < today;
-                            }}
+                            disabled={(date) =>
+                              date < new Date(new Date().setHours(0, 0, 0, 0))
+                            }
                             initialFocus
                             className="p-3"
                             classNames={{
