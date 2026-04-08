@@ -309,6 +309,8 @@ import { createSubmissionService } from "./submission.service.ts";
 const TIME_LIMIT = 1000;
 const MEMORY_LIMIT = 256;
 
+const IS_DOCKER = process.env.IS_DOCKER === 'true';
+
 export const processSubmission = async ({
   language,
   code,
@@ -328,7 +330,9 @@ export const processSubmission = async ({
   };
 
   const submissionId = uuid();
-  const submissionsPath = path.join("/app/submissions", submissionId);
+  const submissionsPath = IS_DOCKER
+    ? path.join("/app/submissions", submissionId)
+    : path.join(process.cwd(), "submissions", submissionId);
 
   fs.mkdirSync(submissionsPath, { recursive: true });
 
@@ -346,7 +350,7 @@ export const processSubmission = async ({
         results,
     }
 
-    await startContainer(containerName, submissionId, config.image);
+    await startContainer(containerName, submissionId, submissionsPath, config.image);
 
     // 🔧 Compile if needed
     if (config.compile) {
@@ -450,6 +454,7 @@ export const processSubmission = async ({
 const startContainer = (
   containerName: string,
   submissionId: string,
+  submissionsPath: string,
   image: string
 ): Promise<void> => {
 
@@ -476,11 +481,10 @@ const startContainer = (
 
       "--read-only",
 
-      "-v",
-      `backend_submissions:/data`,
-
-      "-w",
-      `/data/${submissionId}`,
+      ...(IS_DOCKER 
+        ? ["-v", "backend_submissions:/data", "-w", `/data/${submissionId}`]
+        : ["-v", `${path.resolve(submissionsPath)}:/app`, "-w", "/app"]
+      ),
 
       image,
 
