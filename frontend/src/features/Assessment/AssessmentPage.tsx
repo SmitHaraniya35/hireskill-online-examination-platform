@@ -346,10 +346,10 @@ const AssessmentContent: React.FC = () => {
 
         <div className="flex-1 flex overflow-hidden">
           {/* Left: Problem description */}
-          <div className={`${isSidebarOpen ? "w-2/5" : "w-1/3"} border-r border-gray-200 transition-all duration-300`}>
+          <div className={`${isSidebarOpen ? "w-2/5" : "flex-1"} border-r border-gray-200 transition-all duration-300`}>
             <DescriptionPanel />
           </div>
-          <div className={`${isSidebarOpen ? "w-3/5" : "w-2/3"} transition-all duration-300`}>
+          <div className={`${isSidebarOpen ? "w-3/5" : "flex-1"} transition-all duration-300`}>
             <EditorPanel key={currentAssignedProblemId} />
           </div>
         </div>
