@@ -306,36 +306,39 @@ const CreateNewTest: React.FC = () => {
     setIsError(false);
     setErrorMsg("");
 
-    // ── NEW: build ISO from date picker + time field (same logic, cleaner source) ─
-    const [startHh, startMm] = data.start_time.split(":").map(Number);
-    const startDateObj = new Date(startDate);
-    startDateObj.setHours(startHh, startMm, 0, 0);
-
-    const [hh, mm] = data.expiry_time.split(":").map(Number);
-    const expiryDateObj = new Date(expiryDate);
-    expiryDateObj.setHours(hh, mm, 0, 0);
-    
-    if (expiryDateObj <= startDateObj) {
-      toast.error("Expiration date & time must be after the start date & time");
-      return;
-    }
-
-    const testData: Partial<Test> = {
-      title: data.title.trim(),
-      duration_minutes: Number(data.duration),
-      start_at: startDateObj.toISOString(),
-      expiration_at: expiryDateObj.toISOString(),
-      count_of_total_problem: totalProblems,
-      count_of_easy_problem: easyCount,
-      count_of_medium_problem: mediumCount,
-      count_of_hard_problem: hardCount,
-      coding_problem_ids: useAllAvailableProblems
-        ? []
-        : Array.from(selectedProblems),
-      use_all_available_problems: useAllAvailableProblems,
-    };
-
     try {
+      // ── NEW: build ISO from date picker + time field (same logic, cleaner source) ─
+      const [startHh, startMm] = data.start_time.split(":").map(Number);
+      const startDateObj = new Date(startDate);
+      startDateObj.setHours(startHh, startMm, 0, 0);
+
+      const [hh, mm] = data.expiry_time.split(":").map(Number);
+      const expiryDateObj = new Date(expiryDate);
+      expiryDateObj.setHours(hh, mm, 0, 0);
+
+      if (expiryDateObj <= startDateObj) {
+        toast.error(
+          "Expiration date & time must be after the start date & time",
+        );
+        setLoading(false);
+        return;
+      }
+
+      const testData: Partial<Test> = {
+        title: data.title.trim(),
+        duration_minutes: Number(data.duration),
+        start_at: startDateObj.toISOString(),
+        expiration_at: expiryDateObj.toISOString(),
+        count_of_total_problem: totalProblems,
+        count_of_easy_problem: easyCount,
+        count_of_medium_problem: mediumCount,
+        count_of_hard_problem: hardCount,
+        coding_problem_ids: useAllAvailableProblems
+          ? []
+          : Array.from(selectedProblems),
+        use_all_available_problems: useAllAvailableProblems,
+      };
+
       if (isEditMode && editId) {
         await testLinkService.updateTest(editId, testData as Test);
         toast.success("Test Updated Successfully!");
