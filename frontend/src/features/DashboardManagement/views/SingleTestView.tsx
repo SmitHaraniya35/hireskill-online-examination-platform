@@ -28,7 +28,7 @@ import {
 } from "../components/dashboard.components";
 import type { ISingleTestResponse } from "@/types/dashboard.types";
 import { DIFF_COLOR, PALETTE } from "../constants/dashboard.constants";
-import { fmt, truncate } from "../utils/dashboard.utils";
+import { fmt } from "../utils/dashboard.utils";
 
 interface SingleTestViewProps {
   data: ISingleTestResponse;
