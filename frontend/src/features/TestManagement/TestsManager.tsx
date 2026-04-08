@@ -155,17 +155,6 @@ const TestManager: React.FC = () => {
 
             {/* Title */}
             <p className="text-sm font-medium text-gray-500">No tests found.</p>
-
-            {/* CTA Button (with full animation) */}
-            <div className="mt-4">
-              <button
-                onClick={handleCreate}
-                className="group inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-[#1DA077] bg-[#1DA077]/10 transition-all duration-300 ease-out shadow-[0_2px_6px_rgba(29,160,119,0.15)] hover:bg-[#1DA077] hover:text-white hover:-translate-y-0.5 hover:shadow-[0_8px_20px_rgba(29,160,119,0.3)] active:translate-y-0 active:shadow-[0_3px_8px_rgba(29,160,119,0.2)]"
-              >
-                <Plus className="w-4 h-4 transition-all duration-300 group-hover:rotate-90" />
-                Create Test
-              </button>
-            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -272,7 +261,11 @@ const TestManager: React.FC = () => {
                     </button> */}
                       <button
                         disabled={ link.is_active && isLive}
-                        onClick={() => !isLive || !link.is_active && handleEdit(link.id!)}
+                        onClick={() => {
+                          if (!isLive || !link.is_active  ) {
+                            handleEdit(link.id!);
+                          }
+                        }}
                         title={isLive ? "Cannot edit live test" : "Edit test"}
                         className={`w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 transition-all duration-150 ${
                           isLive && link.is_active

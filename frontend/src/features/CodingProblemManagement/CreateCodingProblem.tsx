@@ -17,7 +17,7 @@ import {
   problemSchema,
   type ProblemFormInput,
 } from "../../validators/createCodingProblem.validators";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 import { lazy } from "react";
 
 const Editor = lazy(() => import("@monaco-editor/react"));
@@ -273,7 +273,9 @@ const CreateCodingProblemPage: React.FC = () => {
       constraint: "",
       inputFormat: "",
       outputFormat: "",
-      testCases: [{ input: "", expected_output: "", is_hidden: false }],
+      testCases: [
+        { input: "", expected_output: "", is_hidden: false, image_url: "" },
+      ],
     },
   });
 
@@ -293,7 +295,7 @@ const CreateCodingProblemPage: React.FC = () => {
           langs = Object.values(res.payload.Languages) as string[];
         }
       } catch (err) {
-        console.error("Failed to fetch languages", err);
+        toast.error("Failed to fetch languages");
       }
       if (langs.length === 0) langs = ["C++", "C", "Python", "JavaScript"];
       setAllLanguages(langs);
@@ -333,6 +335,7 @@ const CreateCodingProblemPage: React.FC = () => {
                 input: tc.input,
                 expected_output: tc.expected_output,
                 is_hidden: tc.is_hidden,
+                image_url: tc.image_url || "",
               })),
             );
             const previews: { [key: number]: string } = {};
@@ -664,6 +667,7 @@ const CreateCodingProblemPage: React.FC = () => {
           await codingProblemService.createCodingProblemWithTestCases(
             problemData,
           );
+          console.log("Create response:", res);
         toast.success("Problem Created Successfully!");
       }
 
@@ -1158,6 +1162,10 @@ const CreateCodingProblemPage: React.FC = () => {
                   key={field.id}
                   className="grid grid-cols-12 gap-3 items-start bg-gray-50 rounded-xl p-3"
                 >
+                  <input
+                    type="hidden"
+                    {...register(`testCases.${index}.image_url`)}
+                  />
                   <div className="col-span-1 flex items-center justify-center h-full pt-2">
                     <span className="text-sm font-medium text-gray-500">
                       {index + 1}
@@ -1236,7 +1244,7 @@ const CreateCodingProblemPage: React.FC = () => {
                           disabled={deletingTestCases[index]}
                           className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs hover:bg-red-600 transition disabled:opacity-50"
                         >
-                          ×
+                          <X className="w-2.5 h-2.5" />
                         </button>
                       </div>
                     ) : (
@@ -1271,7 +1279,6 @@ const CreateCodingProblemPage: React.FC = () => {
                       </label>
                     )}
                   </div>
-
                   <div className="col-span-1 flex items-center justify-center pt-2">
                     {fields.length > 1 && (
                       <button
@@ -1303,7 +1310,12 @@ const CreateCodingProblemPage: React.FC = () => {
             <button
               type="button"
               onClick={() =>
-                append({ input: "", expected_output: "", is_hidden: true })
+                append({
+                  input: "",
+                  expected_output: "",
+                  is_hidden: true,
+                  image_url: "",
+                })
               }
               className="mt-4 w-full py-2.5 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-[#1DA077] hover:text-[#1DA077] transition-colors"
             >
