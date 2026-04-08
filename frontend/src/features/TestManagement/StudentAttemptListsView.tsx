@@ -348,7 +348,7 @@ const StudentAttemptListView: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#f5f6f8]">
-      <div className="max-w-full mx-auto px-6 py-6">
+      <div className="w-full px-6 sm:px-10 lg:px-16 xl:px-24 2xl:px-32 py-8 max-w-screen-2xl mx-auto">
         {/* ── Page Header ────────────────────────────────────── */}
         <div className="flex justify-between items-center mb-5">
           <div>

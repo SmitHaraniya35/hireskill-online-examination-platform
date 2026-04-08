@@ -196,11 +196,11 @@ export const Card = ({
 export const TH = ({
   children,
   align = "left",
-  className = "", // Add this
+  className = "", 
 }: {
   children?: React.ReactNode;
   align?: "left" | "right" | "center";
-  className?: string; // Add this
+  className?: string;
 }) => (
   <th
     className={`text-${align} py-3 px-4 text-[11px] font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100 whitespace-nowrap ${className}`} // Add this
