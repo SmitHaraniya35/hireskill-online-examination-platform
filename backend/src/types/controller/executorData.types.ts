@@ -61,6 +61,6 @@ export interface CodeExecutionData {
 export const LanguageExtensions: { [key: string]: string } = {
   "C++": "cpp",
   "C": "c",
-  "Python": "py",
+  "Python": "python",
   "JavaScript": "javascript"
 };
