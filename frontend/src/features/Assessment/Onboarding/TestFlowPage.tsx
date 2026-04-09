@@ -510,117 +510,88 @@ const Step3Instructions = ({ flowState, slug, onBegin }: Step3Props) => {
     if (!slug || !testId || !studentId || !rulesAccepted) return;
     setLoading(true);
     try {
-      // await navigator.mediaDevices.getUserMedia({
-      //   video: true,
-      //   audio: true,
-      // });
       const response = await testFlowService.startTest(slug, testId, studentId);
       if (response.success && response.payload) {
         onBegin(response.payload.studentAttemptId);
       }
     } catch (error) {
       console.error("Failed to start test:", error);
-      // alert("Something went wrong. Please try again.");
-      alert(
-        "Camera and Microphone access are required to start the test. Please allow permissions in your browser settings and try again.",
-      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white p-10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] w-full max-w-2xl mt-10 border border-gray-100">
-      <h1 className="text-3xl font-bold mb-1 tracking-tight">
-        Step 3: Test Access
-      </h1>
-      <p className="text-gray-500 font-bold mb-8">Test Instructions</p>
-
-      {/* <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm mb-8">
-        <h2 className="text-xl font-bold mb-4">
-          Assessment: Software Engineer
-        </h2>
-        <div className="grid grid-cols-2 gap-0 bg-[#f8f9fa] rounded-xl overflow-hidden border border-gray-100">
-          <div className="p-4 border-r border-gray-200">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">
-              Total Problems
-            </p>
-            <p className="text-lg font-bold">2</p>
-          </div>
-          <div className="p-4 border-r border-gray-200">
-            <p className="text-[10px] font-bold text-gray-400 uppercase">
-              Total Time
-            </p>
-            <p className="text-lg font-bold">120 Minutes</p>
-          </div>
-        </div>
-      </div> */}
-
-      <div className="space-y-4 mb-8">
-        <p className="font-bold text-gray-800">Key Instructions:</p>
-        <ul className="space-y-3">
-          <li className="flex gap-2 text-sm text-gray-600">
-            <span className="text-[#24a17e]">•</span>
-            <span>Integrity: Plagiarism is strictly prohibited.</span>
-          </li>
-          <li className="flex gap-2 text-sm text-gray-600">
-            <span className="text-[#24a17e]">•</span>
-            <span>
-              <strong>Fullscreen Required:</strong> Test will end if you exit
-              fullscreen or switch tabs.
-            </span>
-          </li>
-          <li className="flex gap-2 text-sm text-gray-600">
-            <span className="text-[#24a17e]">•</span>
-            <span>
-              <strong>Proctoring Active:</strong> Webcam & microphone monitoring
-              enabled (no talking/whispering).
-            </span>
-          </li>
-          <li className="flex gap-2 text-sm text-gray-600">
-            <span className="text-[#24a17e]">•</span>
-            <span>
-              <strong>Shortcuts Blocked:</strong> Copy/Paste (Ctrl+C/V), Print
-              (Ctrl+P), Inspect (Ctrl+Shift+I) disabled.
-            </span>
-          </li>
-          <li className="flex gap-2 text-sm text-gray-600">
-            <span className="text-[#24a17e]">•</span>
-            <span>
-              <strong>5s Penalty:</strong> Tab switch or Alt+Tab triggers
-              5-second auto-finish countdown.
-            </span>
-          </li>
-        </ul>
-      </div>
-
-      <div className="space-y-2 mb-10">
-        <p className="font-bold text-gray-800">Readiness Checklist:</p>
-        <div className="flex items-center gap-3 text-sm">
-          <input
-            type="checkbox"
-            checked={rulesAccepted}
-            onChange={(e) => setRulesAccepted(e.target.checked)}
-            className="accent-[#24a17e] w-4 h-4 cursor-pointer"
-          />
-          <span
-            className={
-              rulesAccepted ? "text-emerald-600 font-bold" : "text-gray-500"
-            }
-          >
-            I have read and agree to follow all rules
+    <div className="bg-white border border-gray-100 rounded-[2rem] p-10 w-full max-w-2xl mt-10">
+      {/* Header — Matches Step 1 & 2 */}
+      <div className="mb-8">
+        <div className="inline-flex items-center gap-1.5 bg-gray-50 border border-gray-100 rounded-full px-3 py-1 mb-5">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span className="text-[11px] font-medium text-gray-500 tracking-wide">
+            Step 3 of 3
           </span>
         </div>
+        <h1 className="text-[1.4rem] font-medium text-gray-900 leading-snug tracking-tight mb-1">
+          Test Access & Instructions
+        </h1>
+        <p className="text-[14px] text-gray-400 font-normal">
+          Please review the guidelines carefully before starting.
+        </p>
       </div>
 
+      <div className="h-px bg-gray-100 mb-8" />
+
+      {/* Content Section — Matches Step 2's spacing */}
+      <div className="mb-8 space-y-6">
+        <div className="space-y-4">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+            Key Instructions
+          </p>
+          
+          <ul className="space-y-4">
+            {[
+              { label: "Integrity", text: "Plagiarism is strictly prohibited." },
+              { label: "Fullscreen Required", text: "Test will end if you exit fullscreen or switch tabs." },
+              { label: "Proctoring Active", text: "Webcam & microphone monitoring enabled (no talking)." },
+              { label: "Shortcuts Blocked", text: "Copy/Paste and Inspect element are disabled." },
+              { label: "Penalty", text: "Tab switching triggers a 5-second auto-finish countdown." },
+            ].map((item, idx) => (
+              <li key={idx} className="flex gap-3 items-start">
+                <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#1D9E75] shrink-0" />
+                <p className="text-[14px] text-gray-600 leading-relaxed">
+                  <span className="font-semibold text-gray-800">{item.label}:</span> {item.text}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="h-px bg-gray-100" />
+
+        <div className="space-y-4">
+          <p className="text-[10px] font-medium uppercase tracking-widest text-gray-400">
+            Readiness Checklist
+          </p>
+          
+          <label className="flex items-center gap-3 p-4 border border-gray-100 rounded-xl bg-gray-50/50 cursor-pointer hover:bg-gray-50 transition-colors">
+            <input
+              type="checkbox"
+              checked={rulesAccepted}
+              onChange={(e) => setRulesAccepted(e.target.checked)}
+              className="accent-[#1D9E75] w-4 h-4 cursor-pointer"
+            />
+            <span className={`text-[13px] font-medium transition-colors ${rulesAccepted ? "text-[#0F6E56]" : "text-gray-500"}`}>
+              I have read and agree to follow all rules mentioned above
+            </span>
+          </label>
+        </div>
+      </div>
+
+      {/* Button — Matches Step 1 & 2 Styling */}
       <button
         onClick={handleBeginTest}
-        disabled={loading || !rulesAccepted} // ✅ Disabled until checkbox checked
-        className={`w-full font-bold py-4 rounded-xl shadow-lg shadow-emerald-50 transition-all duration-200 ${
-          loading || !rulesAccepted
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-70"
-            : "bg-[#24a17e] text-white hover:bg-[#1d8265] hover:shadow-emerald-100"
-        }`}
+        disabled={loading || !rulesAccepted}
+        className="w-full bg-[#1D9E75] text-white font-medium py-3.5 rounded-xl hover:bg-[#188c67] active:scale-[0.99] transition-all text-[14px] tracking-wide disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {loading ? "Starting..." : "Begin Test"}
       </button>

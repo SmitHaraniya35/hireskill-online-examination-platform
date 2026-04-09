@@ -66,7 +66,10 @@ const StudentAttemptListView: React.FC = () => {
   const fetchAttempts = useCallback(
     async (showRefreshing = false) => {
       if (!testId) return;
-      if (showRefreshing) setIsRefreshing(true);
+      if (showRefreshing){
+        setIsRefreshing(true);
+        setIsRefreshing(true);
+      } 
       try {
         const res =
           await studentAttemptService.getStudentAttemptsDetails(testId);
@@ -151,79 +154,72 @@ const StudentAttemptListView: React.FC = () => {
       // ── # ──────────────────────────── 
       {
         header: "#",
-        width: "4%",
+        width: "5%",
         align: "center" as const,
         accessor: (_row: GetStudentAttempts, index: number) => (
           <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-gray-100 text-[10px] font-bold text-gray-500">
             {index}
           </span>
         ),
-        sortable: false,
       },
       // ── Name ───────────────────────── 
       {
         header: "Name",
         width: "12%",
         accessor: (row: GetStudentAttempts) => (
-          <span className="font-semibold text-gray-800 capitalize truncate block">
+          <span title={row.student?.name} className="font-semibold text-gray-800 capitalize truncate block">
             {row.student?.name}
           </span>
         ),
-        sortable: true,
       },
       // ── Email ────────────────────────
       {
         header: "Email",
         width: "12%",
         accessor: (row: GetStudentAttempts) => (
-          <span className="text-gray-500 truncate block">
+          <span title={row.student?.email} className="text-gray-500 truncate block">
             {row.student?.email}
           </span>
         ),
-        sortable: true,
       },
       // ── Phone ────────────────────────
       {
         header: "Phone",
-        width: "9%",
+        width: "10%",
         accessor: (row: GetStudentAttempts) => (
-          <span className="tabular-nums text-gray-600">
+          <span title={String(row.student?.phone)} className="tabular-nums text-gray-600">
             {row.student?.phone}
           </span>
         ),
-        sortable: true,
       },
       // ── Started ──────────────────────
       {
         header: "Started",
-        width: "8%",
+        width: "10%",
         accessor: (row: GetStudentAttempts) => (
           <DateCell iso={row.started_at} />
         ),
-        sortable: true,
       },
       // ── Expiry ───────────────────────
       {
         header: "Expiry",
-        width: "8%",
+        width: "10%",
         accessor: (row: GetStudentAttempts) => (
           <DateCell iso={row.expires_at} />
         ),
-        sortable: true,
       },
       // ── Finished ─────────────────────
       {
         header: "Finished",
-        width: "9%",
+        width: "10%",
         accessor: (row: GetStudentAttempts) => (
           <DateCell iso={row.finished_at ?? null} />
         ),
-        sortable: true,
       },
       // ── Status ───────────────────────
       {
         header: "Status",
-        width: "12%",
+        width: "14%",
         align: "left" as const,
         accessor: (row: GetStudentAttempts) => {
           const statusMap: Record<
@@ -272,7 +268,6 @@ const StudentAttemptListView: React.FC = () => {
             </span>
           );
         },
-        sortable: true,
       },
       // ── Result ───────────────────────
       {
@@ -292,7 +287,6 @@ const StudentAttemptListView: React.FC = () => {
             </div>
           );
         },
-        sortable: true,
       },
       // ── Time ─────────────────────────
       {
@@ -301,7 +295,6 @@ const StudentAttemptListView: React.FC = () => {
         align: "center" as const,
         accessor: (row: GetStudentAttempts) =>
           calculateDuration(row.started_at, row.finished_at),
-        sortable: true,
       },
       // ── Actions ──────────────────────
       {
@@ -319,7 +312,7 @@ const StudentAttemptListView: React.FC = () => {
                 title={
                   isDisabled ? "Cannot view while processing" : "View attempt"
                 }
-                className={`w-7 h-7 flex items-center justify-center rounded-[7px] border bg-white transition-all duration-150 ${
+                className={`w-9 h-5 flex items-center justify-center rounded-[7px] border bg-white transition-all duration-150 ${
                   isDisabled
                     ? "border-[#e2e5e9] text-gray-300 cursor-not-allowed"
                     : "cursor-pointer border-[#e2e5e9] text-gray-700 hover:bg-[#f0fdf4] hover:border-[#bbf7d0] hover:text-[#16a34a]"
@@ -333,14 +326,13 @@ const StudentAttemptListView: React.FC = () => {
                   setOpenDeleteDialog(true);
                 }}
                 title="Delete attempt"
-                className="cursor-pointer w-7 h-7 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#fff1f2] hover:border-[#fecdd3] hover:text-[#dc2626] transition-all duration-150"
+                className="cursor-pointer w-20 h-5 flex items-center justify-center rounded-[7px] border border-[#e2e5e9] bg-white text-gray-700 hover:bg-[#fff1f2] hover:border-[#fecdd3] hover:text-[#dc2626] transition-all duration-150"
               >
                 <IconDelete />
               </button>
             </div>
           );
         },
-        sortable: false,
       },
     ],
     [],
