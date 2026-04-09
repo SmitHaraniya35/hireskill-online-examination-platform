@@ -151,7 +151,12 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
                   strokeWidth={2.5}
                   fill="url(#scoreGradient)"
                   name="Average Score"
-                  dot={{ fill: "#ffffff", stroke: "#6366f1", strokeWidth: 2, r: 4 }}
+                  dot={{
+                    fill: "#ffffff",
+                    stroke: "#6366f1",
+                    strokeWidth: 2,
+                    r: 4,
+                  }}
                   activeDot={{
                     fill: "#6366f1",
                     stroke: "#fff",
@@ -348,73 +353,63 @@ const GlobalView = ({ data, onTestClick }: GlobalViewProps) => {
       </div>
 
       {/* Test-Wise Table */}
-      <Card
-        title="Test-Wise Breakdown"
-        subtitle="Detailed analytics for each test"
-      >
-        <table className="w-full">
-          <thead>
-            <tr>
-              <TH>Test</TH>
-              <TH>Date</TH>
-              <TH>Students</TH>
-              <TH>Avg Score</TH>
-              <TH align="center">Action</TH>
-            </tr>
-          </thead>
-          <tbody>
-            {testWiseAnalytics.map((t) => {
-              const scoreColor =
-                t.avgScore >= 70
-                  ? "text-emerald-600"
-                  : t.avgScore >= 40
-                    ? "text-amber-600"
-                    : "text-red-600";
-              return (
-                <tr
-                  key={t.testId}
-                  onClick={() => onTestClick(t.testId)}
-                  className="cursor-pointer hover:bg-gray-50 transition-colors"
-                >
-                  <TD>
-                    <span className="font-medium text-gray-800">{t.title}</span>
-                  </TD>
-                  <TD>
-                    <span className="text-xs text-gray-400 tabular-nums">
-                      {relDate(t.start_at)}
-                    </span>
-                  </TD>
-                  <TD>
-                    <span className="tabular-nums">{t.totalStudents}</span>
-                  </TD>
-                  <TD>
-                    <span
-                      className={`text-xs font-semibold tabular-nums px-2 py-1 rounded-lg ${scoreColor} bg-opacity-10`}
-                    >
-                      {fmt(t.avgScore)} %
-                    </span>
-                  </TD>
-                  <TD align="center">
-                    <span className="inline-flex items-center gap-1 text-indigo-500 text-xs hover:text-indigo-700 font-medium">
-                      View Details
-                      <svg
-                        width="12"
-                        height="12"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <polyline points="9 18 15 12 9 6" />
-                      </svg>
-                    </span>
-                  </TD>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </Card>
+      <Card title="Test-Wise Breakdown" subtitle="Detailed analytics for each test">
+  <table className="w-full table-fixed">
+    <thead>
+      <tr>
+        <TH align="left" className="w-[25%]">Test</TH>
+        <TH align="left" className="w-[18%]">Date</TH>
+        <TH align="left" className="w-[18%]">Students</TH>
+        <TH align="left" className="w-[18%]">Avg Score</TH>
+        <TH align="left" className="w-[15%]">Action</TH>
+      </tr>
+    </thead>
+    <tbody>
+      {testWiseAnalytics.map((t) => {
+        const scoreColor =
+          t.avgScore >= 70
+            ? "text-emerald-600"
+            : t.avgScore >= 40
+              ? "text-amber-600"
+              : "text-red-600";
+        return (
+          <tr
+            key={t.testId}
+            onClick={() => onTestClick(t.testId)}
+            className="cursor-pointer hover:bg-gray-50 transition-colors"
+          >
+            <TD align="left" className="w-[25%]">
+              <span className="font-medium text-gray-800 truncate block">
+                {t.title}
+              </span>
+            </TD>
+            <TD align="left" className="w-[18%]">
+              <span className="text-xs text-gray-400 tabular-nums">
+                {relDate(t.start_at)}
+              </span>
+            </TD>
+            <TD align="left" className="w-[18%]">
+              <span className="tabular-nums">{t.totalStudents}</span>
+            </TD>
+            <TD align="left" className="w-[18%]">
+              <span className={`text-xs font-semibold tabular-nums px-2 py-1 rounded-lg ${scoreColor} bg-opacity-10`}>
+                {fmt(t.avgScore)} %
+              </span>
+            </TD>
+            <TD align="left" className="w-[15%]">
+              <span className="inline-flex items-center gap-1 text-indigo-500 text-xs hover:text-indigo-700 font-medium">
+                View Details
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </span>
+            </TD>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</Card>
     </div>
   );
 };

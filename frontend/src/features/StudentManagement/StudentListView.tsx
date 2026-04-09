@@ -70,37 +70,69 @@ const StudentsListView: React.FC = () => {
     {
       header: "Email",
       width: "14%",
-      accessor: "email" as keyof Student,
+      accessor: (row: Student) => (
+        <span title={row.email} className="truncate block text-gray-700">
+          {row.email}
+        </span>
+      ),
       sortable: true,
     },
     {
       header: "Name",
       width: "14%",
-      accessor: "name" as keyof Student,
+      accessor: (row: Student) => (
+        <span title={row.name} className="truncate block text-gray-700">
+          {row.name}
+        </span>
+      ),
       sortable: true,
     },
-    { header: "Phone", accessor: "phone" as keyof Student, sortable: true },
+    {
+      header: "Phone",
+      accessor: (row: Student) => (
+        <span title={row.phone} className="truncate block text-gray-700">
+          {row.phone}
+        </span>
+      ),
+      sortable: true,
+    },
     {
       header: "College",
-      width: "10%",
-      accessor: "college" as keyof Student,
+      width: "20%",
+      accessor: (row: Student) => (
+        <span title={row.college} className="truncate block text-gray-700">
+          {row.college}
+        </span>
+      ),
       sortable: true,
     },
     {
       header: "Branch",
       width: "7%",
-      accessor: "branch" as keyof Student,
+      accessor: (row: Student) => (
+        <span title={row.branch} className="truncate block text-gray-700">
+          {row.branch}
+        </span>
+      ),
       sortable: true,
     },
     {
       header: "Degree",
       width: "10%",
-      accessor: "degree" as keyof Student,
+      accessor: (row: Student) => (
+        <span title={row.degree} className="truncate block text-gray-700">
+          {row.degree}
+        </span>
+      ),
       sortable: true,
     },
     {
       header: "Graduation year",
-      accessor: "graduation_year" as keyof Student,
+      accessor: (row: Student) => (
+        <span title={String(row.graduation_year)} className="truncate block text-gray-700">
+          {row.graduation_year}
+        </span>
+      ),
       sortable: true,
     },
     {

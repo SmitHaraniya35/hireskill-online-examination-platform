@@ -278,10 +278,8 @@ const SingleTestView = ({ data }: SingleTestViewProps) => {
                 {/* 2. Added table-fixed and removed min-w-[600px] wrapper */}
                 <table className="w-full table-fixed border-collapse">
                   <thead className="sticky top-0 z-20">
-                    {" "}
                     {/* Increased z-index */}
                     <tr className="bg-gray-50">
-                      {" "}
                       {/* Removed semi-transparency /50 */}
                       <TH align="center" className="w-[8%] bg-gray-50">
                         #

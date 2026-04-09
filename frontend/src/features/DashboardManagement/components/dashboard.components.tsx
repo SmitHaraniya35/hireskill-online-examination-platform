@@ -196,14 +196,14 @@ export const Card = ({
 export const TH = ({
   children,
   align = "left",
-  className = "", 
+  className = "",
 }: {
   children?: React.ReactNode;
   align?: "left" | "right" | "center";
   className?: string;
 }) => (
   <th
-    className={`text-${align} py-3 px-4 text-[11px] font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100 whitespace-nowrap ${className}`} // Add this
+    className={`text-${align} py-3 px-4 text-[11px] font-semibold text-gray-400 uppercase tracking-wider border-b border-gray-100 whitespace-nowrap ${className}`}
   >
     {children}
   </th>
@@ -218,11 +218,10 @@ export const TD = ({
   className?: string;
   align?: "left" | "right" | "center";
 }) => (
-  <td className={`text-${align} py-3  text-sm text-gray-700 ${className}`}>
+  <td className={`text-${align} py-3 px-4 text-sm text-gray-700 ${className}`}>
     {children}
   </td>
 );
-
 // ─── Leaderboard Rows ─────────────────────────────────────────────────────────
 
 export const GlobalLBRow = ({ rank, p }: { rank: number; p: ILeaderboard }) => {
