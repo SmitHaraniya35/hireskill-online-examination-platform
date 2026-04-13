@@ -38,7 +38,7 @@ export const getSubmissionById = async (
             }
         }
 
-        res.ok(data, SUCCESS_MESSAGES.SUBMISSION_RETRIEVED);
+        res.ok(SUCCESS_MESSAGES.SUBMISSION_RETRIEVED, data);
     } catch (err: any) {
         next(err);
     }

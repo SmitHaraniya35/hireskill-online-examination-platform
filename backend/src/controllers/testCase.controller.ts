@@ -21,7 +21,7 @@ export const createTestCase = async (
     }
 
     const data = await createTestCaseService(input);
-    res.ok(data, SUCCESS_MESSAGES.TEST_CASE_CREATED);
+    res.ok(SUCCESS_MESSAGES.TEST_CASE_CREATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -39,7 +39,7 @@ export const getAllTestCasesByProblemId = async (
     }
 
     const data = await getAllTestCasesByProblemIdService(problemId);
-    res.ok(data, SUCCESS_MESSAGES.TEST_CASES_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.TEST_CASES_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -58,7 +58,7 @@ export const updateTestCase = async (
     }
 
     const data = await updateTestCaseService(id, input);
-    res.ok(data, SUCCESS_MESSAGES.TEST_CASE_UPDATED);
+    res.ok(SUCCESS_MESSAGES.TEST_CASE_UPDATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -76,7 +76,7 @@ export const deleteTestCase = async (
     }
 
     const data = await deleteTestCaseService(id);
-    res.ok(data, SUCCESS_MESSAGES.TEST_CASE_DELETED);
+    res.ok(SUCCESS_MESSAGES.TEST_CASE_DELETED, data);
   } catch (err: any) {
     next(err);
   }

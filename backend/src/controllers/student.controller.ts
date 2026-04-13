@@ -25,7 +25,7 @@ export const createStudent = async (
 
     const data = await createStudentService(email);
 
-    return res.created(data, SUCCESS_MESSAGES.STUDENT_CREATED);
+    return res.created(SUCCESS_MESSAGES.STUDENT_CREATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -43,7 +43,7 @@ export const importStudents = async (
     }
 
     const data = await importStudentsService(input);
-    res.created(data, SUCCESS_MESSAGES.STUDENT_IMPORTED);
+    res.created(SUCCESS_MESSAGES.STUDENT_IMPORTED, data);
   } catch (err: any){
     next(err);
   }
@@ -61,7 +61,7 @@ export const getStudentById = async (
     }
 
     const data = await getStudentByIdService(id);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -79,7 +79,7 @@ export const getAllStudent = async (
     }
 
     const data = await getAllStudentService();
-    res.ok(data, SUCCESS_MESSAGES.STUDENTS_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.STUDENTS_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -97,7 +97,7 @@ export const updateStudentProfile = async (
     }
 
     const data = await updateStudentProfileService(input.id, input);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_PROFILE_UPDATED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_PROFILE_UPDATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -115,7 +115,7 @@ export const deleteStudent = async (
     }
 
     const data = await deleteStudentService(id);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_DELETED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_DELETED, data);
   } catch (err: any) {
     next(err);
   }
@@ -133,7 +133,7 @@ export const deleteManyStudent = async (
     }
 
     const data = await deleteManyStudentsService(ids);
-    res.ok(data, SUCCESS_MESSAGES.SELECTED_STUDENTS_DELETED);
+    res.ok(SUCCESS_MESSAGES.SELECTED_STUDENTS_DELETED, data);
   } catch (err: any) {
     next(err);
   }

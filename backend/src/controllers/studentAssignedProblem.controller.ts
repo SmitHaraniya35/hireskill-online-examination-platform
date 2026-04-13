@@ -16,7 +16,7 @@ export const saveStudentAssignedProblemDraft = async (
         }
 
         const data = await saveStudentAssignedProblemDraftService(input);
-        res.ok(data, SUCCESS_MESSAGES.STUDENT_ASSIGNED_PROBLEM_SAVE_DRAFT_SUCCESS);
+        res.ok(SUCCESS_MESSAGES.STUDENT_ASSIGNED_PROBLEM_SAVE_DRAFT_SUCCESS, data);
     } catch (err: any) {
         next(err);
     }
@@ -34,7 +34,7 @@ export const attemptedStudentAssignedProblem = async (
         }
 
         const data = await attemptedStudentAssignedProblemService(id);
-        res.ok(data, SUCCESS_MESSAGES.STUDENT_ASSIGNED_PROBLEM_ATTEMPTED_SUCCESS);
+        res.ok(SUCCESS_MESSAGES.STUDENT_ASSIGNED_PROBLEM_ATTEMPTED_SUCCESS, data);
     } catch (err: any) {
         next(err);
     }
@@ -52,7 +52,7 @@ export const submittedStudentAssignedProblem = async (
         }
 
         const data = await submittedStudentAssignedProblemService(id);
-        res.ok(data, SUCCESS_MESSAGES.STUDENT_ASSIGNED_PROBLEM_SUBMITTED_SUCCESS);
+        res.ok(SUCCESS_MESSAGES.STUDENT_ASSIGNED_PROBLEM_SUBMITTED_SUCCESS, data);
     } catch (err: any) {
         next(err);
     }

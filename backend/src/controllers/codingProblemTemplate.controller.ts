@@ -14,7 +14,7 @@ export const deleteCodingProblemTemplateById = async (
             return res.badRequest(ERROR_MESSAGES.CODING_PROBLEM_TEMPLATE_ID_REQUIRED);
         }
         const data = await deleteCodingProblemTemplateByIdService(id);
-        res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_TEMPLATE_DELETED);
+        res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_TEMPLATE_DELETED, data);
     } catch (err: any) {
         next(err);
     }

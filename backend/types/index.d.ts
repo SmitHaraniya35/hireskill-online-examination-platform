@@ -7,8 +7,8 @@ import type { ClientDocument } from "../src/types/model/client.document.ts";
 declare global {
     namespace Express {
         interface Response {
-            ok<T>(data?: T, message?: string): this;
-            created<T>(data?: T, message?: string): this;
+            ok<T>(message?: string, data?: T): this;
+            created<T>(message?: string, data?: T): this;
             
             badRequest(message?: string, errors?: string[] | null): this;
             unauthorized(message?: string, errorCode?: string): this;

@@ -37,7 +37,7 @@ export const createTest = async (
     input.expiration_at = new Date(input.expiration_at);
 
     const data = await createTestService(input, adminId);
-    res.ok(data, SUCCESS_MESSAGES.TEST_CREATED);
+    res.ok(SUCCESS_MESSAGES.TEST_CREATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -55,7 +55,7 @@ export const getTestById = async (
     }
 
     const data = await getTestByIdService(id);
-    res.ok(data, SUCCESS_MESSAGES.TEST_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.TEST_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -73,7 +73,7 @@ export const getAllTests = async (
     }
 
     const data = await getAllTestService();
-    res.ok(data, SUCCESS_MESSAGES.TESTS_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.TESTS_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -99,7 +99,7 @@ export const updateTest = async (
     input.start_at = new Date(input.start_at);
 
     const data = await updateTestService(input);
-    res.ok(data, SUCCESS_MESSAGES.TEST_UPDATED);
+    res.ok(SUCCESS_MESSAGES.TEST_UPDATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -122,7 +122,7 @@ export const deleteTest = async (
     }
 
     const data = await deleteTestService(id);
-    res.ok(data, SUCCESS_MESSAGES.TEST_DELETED);
+    res.ok(SUCCESS_MESSAGES.TEST_DELETED, data);
   } catch (err: any) {
     next(err);
   }
@@ -140,7 +140,7 @@ export const startTest = async (
     }
 
     const data = await startTestService(test_id, student_id);
-    res.ok(data, SUCCESS_MESSAGES.TEST_STARTED);
+    res.ok(SUCCESS_MESSAGES.TEST_STARTED, data);
   } catch (err: any) {
     next(err);
   }
@@ -158,7 +158,7 @@ export const getTestDataByStudentAttemptId = async (
     }
 
     const data = await getTestDataByStudentAttemptIdService(studentAttemptId);
-    res.ok(data, SUCCESS_MESSAGES.TEST_DATA_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.TEST_DATA_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -178,7 +178,7 @@ export const finishTest = async (
 
     await finishTestService(input);
 
-    res.ok({}, SUCCESS_MESSAGES.TEST_COMPLETED);
+    res.ok(SUCCESS_MESSAGES.TEST_COMPLETED);
   } catch (err: any) {
     next(err);
   }
@@ -196,7 +196,7 @@ export const toggleTestActivation = async (
     }
 
     const data = await toggleTestActivationService(id);
-    res.ok(data, SUCCESS_MESSAGES.TEST_ACTIVATION_TOGGLED);
+    res.ok(SUCCESS_MESSAGES.TEST_ACTIVATION_TOGGLED, data);
   } catch (err: any) {
     next(err);
   }
@@ -214,7 +214,7 @@ export const toggleTestPublicStatus = async (
     }
 
     const data = await toggleTestPublicStatusService(id);
-    res.ok(data, SUCCESS_MESSAGES.TEST_PUBLIC_STATUS_TOGGLED);
+    res.ok(SUCCESS_MESSAGES.TEST_PUBLIC_STATUS_TOGGLED, data);
   } catch (err: any) {
     next(err);
   } 

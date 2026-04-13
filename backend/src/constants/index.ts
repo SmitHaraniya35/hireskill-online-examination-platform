@@ -79,7 +79,11 @@ export const SUCCESS_MESSAGES = {
   STUDENT_ASSIGNED_PROBLEM_SUBMITTED_SUCCESS: "Student assigned problem marked as submitted successfully",
 
   // Submission
-  SUBMISSION_RETRIEVED: "Submission retrieved successfully"
+  SUBMISSION_RETRIEVED: "Submission retrieved successfully",
+
+  // Upload
+  IMAGE_UPLOADED: "Image uploaded successfully",
+  IMAGE_DELETED: "Image deleted successfully"
 };
 
 export const ERROR_MESSAGES = {

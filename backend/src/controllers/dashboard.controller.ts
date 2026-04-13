@@ -11,7 +11,7 @@ export const getAllTestsAnalytics = async (
 ) => {
     try {
         const data = await getAllTestsAnalyticsService();
-        res.ok(data, SUCCESS_MESSAGES.ALL_OVER_TESTS_ANALYTICS_FETCHED);
+        res.ok(SUCCESS_MESSAGES.ALL_OVER_TESTS_ANALYTICS_FETCHED, data);
     } catch (err: any) {
         next(err);
     }
@@ -29,7 +29,7 @@ export const getSingleTestAnalytics = async (
         }
 
         const data = await getSingleTestAnalyticsService(id);
-        res.ok(data, SUCCESS_MESSAGES.TEST_ANALYTICS_FETCHED);
+        res.ok(SUCCESS_MESSAGES.TEST_ANALYTICS_FETCHED, data);
     } catch (err: any) {
         next(err);
     }
