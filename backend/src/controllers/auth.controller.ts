@@ -13,7 +13,6 @@ import {
 } from "../services/auth.service.ts";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
 import type { Admin, LoginRequestData, LoginResponseData, ResetPasswordData, VerifyOtpData } from "../types/controller/authData.types.ts";
-import { generateApiKey } from "../utils/helper.utils.ts";
 import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 
 export const login = async (
@@ -91,7 +90,16 @@ export const createAdmin = async (
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED);
     }
 
-    const data = await createAdminService(email, password);
+    const { user } = await createAdminService(email, password);
+    const safeUser = {
+      id: user.id,
+      email: user.email
+    }
+
+    const data = {
+      user: safeUser
+    }
+    
     res.created(SUCCESS_MESSAGES.ADMIN_CREATED, data);
   } catch (err: any) {
     next(err);
@@ -146,8 +154,8 @@ export const forgotPassword = async (
       return res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
     }
 
-    const data = await forgetPasswordService(email);
-    res.ok(SUCCESS_MESSAGES.OTP_GENERATED, data);
+    await forgetPasswordService(email);
+    res.ok(SUCCESS_MESSAGES.OTP_GENERATED);
   } catch (err: any) {
     next(err);
   }
@@ -186,7 +194,7 @@ export const resetPassword = async (
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_NEWPASSWORD_REQUIRED);
     }
 
-    const data = await resetPasswordService(email, newPassword);
+    await resetPasswordService(email, newPassword);
     res.ok(SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS);
   } catch (err: any) {
     next(err);
