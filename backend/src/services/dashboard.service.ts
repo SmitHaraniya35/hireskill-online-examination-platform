@@ -230,17 +230,17 @@ const getTestWiseAnalytics = async (
 
   const map = new Map<string, any>();
 
-  // // Initialize map with all tests to ensure even those without attempts are included
-  // for(const t of tests) {
-  //   map.set(t.id, {
-  //       testId: t.id,
-  //       title: t?.title || "Unknown Test",
-  //       start_at: t?.start_at || null,
-  //       totalStudents: 0,
-  //       totalScore: 0,
-  //       completed: 0,
-  //   });
-  // }
+  // Initialize map with all tests to ensure even those without attempts are included
+  for(const t of tests) {
+    map.set(t.id, {
+        testId: t.id,
+        title: t.title,
+        start_at: t.start_at,
+        totalStudents: 0,
+        totalScore: 0,
+        completed: 0,
+    });
+  }
 
   for (const a of attempts) {
     if (!map.has(a.test_id)) {
@@ -248,8 +248,8 @@ const getTestWiseAnalytics = async (
 
       map.set(a.test_id, {
         testId: a.test_id,
-        title: t?.title || "Unknown Test",
-        start_at: t?.start_at || null,
+        title: t.title,
+        start_at: t.start_at,
         totalStudents: 0,
         totalScore: 0,
         completed: 0,
