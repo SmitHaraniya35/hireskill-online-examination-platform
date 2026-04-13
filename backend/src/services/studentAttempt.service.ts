@@ -99,12 +99,6 @@ export const getStudentAttemptSubmissionDetailsAndResultByIdService = async (id:
   const { student_id, test_id } = studentAttempt;
 
   const { student } = await getStudentByIdService(student_id);
-  // const formattedStudent = {
-  //   id: student.id,
-  //   name: student.name,
-  //   email: student.email,
-  //   phone: student.phone
-  // }
 
   const { test } = await getTestByIdService(test_id);
   const formattedTest = {
@@ -117,7 +111,6 @@ export const getStudentAttemptSubmissionDetailsAndResultByIdService = async (id:
   const { studentAssignedProblems } = await getStudentAssignedProblemsWithSubmissionDetailsByStudentAttemptIdService(id);
 
   return {
-    // student: formattedStudent, 
     student, 
     test: formattedTest,
     studentAttempt,
@@ -127,7 +120,7 @@ export const getStudentAttemptSubmissionDetailsAndResultByIdService = async (id:
 };
 
 export const finishStudentAttemptService = async (id: string) => {
-  const studentAttempt: StudentAttemptDocument | null =
+  const studentAttempt =
     await StudentAttempt.updateOneByFilter({ id }, 
       { 
         is_active: false,
@@ -148,7 +141,7 @@ export const finishStudentAttemptService = async (id: string) => {
 };
 
 export const updateStudentAttemptStatusService = async (id: string, status: StudentAttemptStatusType) => {
-  const studentAttempt: StudentAttemptDocument | null = await StudentAttempt.updateOneByFilter({ id },
+  const studentAttempt = await StudentAttempt.updateOneByFilter({ id },
     {
       status
     }
