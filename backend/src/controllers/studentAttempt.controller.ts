@@ -24,7 +24,7 @@ export const createStudentAttempt = async (
     }
 
     const data = await createStudentAttemptService(test_id, student_id);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_CREATED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_ATTEMPT_CREATED, data);
   } catch (err: any) {
     next(err);
   } 
@@ -47,7 +47,7 @@ export const deleteStudentAttempt = async (
     }
 
     const data = await deleteStudentAttemptService(id);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_DELETED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_ATTEMPT_DELETED, data);
   } catch (err: any) {
     next(err);
   }
@@ -65,7 +65,7 @@ export const getStudentAttemptsDetailsByTestId = async (
     }
 
     const data = await getStudentAttemptsDetailsByTestIdService(testId);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPTS_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_ATTEMPTS_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -83,7 +83,7 @@ export const getStudentAttemptSubmissionDetailsAndResultById = async (
     }
 
     const data = await getStudentAttemptSubmissionDetailsAndResultByIdService(id);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_DETAILS_AND_RESULT_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_ATTEMPT_DETAILS_AND_RESULT_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -102,7 +102,7 @@ export const getStudentAttemptById = async (
 
     const data = await getStudentAttemptByIdService(id);
 
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_ATTEMPT_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -122,7 +122,7 @@ export const validateStudentAttemptByEmailAndTestId = async (
     }
 
     const data = await validateStudentAttemptByEmailAndTestIdService(email, test_id);
-    res.ok(data, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED);
+    res.ok(SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED, data);
   } catch(err: any){
     next(err);
   }
@@ -140,11 +140,11 @@ export const validateStudentAttemptById = async (
     }
 
     const data = await validateStudentAttemptByIdService(id);
-    res.ok({
+    res.ok(SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED, {
       id: data.studentAttempt.id,
       is_active: data.studentAttempt.is_active,
       is_submitted: data.studentAttempt.is_submitted
-    }, SUCCESS_MESSAGES.STUDENT_ATTEMPT_VALIDATED);
+    });
   } catch(err: any){
     next(err);
   }

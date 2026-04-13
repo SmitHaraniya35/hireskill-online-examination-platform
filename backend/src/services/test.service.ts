@@ -165,7 +165,7 @@ export const updateTestService = async (
 };
 
 export const deleteTestService = async (id: string) => {
-  const test = await Test.updateOneByFilter({ id }, { $set: { isDeleted: true, is_active: false } });
+  const test = await Test.updateOneByFilter({ id }, { $set: { isDeleted: true, is_active: false, deletedAt: new Date() } });
 
   if (!test) {
     throw new HttpError(

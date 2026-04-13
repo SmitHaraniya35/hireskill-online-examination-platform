@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { ERROR_MESSAGES, HttpStatusCode, SUCCESS_MESSAGES } from "../constants/index.ts";
+import { ERROR_MESSAGES, SUCCESS_MESSAGES } from "../constants/index.ts";
 import {
   loginService,
   getMeService,
@@ -13,7 +13,6 @@ import {
 } from "../services/auth.service.ts";
 import type { AuthJwtPayload, AuthRequest } from "../types/controller/index.ts";
 import type { Admin, LoginRequestData, LoginResponseData, ResetPasswordData, VerifyOtpData } from "../types/controller/authData.types.ts";
-import { generateApiKey } from "../utils/helper.utils.ts";
 import { verifyRefreshToken } from "../utils/jwt.utils.ts";
 
 export const login = async (
@@ -46,7 +45,7 @@ export const login = async (
       accessToken
     }
 
-    res.ok(data, SUCCESS_MESSAGES.LOGIN_SUCCESS);
+    res.ok(SUCCESS_MESSAGES.LOGIN_SUCCESS, data);
   } catch (err: any) {
     next(err);
   }
@@ -74,7 +73,7 @@ export const getMe = async (
       user: safeUser
     }
     
-    res.ok(data, SUCCESS_MESSAGES.ADMIN_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.ADMIN_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -91,8 +90,17 @@ export const createAdmin = async (
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_PASSWORD_REQUIRED);
     }
 
-    const data = await createAdminService(email, password);
-    res.created(data, SUCCESS_MESSAGES.ADMIN_CREATED);
+    const { user } = await createAdminService(email, password);
+    const safeUser = {
+      id: user.id,
+      email: user.email
+    }
+
+    const data = {
+      user: safeUser
+    }
+    
+    res.created(SUCCESS_MESSAGES.ADMIN_CREATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -121,7 +129,7 @@ export const refreshToken = async (
         secure: true,
       });
 
-      res.ok({ accessToken: data.accessToken }, SUCCESS_MESSAGES.ACCESS_TOKEN_GENERATED);
+      res.ok(SUCCESS_MESSAGES.ACCESS_TOKEN_GENERATED, { accessToken: data.accessToken });
     } catch (err: any) {
       res.clearCookie("refreshToken", {
         httpOnly: true,
@@ -146,8 +154,8 @@ export const forgotPassword = async (
       return res.badRequest(ERROR_MESSAGES.EMAIL_REQUIRED);
     }
 
-    const data = await forgetPasswordService(email);
-    res.ok(data, SUCCESS_MESSAGES.OTP_GENERATED);
+    await forgetPasswordService(email);
+    res.ok(SUCCESS_MESSAGES.OTP_GENERATED);
   } catch (err: any) {
     next(err);
   }
@@ -169,7 +177,7 @@ export const verifyOtp = async (
     }
 
     await verifyOtpService(email, otp);
-    res.ok({}, SUCCESS_MESSAGES.OTP_VERIFIED);
+    res.ok(SUCCESS_MESSAGES.OTP_VERIFIED);
   } catch (err: any) {
     next(err);
   }
@@ -186,8 +194,8 @@ export const resetPassword = async (
       return res.badRequest(ERROR_MESSAGES.EMAIL_AND_NEWPASSWORD_REQUIRED);
     }
 
-    const data = await resetPasswordService(email, newPassword);
-    res.ok({}, SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS);
+    await resetPasswordService(email, newPassword);
+    res.ok(SUCCESS_MESSAGES.PASSWORD_RESET_SUCCESS);
   } catch (err: any) {
     next(err);
   }
@@ -216,7 +224,7 @@ export const logout = async (
       secure: true,
     });
 
-    res.ok({}, SUCCESS_MESSAGES.LOGOUT_SUCCESS);
+    res.ok(SUCCESS_MESSAGES.LOGOUT_SUCCESS);
   } catch (err: any) {
     next(err);
   }
@@ -231,7 +239,7 @@ export const createClient = async (
     const { client_id } = req.body;
     const data = await createClientService(client_id);
     
-    res.created(data, SUCCESS_MESSAGES.CLIENT_CREATED);
+    res.created(SUCCESS_MESSAGES.CLIENT_CREATED, data);
   } catch (err: any) {
     next(err);  
   }

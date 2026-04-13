@@ -1,6 +1,7 @@
 import type { Response, NextFunction } from "express";
 import type { AuthRequest } from "../types/controller/index.ts";
 import { uploadImageService, deleteImageService } from "../services/upload.service.ts";
+import { SUCCESS_MESSAGES } from "../constants/index.ts";
 
 export const uploadImage = async (req: AuthRequest, res: Response, next: NextFunction) => {
     try {
@@ -9,7 +10,7 @@ export const uploadImage = async (req: AuthRequest, res: Response, next: NextFun
         }
 
         const data = await uploadImageService(req.file.buffer);
-        return res.ok(data, "Image uploaded successfully.");
+        return res.ok(SUCCESS_MESSAGES.IMAGE_UPLOADED, data);
     } catch (err: any) {
         next(err);
     }
@@ -23,7 +24,7 @@ export const deleteImage = async (req: AuthRequest, res: Response, next: NextFun
         }
 
         await deleteImageService(url);
-        return res.ok(null, "Image deleted from Cloudinary successfully.");
+        return res.ok(SUCCESS_MESSAGES.IMAGE_DELETED);
     } catch (err: any) {
         next(err);
     }

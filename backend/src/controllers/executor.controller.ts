@@ -33,7 +33,7 @@ export const runCode = async (
         // await redis.set(`job:${job.id}`, JSON.stringify(response));
 
         // res.ok({ jobId: job.id });
-        res.ok(data);
+        res.ok(SUCCESS_MESSAGES.CODE_EXECUTED, data);
     } catch (err: any) {
         next(err);
     }
@@ -51,7 +51,7 @@ export const submitCode = async (
         }
 
         const result = await submitCodeService(input);
-        return res.ok(result, SUCCESS_MESSAGES.CODE_EXECUTED);
+        return res.ok(SUCCESS_MESSAGES.CODE_EXECUTED, result);
     } catch (err: any) {
         next(err);
     }

@@ -8,7 +8,7 @@ export default function responseMiddleware(
 ): void {
 
   const success = <T>(status: number) => 
-    (payload: T, message: string) => 
+    (message: string, payload?: T) => 
       res.status(status).json({
         success: true,
         message,
@@ -26,14 +26,14 @@ export default function responseMiddleware(
     
 
   res.ok = <T> (
-    data: T, 
-    message = SUCCESS_MESSAGES.OK
-  ) => success<T>(HttpStatusCode.OK)(data, message);
+    message = SUCCESS_MESSAGES.OK,
+    data?: T
+  ) => success<T>(HttpStatusCode.OK)(message, data);
   
   res.created = <T> (
-    data: T, 
-    message = SUCCESS_MESSAGES.CREATED
-  ) => success(HttpStatusCode.CREATED)(data, message);
+    message = SUCCESS_MESSAGES.CREATED,
+    data?: T
+  ) => success<T>(HttpStatusCode.CREATED)(message, data);
 
   res.badRequest = (
     message = ERROR_MESSAGES.BAD_REQUEST,

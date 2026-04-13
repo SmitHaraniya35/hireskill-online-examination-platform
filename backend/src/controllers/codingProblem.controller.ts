@@ -34,7 +34,7 @@ export const createCodingProblem = async (
     }
 
     const data = await createCodingProblemService(input, admin.userId);
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_CREATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -52,7 +52,7 @@ export const getCodingProblemById = async (
     }
 
     const data = await getCodingProblemByIdService(id);
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -70,7 +70,7 @@ export const getAllCodingProblems = async (
     }
 
     const data = await getAllCodingProblemsService();
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEMS_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEMS_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -95,7 +95,7 @@ export const updateCodingProblem = async (
     }
 
     const data = await updateCodingProblemService(id, updatedInput);
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_UPDATED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_UPDATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -113,7 +113,7 @@ export const deleteCodingProblem = async (
     }
 
     const data = await deleteCodingProblemService(id);
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_DELETED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_DELETED, data);
   } catch (err: any) {
     next(err);
   }
@@ -139,7 +139,7 @@ export const createCodingProblemWithTestCasesAndTemplateCodes = async (
       input,
       admin.userId,
     );
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_CREATED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_CREATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -157,7 +157,7 @@ export const getCodingProblemWithTestCasesAndTemplateCodes = async (
     }
 
     const data = await getCodingProblemWithTestCasesAndTemplateCodesService(id, sample_only);
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_RETRIEVED, data);
   } catch (err: any) {
     next(err);
   }
@@ -183,7 +183,7 @@ export const updateCodingProblemWithTestCasesAndTemplateCodes = async (
       input,
       admin.userId,
     );
-    res.ok(data, SUCCESS_MESSAGES.CODING_PROBLEM_UPDATED);
+    res.ok(SUCCESS_MESSAGES.CODING_PROBLEM_UPDATED, data);
   } catch (err: any) {
     next(err);
   }
@@ -196,7 +196,7 @@ export const getAllSupportedLanguages = async (
 ) => {
   try {
     const data = await getAllSupportedLanguagesService();
-    res.ok(data, SUCCESS_MESSAGES.LANGUAGES_RETRIEVED);
+    res.ok(SUCCESS_MESSAGES.LANGUAGES_RETRIEVED, data);
   }   
   catch (err: any) {
     next(err);
