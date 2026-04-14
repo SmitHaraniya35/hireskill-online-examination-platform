@@ -39,14 +39,6 @@ export interface GelAllCodingProblemWithTestCases {
     codingProblemWithTestCases: CodingProblemData;
 }
 
-export interface GetCodingProblemResponse {
-    codingProblem: CodingProblemData;
-}
-
-export interface GetCodingProblemWithTestCases {
-    codingProblemWithTestCases: CodingProblemData;
-}
-
 export interface LANGUAGES {
     Languages: Languages;
 }

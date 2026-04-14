@@ -1,10 +1,5 @@
 
 
-export interface Problem {
-  id: string;
-  title: string;
-  difficulty: string;
-}
 
 export interface Submission {
   id?: string;
