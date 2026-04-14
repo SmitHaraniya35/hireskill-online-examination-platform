@@ -8,14 +8,6 @@ export interface ISummary {
   totalTests?: number;
 }
 
-export interface ITest {
-  id: string;
-  title: string;
-  duration_minutes: number;
-  start_at: string;
-  total_score: number;
-}
-
 export interface ILeaderboard {
   studentId?: string;
   name?: string;
@@ -27,23 +19,6 @@ export interface ILeaderboard {
   testId?: string;
   testTitle?: string;
 }
-
-export interface IProblemAnalytics {
-  title: string;
-  difficulty: Difficulty;
-  attempts: number;
-  avgPerformance: number;
-  successRate: number;
-}
-
-// export interface ISingleTestResponse {
-//   test: ITest;
-//   summary: ISummary;
-//   scoreDistribution: Record<string, number>;
-//   difficultyStats: { difficulty: Difficulty; avgPerformance: number }[];
-//   problemAnalytics: IProblemAnalytics[];
-//   leaderboard: ILeaderboard[];
-// }
 
 // In dashboard.types.ts
 export interface ISingleTestResponse {
@@ -76,6 +51,14 @@ export interface ISingleTestResponse {
     successRate: number;
   }>;
   leaderboard: ILeaderboard[];
+}
+
+export interface IProblemAnalytics {
+  title: string;
+  difficulty: Difficulty;
+  attempts: number;
+  avgPerformance: number;
+  successRate: number;
 }
 
 export interface IGlobalResponse {

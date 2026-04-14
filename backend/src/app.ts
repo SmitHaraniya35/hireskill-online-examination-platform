@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import responseMiddleware from "./middlewares/response.middleware.ts";
@@ -17,6 +18,8 @@ import dashboardRoutes from "./routes/dashboard.routes.ts";
 import uploadRoutes from "./routes/upload.routes.ts";
 import { errorHandlerMiddleware } from "./middlewares/error.middleware.ts";
 // import { validateApiKey } from "./middlewares/apikey.middleware.ts";
+
+dotenv.config();
 
 const app = express();
 

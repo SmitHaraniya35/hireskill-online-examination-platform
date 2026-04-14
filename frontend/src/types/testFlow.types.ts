@@ -113,10 +113,6 @@ export interface SubmitCodeResponse {
     error?: string;
 }
 
-export interface RunCodeRespone {
-    jobId: string;
-}
-
 export type JudgeStatus =
   | "Completed"
   | "Failed";

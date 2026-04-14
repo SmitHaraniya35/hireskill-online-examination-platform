@@ -1,12 +1,8 @@
-// import axios from 'axios';
-import { type GetSubmissionResponse, type SubmitResponse, type RunData, type RunResponse, type SubmitData } from '../types/submission.types';
+import { type GetSubmissionResponse } from '../types/submission.types';
 import type { axiosResponse } from '../types/index.types';
-import type { SubmissionByStudentAttemptId } from '../types/studentAttempts.types';
 import api from './api';
 
-// const API_URL = `${import.meta.env.VITE_BACKEND_API_URL}/submission`;
 const API_URL = api.defaults.baseURL + '/submission';
-
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem('admin_token');
@@ -19,27 +15,12 @@ const getAuthHeaders = () => {
     };
 };
 
-
 const submissionService = {
-
-    runCodeService: async (inputData: RunData) => {
-        const response  = await api.post<axiosResponse<RunResponse> >(`${API_URL}/run`, inputData, getAuthHeaders());
-        return response.data;
-    },
-
-    submitCodeService: async (inputData:SubmitData ) => {
-        const response = await api.post<axiosResponse<SubmitResponse>>(`${API_URL}/submit`, inputData, getAuthHeaders());
-        return response.data;
-    },
 
     getSubmissionService: async (submissionId: string) => {
         const response = await api.get<axiosResponse<GetSubmissionResponse>>(`${API_URL}/get-submission/${submissionId}`, getAuthHeaders());
         return response.data;
     },
-    getSubmissionByStudentAttemptId: async (studentAttemptId: string) => {
-        const response = await api.get<axiosResponse<SubmissionByStudentAttemptId>>(`${API_URL}/get-submission-by-student-attempt-id/${studentAttemptId}`,getAuthHeaders());
-        return response.data;
-    }
 };
 
 export default submissionService;

@@ -19,14 +19,6 @@ const getAuthHeaders = () => {
 };
 
 const dashboardService = {
-  getDashboardService: async (id?: string) => {
-    const url = id
-      ? `${API_URL}/test-analytics/${id}`
-      : `${API_URL}/test-analytics`;
-    const response = await api.get<axiosResponse>(url, getAuthHeaders());
-    return response.data.payload;
-  },
-
   fetchAllTestsAnalytics: async () => {
     const url = `${API_URL}/test/global`;
     const response = await api.get<axiosResponse<IGlobalResponse>>(url, getAuthHeaders());
