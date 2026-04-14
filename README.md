@@ -26,7 +26,6 @@ HireSkill is a robust, full-stack platform designed to help organizations evalua
 - [Environment Variables](#-environment-variables)
 - [Running Locally](#-running-locally)
 - [Deployment](#-deployment)
-- [API Routes](#-api-routes)
 - [Supported Languages](#-supported-languages)
 - [Contributing](#-contributing)
 
@@ -212,8 +211,6 @@ VITE_FRONTEND_URL=http://localhost:5173
 
 ---
 
----
-
 ## 💻 Execution Options
 
 ### Option 1: Native Local Execution (Development)
@@ -273,35 +270,6 @@ The Docker Compose setup in the `backend` directory is designed for production r
 - **Shared Volume**: A shared `submissions` volume is used to pass source code between the host and judge containers efficiently.
 
 The frontend is deployed separately on **Vercel**.
-
----
-
-## 📡 API Routes
-
-| Module | Method | Endpoint | Description |
-|--------|--------|----------|-------------|
-| **Auth** | POST | `/api/auth/login` | Admin login |
-| | POST | `/api/auth/forgot-password` | Send password reset OTP |
-| | POST | `/api/auth/verify-otp` | Verify OTP |
-| | POST | `/api/auth/reset-password` | Reset password |
-| **Tests** | GET | `/api/test` | List all tests |
-| | POST | `/api/test` | Create test |
-| | PUT | `/api/test` | Update test |
-| | DELETE | `/api/test/:id` | Soft delete test |
-| **Coding Problems** | GET | `/api/coding-problem` | List problems |
-| | POST | `/api/coding-problem/create-coding-problem-with-testcases-and-templateCodes` | Create problem with test cases & templates |
-| **Test Cases** | GET | `/api/test-case/:problemId` | Get test cases for a problem |
-| | POST | `/api/test-case` | Add test case |
-| **Students** | GET | `/api/student` | List students |
-| | POST | `/api/student` | Create/import students |
-| **Code Execution** | POST | `/api/executor/run` | Run code against sample test cases |
-| | POST | `/api/executor/submit` | Submit code against all test cases |
-| **Student Attempts** | POST | `/api/student-attempt/start` | Start a test attempt |
-| | POST | `/api/student-attempt/finish` | Finish & trigger scoring |
-| **Dashboard** | GET | `/api/dashboard` | Global analytics |
-| | GET | `/api/dashboard/:testId` | Per-test analytics |
-| **Upload** | POST | `/api/upload/image` | Upload image to Cloudinary |
-| | DELETE | `/api/upload/image` | Delete image from Cloudinary |
 
 ---
 
