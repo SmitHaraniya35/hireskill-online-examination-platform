@@ -24,7 +24,7 @@ HireSkill is a robust, full-stack platform designed to help organizations evalua
 - [Architecture](#-architecture)
 - [Getting Started](#-getting-started)
 - [Environment Variables](#-environment-variables)
-- [Running Locally](#-running-locally)
+- [Execution Options](#-execution-options)
 - [Deployment](#-deployment)
 - [Supported Languages](#-supported-languages)
 - [Contributing](#-contributing)
@@ -255,7 +255,7 @@ Use this to run the entire backend stack (API, Worker, Redis) within Docker cont
 
 ---
 
-## 🐳 Production Deployment Details
+## 🐳 Deployment
 
 The Docker Compose setup in the `backend` directory is designed for production readiness. It orchestrates three primary services:
 
