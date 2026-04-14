@@ -53,6 +53,14 @@ export interface ISingleTestResponse {
   leaderboard: ILeaderboard[];
 }
 
+export interface IProblemAnalytics {
+  title: string;
+  difficulty: Difficulty;
+  attempts: number;
+  avgPerformance: number;
+  successRate: number;
+}
+
 export interface IGlobalResponse {
   summary: ISummary;
   scoreTrendsTestWise: {
